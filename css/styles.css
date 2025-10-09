@@ -12,7 +12,7 @@ html, body {
   padding: 0;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f9fafb;
-  color: #1f2937;
+  color: #1f2937; /* gray-800 */
   line-height: 1.6;
 }
 
@@ -20,11 +20,24 @@ html, body {
 :root {
   --header-h: 64px;
   --footer-h: 44px;
-  --content-w: 960px;
-  --brand: #00437a;
-  --border: #e5e7eb;
+  --content-w: 1060px;
+
+  --brand: #2563eb;       /* blue */
+  --brand-100: #dbeafe;   /* blue-100 */
+  --text: #1f2937;        /* gray-800 */
+  --muted: #6b7280;       /* gray-500 */
+  --card: #ffffff;
+  --border: #e5e7eb;      /* gray-200 */
   --radius: 12px;
   --shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+/* Page-scoped body behaviour */
+body.quiz-body {   /* Quiz page: no page scroll */
+  overflow: hidden;
+}
+body.results-body {  /* Results page: page scroll allowed */
+  overflow: auto;
 }
 
 /* Header */
@@ -37,17 +50,27 @@ html, body {
   box-shadow: var(--shadow);
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 16px;
   z-index: 100;
 }
 
+.site-header .brand,
 .site-header h1 {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   color: var(--brand);
   margin: 0;
+  font-weight: 700;
 }
 
-/* Footer */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Footer (fixed for quiz page; will be reset to static in results.css) */
 .site-footer {
   position: fixed;
   bottom: 0; left: 0; right: 0;
@@ -59,6 +82,7 @@ html, body {
   justify-content: center;
   font-size: 0.9rem;
   color: #6b7280;
+  z-index: 90;
 }
 
 /* Main Content Container */
@@ -73,83 +97,22 @@ html, body {
   overflow: hidden; /* prevents unwanted page scroll */
 }
 
-/* Shared Buttons */
-button {
-  font-family: inherit;
-  border-radius: var(--radius);
-  border: none;
-  cursor: pointer;
-  font-weight: 600;
-  padding: 10px 16px;
-  transition: background 0.2s ease, transform 0.1s ease;
+/* QUIZ PAGE LAYOUT (no inner scroll) */
+.container.quiz-page {
+  align-items: stretch; /* let inner take full height */
 }
 
-button:focus-visible {
-  outline: 3px solid #2563eb;
-  outline-offset: 2px;
-}
-
-/* Make the container stretch instead of vertical centering on quiz pages */
-main.quiz-page .container {
-  align-items: stretch;
-}
-
-/* The quiz panel itself: full height, internal scroll if needed */
 .quiz-container {
   width: 100%;
   max-width: var(--content-w);
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-
-  /* Ensure content doesn't get overlapped by the fixed site footer */
-  padding: 16px;
-  padding-bottom: calc(16px + var(--footer-h));
-
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-
-  /* Internal scroll only when needed */
-  overflow: hidden;          /* container itself */
+  height: calc(100dvh - var(--header-h) - var(--footer-h));
+  min-height: calc(100dvh - var(--header-h) - var(--footer-h));
+  overflow: hidden; /* no inner scroll */
+  background: transparent;
+  padding: 18px 24px 12px;
 }
 
-.quiz-header {
-  padding-bottom: 4px;
-}
-.quiz-body {
-  flex: 1 1 auto;
-  overflow: auto;            /* scroll only the question area if it gets tall */
-}
-.quiz-footer {
-  position: sticky;
-  bottom: 0;
-  background: #fff;
-  padding-top: 8px;
-  display: flex;
-  justify-content: space-between; /* Back left, Continue right */
-  gap: 12px;
-  border-top: 1px solid var(--border);
-  z-index: 1; /* stay above body content */
-}
-
-/* Buttons feel consistent */
-.quiz-footer .secondary {
-  background: #e5e7eb;
-  color: #374151;
-}
-#continueBtn {
-  background: var(--brand);
-  color: #fff;
-}
-#continueBtn[disabled] {
-  opacity: .6;
-  cursor: not-allowed;
-}
-
-/* Progress bar (keep your header’s existing HTML) */
+/* Progress bar (shared) */
 .progress-bar {
   width: 100%;
   height: 10px;
@@ -164,12 +127,52 @@ main.quiz-page .container {
   transition: width 200ms ease;
 }
 
-/* Option cards grid lives in questions.css, but ensure grid fits */
-.options-list {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
+/* ---- Buttons ---- */
+button, .btn {
+  font-family: inherit;
+  border-radius: var(--radius);
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  padding: 10px 16px;
+  transition: background 0.2s ease, transform 0.1s ease;
 }
-@media (min-width: 640px) {
-  .options-list { grid-template-columns: 1fr 1fr; }
+button:focus-visible, .btn:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.btn {
+  background: var(--brand);
+  color: #fff;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn:hover { filter: brightness(0.98); }
+.btn.small { padding: 8px 12px; font-size: 0.9rem; border-radius: 10px; }
+.btn.secondary { background: #e5e7eb; color: #374151; }
+
+/* ---- Quiz page text size tweaks (to maximize space) ---- */
+/* These override questions.css subtly to scale text and reduce chance of overflow */
+body.quiz-body .quiz-question .question-text {
+  font-size: clamp(18px, 2.2vw, 22px);
+}
+body.quiz-body .option-card span {
+  font-size: clamp(14px, 1.9vw, 17px);
+}
+
+/* Compact mode for dense screens (short heights) */
+@media (max-height: 740px) {
+  .quiz-container { padding: 14px 18px 8px; }
+  .site-header { height: 56px; }
+  :root { --header-h: 56px; }
+  body.quiz-body .quiz-question .question-text { font-size: clamp(16px, 2vw, 20px); }
+  body.quiz-body .option-card { padding: 12px 14px; }
+}
+
+/* Slightly wider screens: allow larger max width */
+@media (min-width: 1200px) {
+  .quiz-container { max-width: 1120px; }
 }
