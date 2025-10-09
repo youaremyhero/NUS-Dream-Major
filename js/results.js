@@ -71,7 +71,30 @@ function fireConfettiOnce() {
 export function renderResultsPage({ topMajorIds = [], identifiedQualities = [] }) {
   const container = $("#resultsRoot") || mountResultsRoot();
   container.innerHTML = ""; // reset
+
+  // Keep a simple, stable URL for results (no query/hash churn)
+  try {
+    const path = location.pathname.endsWith("/results") ? location.pathname : "/results";
+    if (location.pathname !== path) {
+      history.replaceState({}, "", path);
+    }
+  } catch {}
+
   fireConfettiOnce();
+
+  // Empty-state guard
+  if (!topMajorIds.length) {
+    container.appendChild(
+      el("section", {
+        className: "results-section",
+        html: `
+          <h2 class="section-title">Your Results</h2>
+          <p class="muted">We couldn’t calculate matches this time. Please return to the quiz and try again.</p>
+        `
+      })
+    );
+    return;
+  }
 
   // Build sections
   container.appendChild(renderQualities(identifiedQualities));
@@ -95,7 +118,7 @@ export function prepareResultsForPdf() {
 // Mounting root
 // -----------------------------
 function mountResultsRoot() {
-  // Expecting a dedicated results page DOM scaffold:
+  // Expected DOM scaffold:
   // <main id="resultsPage">
   //   <div id="resultsRoot" class="results-root"></div>
   // </main>
@@ -116,7 +139,7 @@ function renderQualities(qualities = []) {
   const wrap = el("section", { className: "results-section qualities-section" });
   wrap.appendChild(el("h2", { className: "section-title", text: "Your Top Qualities" }));
 
-  // Simple descriptive map (student-friendly)
+  // Student-friendly descriptions
   const desc = {
     "Analytical Thinking": "You break down complex problems and make sense of data and patterns.",
     "Creativity": "You generate fresh ideas and enjoy imaginative problem-solving.",
@@ -182,7 +205,7 @@ function renderTopMajorsStrip(topIds = []) {
 
   wrap.appendChild(rail);
 
-  // Small note about links
+  // Note
   wrap.appendChild(
     el("p", {
       className: "link-note",
@@ -212,7 +235,7 @@ function renderTabs(topIds = []) {
     type: "major"
   }));
 
-  // 2) Cluster tab (groups similar majors at the faculty level)
+  // 2) Cluster tab (groups similar majors at the faculty/cluster level)
   const clusterName = inferClusterName(topIds[0]); // base cluster from top match
   const clusterTab = { id: `CLUSTER_${sanitizeId(clusterName)}`, label: "Explore Similar Majors", type: "cluster" };
 
@@ -225,7 +248,13 @@ function renderTabs(topIds = []) {
     const tabBtn = el("button", {
       className: "tab-btn",
       text: t.label,
-      attrs: { role: "tab", "data-tab-id": t.id, "aria-selected": i === 0 ? "true" : "false" }
+      attrs: {
+        role: "tab",
+        "data-tab-id": t.id,
+        "aria-selected": i === 0 ? "true" : "false",
+        id: `tab_${t.id}`,
+        tabindex: i === 0 ? "0" : "-1"
+      }
     });
     tabBtn.addEventListener("click", () => selectTab(t.id, tablist, panels));
     tablist.appendChild(tabBtn);
@@ -239,6 +268,12 @@ function renderTabs(topIds = []) {
     } else {
       panel = renderSpecialProgrammesPanel(topIds);
     }
+
+    // Accessibility wiring for panel
+    panel.setAttribute("role", "tabpanel");
+    panel.setAttribute("aria-labelledby", `tab_${t.id}`);
+    panel.id = `panel_${t.id}`;
+
     if (i !== 0) panel.classList.add("is-hidden");
     panels.appendChild(panel);
   });
@@ -252,6 +287,7 @@ function selectTab(tabId, tablist, panels) {
   $all(".tab-btn", tablist).forEach(btn => {
     const on = btn.getAttribute("data-tab-id") === tabId;
     btn.setAttribute("aria-selected", on ? "true" : "false");
+    btn.setAttribute("tabindex", on ? "0" : "-1");
   });
   // panels
   $all(".tab-panel", panels).forEach(p => {
@@ -270,7 +306,7 @@ function selectTabForMajor(majorId) {
 
 function renderMajorPanel(majorId, topIds) {
   const m = byId[majorId];
-  const panel = el("div", { className: "tab-panel", id: `panel_${majorId}` });
+  const panel = el("div", { className: "tab-panel" });
 
   if (!m) {
     panel.appendChild(el("p", { className: "muted", text: "This major is not available." }));
@@ -303,10 +339,12 @@ function renderMajorPanel(majorId, topIds) {
 }
 
 function renderClusterPanel(baseClusterName = "") {
-  const panel = el("div", { className: "tab-panel", id: `panel_CLUSTER_${sanitizeId(baseClusterName)}` });
+  const panel = el("div", { className: "tab-panel" });
 
-  // simple cluster expansion: show other majors within the same faculty cluster label
-  const peers = ALL_MAJORS.filter(m => m.cluster === baseClusterName);
+  // simple cluster expansion: show other majors within the same cluster label (deduped)
+  const seen = new Set();
+  const peers = ALL_MAJORS.filter(m => m.cluster === baseClusterName)
+    .filter(m => (seen.has(m.id) ? false : (seen.add(m.id), true)));
 
   panel.appendChild(el("h3", { className: "panel-title", text: `Explore Similar Majors (${baseClusterName})` }));
   if (!peers.length) {
@@ -337,7 +375,7 @@ function renderClusterPanel(baseClusterName = "") {
 }
 
 function renderSpecialProgrammesPanel(topIds = []) {
-  const panel = el("div", { className: "tab-panel", id: "panel_TAB_SPECIAL_PROGRAMMES" });
+  const panel = el("div", { className: "tab-panel" });
 
   panel.appendChild(el("h3", { className: "panel-title", text: "Special Programmes Recommendation" }));
 
