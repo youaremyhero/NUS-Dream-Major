@@ -1,5 +1,5 @@
 // js/scoring.js
-import { questions, TOTAL_QUESTIONS } from "./questions.js";
+import { QUESTIONS } from "./questions.js";
 
 export function calculateResults(answers) {
   const totals = {};
