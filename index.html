@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>NUS Dream Major Quiz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="./css/styles.css" />
+</head>
+<body>
+  <header id="appHeader" class="quiz-header" role="banner">
+    <div class="brand" aria-label="App name">NUS Dream Major Quiz</div>
+    <div class="header-actions"></div>
+    <div class="progress" aria-hidden="true">
+      <div id="progress" class="progress-bar"></div>
+    </div>
+  </header>
+
+  <main id="quizPage" class="quiz-page" role="main" aria-live="polite">
+    <div class="question-meta">
+      <p id="qNum" class="qnum" aria-label="Question counter">Question</p>
+    </div>
+
+    <h1 id="question" class="question" tabindex="-1"></h1>
+
+    <form id="questionForm" class="question-form" action="javascript:void(0);" aria-describedby="question">
+      <div id="options" class="options" role="radiogroup" aria-label="Answer options"></div>
+      <div class="nav-actions">
+        <button id="btnBack" class="btn" type="button" aria-label="Go to previous question">Back</button>
+        <button id="btnNext" class="btn primary" type="submit" aria-label="Go to next question">Next</button>
+      </div>
+    </form>
+  </main>
+
+  <footer id="appFooter" class="footer" role="contentinfo">
+    © NUS Dream Major Quiz
+  </footer>
+
+  <script type="module">
+    import "./js/qualities.js";
+    import "./js/majors.js";
+    import "./js/resources.js";
+    import "./js/questions.js";
+    import "./js/scoring.js";
+    import "./js/main.js";
+  </script>
+</body>
+</html>

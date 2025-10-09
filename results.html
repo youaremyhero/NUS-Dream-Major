@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Your NUS Dream Major Results</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="./css/styles.css" />
+</head>
+
+<body>
+  <header id="appHeader" class="site-header" role="banner">
+    <div class="brand">NUS Dream Major Quiz</div>
+    <nav class="header-actions">
+      <a href="./index.html" class="btn small">Restart Quiz</a>
+      <button id="downloadPdfBtn" class="btn small secondary" type="button">Download PDF</button>
+    </nav>
+  </header>
+
+  <main id="resultsPage" class="results-page" role="main">
+    <section id="qualitiesSection" class="results-section">
+      <h2>Your Identified Qualities</h2>
+      <div id="qualitiesGrid" class="qualities-grid"></div>
+    </section>
+
+    <section id="recommendationsSection" class="results-section">
+      <h2>Your Top Recommendations</h2>
+      <div class="recommendation-tabs" role="tablist" aria-label="Recommendations">
+        <button class="tab-button active" role="tab" aria-selected="true" data-tab="1">Recommendation #1</button>
+        <button class="tab-button" role="tab" aria-selected="false" data-tab="2">Recommendation #2</button>
+        <button class="tab-button" role="tab" aria-selected="false" data-tab="3">Recommendation #3</button>
+      </div>
+      <div class="tab-panels">
+        <div id="tab1" class="tab-panel active" role="tabpanel"></div>
+        <div id="tab2" class="tab-panel" role="tabpanel"></div>
+        <div id="tab3" class="tab-panel" role="tabpanel"></div>
+      </div>
+    </section>
+
+    <section id="topMajorsStrip" class="results-section">
+      <h2>Top 5 Majors for You</h2>
+      <div class="top5-strip" role="list" aria-label="Top 5 majors"></div>
+    </section>
+
+    <section id="specialProgrammesSection" class="results-section">
+      <h2>Recommended Special Programmes</h2>
+      <div id="specialProgrammesList" class="special-programmes"></div>
+    </section>
+
+    <section id="resourcesSection" class="results-section">
+      <h2>Application Resources</h2>
+      <p class="note">Explore additional information on application procedures and eligibility. All links open in a new tab.</p>
+      <ul id="generalResources" class="resource-links"></ul>
+    </section>
+  </main>
+
+  <footer id="appFooter" class="site-footer" role="contentinfo">
+    <p>© NUS Dream Major Quiz</p>
+  </footer>
+
+  <script type="module">
+    import "./js/resources.js";
+    import "./js/majors.js";
+    import "./js/results.js";
+    import "./js/pdfExport.js";
+
+    // Confetti once on results load
+    import confetti from "https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.module.mjs";
+    window.addEventListener("DOMContentLoaded", () => {
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        const duration = 2000;
+        const end = Date.now() + duration;
+        (function frame() {
+          confetti({ particleCount: 5, angle: 60, spread: 70, origin: { x: 0 },
+            colors: ["#2563eb", "#facc15", "#f87171", "#34d399", "#a78bfa"] });
+          confetti({ particleCount: 5, angle: 120, spread: 70, origin: { x: 1 },
+            colors: ["#2563eb", "#facc15", "#f87171", "#34d399", "#a78bfa"] });
+          if (Date.now() < end) requestAnimationFrame(frame);
+        })();
+      }
+    });
+  </script>
+</body>
+</html>
