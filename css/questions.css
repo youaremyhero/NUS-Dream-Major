@@ -122,12 +122,11 @@
   display: flex;
   gap: 12px;
   justify-content: flex-end;
-  margin-top: auto; /* push to bottom of container */
-  position: sticky;
-  bottom: 0;
-  padding-top: 10px;
-  background: #fff; /* ensures it stays readable over content */
+  margin-top: auto;    /* push footer to bottom of the fixed-height container */
+  background: transparent;
+  border-top: 0;
 }
+
 
 .quiz-footer .secondary {
   background: #e5e7eb;
