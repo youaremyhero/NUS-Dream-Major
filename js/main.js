@@ -3,46 +3,140 @@ import { QUESTIONS } from "./questions.js";
 import { calculateResults, saveResults } from "./scoring.js";
 
 let current = 0;
+const TOTAL_QUESTIONS = QUESTIONS.length;
 let answers = new Array(TOTAL_QUESTIONS).fill(null);
 
 window.addEventListener("DOMContentLoaded", () => {
-  render();
-  document.getElementById("questionForm").addEventListener("submit", onNext);
-  document.getElementById("btnBack").addEventListener("click", onBack);
+  // Guard required elements
+  const continueBtn = document.getElementById("continueBtn");
+  const backBtn = document.getElementById("btnBack");
+  const container = document.getElementById("quizContainer");
+  const progressFill = document.getElementById("progressFill");
+
+  if (!continueBtn || !container || !progressFill) {
+    console.error("[main.js] Missing required DOM elements");
+    return;
+  }
+
+  // Attach events
+  continueBtn.addEventListener("click", onNext);
+  if (backBtn) backBtn.addEventListener("click", onBack);
+
+  renderQuestion(); // initial render
 });
 
-function render(){
-  const q = questions[current];
-  document.getElementById("qNum").textContent = `Question ${current+1} of ${TOTAL_QUESTIONS}`;
-  document.getElementById("question").textContent = q.text;
-  const opts = q.options.map((opt,i)=>`
-    <label class="option-card" tabindex="0">
-      <input type="radio" name="q${q.id}" value="${i}" ${answers[current]===i ? "checked":""}>
-      ${opt.text}
-    </label>`).join("");
-  document.getElementById("options").innerHTML = opts;
-  document.getElementById("progress").style.width = (((current+1)/TOTAL_QUESTIONS)*100)+"%";
-  document.getElementById("question").focus();
+function renderQuestion() {
+  const q = QUESTIONS[current];
+  const container = document.getElementById("quizContainer");
 
-  document.querySelectorAll(".option-card").forEach((card, idx) => {
-    card.addEventListener("click", () => {
-      answers[current] = idx;
-      document.querySelectorAll(".option-card").forEach(c=>c.classList.remove("selected"));
-      card.classList.add("selected");
+  // Build the question view
+  container.innerHTML = `
+    <div class="question-header">
+      <h2>Question ${current + 1} of ${TOTAL_QUESTIONS}</h2>
+      <p class="question-text">${q.text}</p>
+    </div>
+
+    <div class="options-list" role="radiogroup" aria-label="Options for current question">
+      ${q.options
+        .map(
+          (opt, i) => `
+        <label class="option-card ${answers[current] === i ? "selected" : ""}" tabindex="0">
+          <input type="radio" name="q${q.id}" value="${i}" ${answers[current] === i ? "checked" : ""} />
+          <span>${opt.text}</span>
+        </label>
+      `
+        )
+        .join("")}
+    </div>
+  `;
+
+  // Update progress bar
+  updateProgress();
+
+  // Enable option selection
+  const optionCards = container.querySelectorAll(".option-card");
+  optionCards.forEach((card, idx) => {
+    // Mouse click
+    card.addEventListener("click", () => selectOption(idx));
+    // Keyboard accessibility
+    card.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        selectOption(idx);
+      }
+      // Optional: arrow key navigation
+      if (e.key === "ArrowDown" || e.key === "ArrowRight") {
+        e.preventDefault();
+        const next = optionCards[idx + 1] || optionCards[0];
+        next.focus();
+      }
+      if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
+        e.preventDefault();
+        const prev = optionCards[idx - 1] || optionCards[optionCards.length - 1];
+        prev.focus();
+      }
     });
   });
-}
 
-function onNext(e){
-  e.preventDefault();
-  if (answers[current] == null) { alert("Please select an answer before continuing."); return; }
-  if (current < TOTAL_QUESTIONS-1){ current++; render(); }
-  else {
-    const result = calculateResults(answers);
-    saveResults(result);
+  // Footer buttons state
+  const continueBtn = document.getElementById("continueBtn");
+  const backBtn = document.getElementById("btnBack");
+
+  // Continue: disabled until an option is chosen
+  continueBtn.disabled = answers[current] == null;
+
+  // Change label on final question
+  continueBtn.textContent = current === TOTAL_QUESTIONS - 1 ? "See Results" : "Continue";
+
+  // Hide/disable back on first question
+  if (backBtn) {
+    if (current === 0) {
+      backBtn.disabled = true;
+      backBtn.classList.add("is-disabled");
+    } else {
+      backBtn.disabled = false;
+      backBtn.classList.remove("is-disabled");
+    }
   }
 }
 
-function onBack(){
-  if (current > 0){ current--; render(); }
+function selectOption(idx) {
+  answers[current] = idx;
+
+  const container = document.getElementById("quizContainer");
+  container.querySelectorAll(".option-card").forEach((c) => c.classList.remove("selected"));
+  const selected = container.querySelectorAll(".option-card")[idx];
+  if (selected) selected.classList.add("selected");
+
+  // Enable Continue as soon as selected
+  const continueBtn = document.getElementById("continueBtn");
+  continueBtn.disabled = false;
+}
+
+function onNext() {
+  if (answers[current] == null) {
+    alert("Please select an answer before continuing.");
+    return;
+  }
+  if (current < TOTAL_QUESTIONS - 1) {
+    current++;
+    renderQuestion();
+  } else {
+    // Final step: score → save → go to results page
+    const result = calculateResults(answers);
+    saveResults(result);
+    window.location.href = "results.html";
+  }
+}
+
+function onBack() {
+  if (current > 0) {
+    current--;
+    renderQuestion();
+  }
+}
+
+function updateProgress() {
+  const progressFill = document.getElementById("progressFill");
+  progressFill.style.width = ((current + 1) / TOTAL_QUESTIONS) * 100 + "%";
 }
