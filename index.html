@@ -15,24 +15,34 @@
 </head>
 <body>
   <header class="site-header">
-    <h1>NUS Major-Matching Quiz</h1>
+    <h1>NUS Dream Major Quiz</h1>
   </header>
 
-  <main class="container quiz-page">
-    <div id="quizWrapper" class="quiz-container">
-      <div class="quiz-header">
-        <div class="progress-bar"><div class="progress-bar-fill" id="progressFill"></div></div>
+ <main class="container quiz-page">
+  <div id="quizWrapper" class="quiz-container">
+    <div class="quiz-header">
+      <div class="progress-bar">
+        <div class="progress-bar-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <!-- The form wraps question content + footer buttons -->
+    <form id="questionForm" class="quiz-body">
+      <div class="question-header">
+        <h2 id="qNum" class="muted">Question 1 of 30</h2>
+        <div id="question" class="question-text"></div>
       </div>
 
-      <div class="quiz-question" id="quizContainer"></div>
+      <div id="options" class="options-list"></div>
 
       <div class="quiz-footer">
-  <button id="btnBack" class="secondary">Back</button>
-  <button id="continueBtn" disabled>Continue</button>
+        <button id="btnBack" class="secondary" type="button">Back</button>
+        <button id="continueBtn" type="submit" disabled>Continue</button>
       </div>
-      
-    </div>
-  </main>
+    </form>
+  </div>
+</main>
+
 
   <footer class="site-footer">
     <p>© Prysillia</p>
