@@ -5,6 +5,11 @@
 // PDF: exposes prepareResultsForPdf()
 
 import {
+  getResourcesForMajor,
+  getSpecialProgrammeRecs
+} from "./results-helpers.js";
+
+import {
   // If you have a combined exported array, import it:
   // majorsAll
 } from "./majors.js";
