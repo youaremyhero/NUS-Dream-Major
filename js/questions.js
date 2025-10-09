@@ -1,3 +1,6 @@
+// js/questions.js
+// Export the full list of quiz questions used by scoring.js
+export const QUESTIONS = [
 // ---------- Academic Interests & Strengths ----------
 {
   id: 1,
@@ -18,9 +21,9 @@
   options: [
     { text: "Scientific experiments or medical studies", scores: { MED_MBBS: 3, CHS_LIFESCI: 3, PHA_PSCI: 2 } }, // Medicine, Life Sciences, Pharmaceutical Science
     { text: "Market analysis and consumer trends", scores: { BIZ_MKT: 3, SOC_BA: 2, BIZ_ABA: 2 } }, // Marketing, Business Analytics, Applied Business Analytics
-    { text: "Political or social research", scores: { CHS_POLSCI: 3, CHS_GS: 2, CHS_SOC: 2 } }, // Political Science, Global Studies, Sociology
+    { text: "Political or social research", scores: { CHS_POLSCI: 3, CHS_GLOBL: 2, CHS_SOC: 2 } }, // Political Science, Global Studies, Sociology
     { text: "Innovation in sustainable design", scores: { DES_ARCH: 3, ENG_ENV: 2, DES_ID: 2 } }, // Architecture, Environmental Engineering, Industrial Design
-    { text: "Data modeling and analytics", scores: { CHS_DSA: 3, SOC_IS: 2, CHS_STATS: 2 } } // Data Science & Analytics, Information Systems, Statistics
+    { text: "Data modeling and analytics", scores: { CHS_DSA: 3, SOC_BA: 2, CHS_STAT: 2 } } // Data Science & Analytics, Information Systems, Statistics
   ]
 },
 {
@@ -41,10 +44,10 @@
   text: "Which environment do you thrive in the most?",
   options: [
     { text: "Corporate office or business setting", scores: { BIZ_ACC: 3, BIZ_BIZEC: 3, BIZ_FIN: 2 } }, // Accountancy, Business Economics, Finance
-    { text: "Technology-driven workplaces", scores: { SOC_CS: 3, SOC_AI: 2, SOC_IS: 2 } }, // Computer Science, Artificial Intelligence, Information Systems
+    { text: "Technology-driven workplaces", scores: { SOC_CS: 3, SOC_AI: 2, SOC_BA: 2 } }, // Computer Science, Artificial Intelligence, Information Systems
     { text: "Healthcare and laboratories", scores: { MED_MBBS: 3, PHA_PHARM: 2, ENG_BIOMED: 2 } }, // Medicine, Pharmacy, Biomedical Engineering
     { text: "Creative studios and design spaces", scores: { DES_ID: 3, DES_ARCH: 2, CHS_TPS: 2 } }, // Industrial Design, Architecture, Theatre & Performance Studies
-    { text: "Academic or research institutions", scores: { CHS_PHIL: 3, CHS_POLSCI: 2, CHS_GS: 2 } } // Philosophy, Political Science, Global Studies
+    { text: "Academic or research institutions", scores: { CHS_PHIL: 3, CHS_POLSCI: 2, CHS_GLOBL: 2 } } // Philosophy, Political Science, Global Studies
   ]
 },
 {
@@ -52,7 +55,7 @@
   category: "Academic Interests & Strengths",
   text: "How do you prefer to work on problems?",
   options: [
-    { text: "By using logic, formulas, and data", scores: { CHS_DSA: 3, CHS_STATS: 2, SOC_CS: 2 } }, // Data Science & Analytics, Statistics, Computer Science
+    { text: "By using logic, formulas, and data", scores: { CHS_DSA: 3, CHS_STAT: 2, SOC_CS: 2 } }, // Data Science & Analytics, Statistics, Computer Science
     { text: "By designing innovative solutions", scores: { DES_ID: 3, ENG_MECH: 2, DES_ARCH: 2 } }, // Industrial Design, Mechanical Engineering, Architecture
     { text: "By understanding and interacting with people", scores: { CHS_PSY: 3, CHS_SOCWORK: 2, CHS_CNM: 2 } }, // Psychology, Social Work, Communications & New Media
     { text: "By writing and expressing ideas creatively", scores: { CHS_LIT: 3, CHS_TPS: 2, CHS_PHIL: 2 } }, // English Literature, Theatre & Performance Studies, Philosophy
@@ -66,11 +69,11 @@
   category: "Career Aspirations",
   text: "What is your ideal career focus?",
   options: [
-    { text: "Developing technology and software", scores: { SOC_CS: 3, SOC_AI: 3, SOC_IS: 2 } }, // Computer Science, Artificial Intelligence, Information Systems
+    { text: "Developing technology and software", scores: { SOC_CS: 3, SOC_AI: 3, SOC_BA: 2 } }, // Computer Science, Artificial Intelligence, Information Systems
     { text: "Working in finance or business strategy", scores: { BIZ_FIN: 3, BIZ_BIZEC: 3, BIZ_ACC: 2 } }, // Finance, Business Economics, Accountancy
     { text: "Helping people through medicine or social work", scores: { MED_MBBS: 3, CHS_SOCWORK: 3, NUR_NURS: 2 } }, // Medicine, Social Work, Nursing
     { text: "Creating art, music, or literature", scores: { MUS_MUS: 3, CHS_LIT: 3, CHS_TPS: 2 } }, // Music, English Literature, Theatre & Performance Studies
-    { text: "Researching political, cultural, or historical issues", scores: { CHS_POLSCI: 3, CHS_HIST: 2, CHS_GS: 2 } } // Political Science, History, Global Studies
+    { text: "Researching political, cultural, or historical issues", scores: { CHS_POLSCI: 3, CHS_HIST: 2, CHS_GLOBL: 2 } } // Political Science, History, Global Studies
   ]
 },
 {
@@ -78,11 +81,11 @@
   category: "Career Aspirations",
   text: "Which of these statements best describes you?",
   options: [
-    { text: "I enjoy working with numbers and analyzing patterns.", scores: { CHS_STATS: 3, CHS_DSA: 2, CHS_QFIN: 2 } }, // Statistics, Data Science & Analytics, Quantitative Finance
+    { text: "I enjoy working with numbers and analyzing patterns.", scores: { CHS_STAT: 3, CHS_DSA: 2, CHS_QFIN: 2 } }, // Statistics, Data Science & Analytics, Quantitative Finance
     { text: "I like creating and innovating new products.", scores: { DES_ID: 3, ENG_ENGSCI: 2, BIZ_ENT: 2 } }, // Industrial Design, Engineering Science, Innovation & Entrepreneurship
     { text: "I want to improve human health and wellbeing.", scores: { MED_MBBS: 3, PHA_PHARM: 2, NUR_NURS: 2 } }, // Medicine, Pharmacy, Nursing
     { text: "I like debating and discussing ideas.", scores: { LAW_LLB: 3, CHS_PHIL: 2, CHS_POLSCI: 2 } }, // Law, Philosophy, Political Science
-    { text: "I enjoy studying different cultures and societies.", scores: { CHS_GS: 3, CHS_SEAS: 2, CHS_ANTH: 2 } } // Global Studies, Southeast Asian Studies, Anthropology
+    { text: "I enjoy studying different cultures and societies.", scores: { CHS_GLOBL: 3, CHS_SEAS: 2, CHS_ANTH: 2 } } // Global Studies, Southeast Asian Studies, Anthropology
   ]
 },
 {
@@ -102,11 +105,11 @@
   category: "Career Aspirations",
   text: "What kind of tasks do you enjoy the most?",
   options: [
-    { text: "Analyzing data and making decisions", scores: { SOC_BA: 3, CHS_DSA: 2, CHS_STATS: 2 } }, // Business Analytics (SoC), Data Science & Analytics, Statistics
+    { text: "Analyzing data and making decisions", scores: { SOC_BA: 3, CHS_DSA: 2, CHS_STAT: 2 } }, // Business Analytics (SoC), Data Science & Analytics, Statistics
     { text: "Designing and building things", scores: { DES_ARCH: 3, DES_ID: 2, ENG_MECH: 2 } }, // Architecture, Industrial Design, Mechanical Engineering
     { text: "Helping people through counseling or healthcare", scores: { CHS_PSY: 3, CHS_SOCWORK: 2, MED_MBBS: 2 } }, // Psychology, Social Work, Medicine
     { text: "Writing and expressing ideas creatively", scores: { CHS_LIT: 3, CHS_CNM: 2, CHS_TPS: 2 } }, // English Literature, Communications & New Media, Theatre & Performance Studies
-    { text: "Studying different cultures and societies", scores: { CHS_ANTH: 3, CHS_GS: 2, CHS_SEAS: 2 } } // Anthropology, Global Studies, Southeast Asian Studies
+    { text: "Studying different cultures and societies", scores: { CHS_ANTH: 3, CHS_GLOBL: 2, CHS_SEAS: 2 } } // Anthropology, Global Studies, Southeast Asian Studies
   ]
 },
 {
@@ -128,7 +131,7 @@
   category: "Learning Style & Preferences",
   text: "Which of these sounds like an exciting project?",
   options: [
-    { text: "Developing an AI chatbot", scores: { SOC_AI: 3, SOC_CS: 2, SOC_IS: 2 } }, // Artificial Intelligence, Computer Science, Information Systems
+    { text: "Developing an AI chatbot", scores: { SOC_AI: 3, SOC_CS: 2, SOC_BA: 2 } }, // Artificial Intelligence, Computer Science, Information Systems
     { text: "Managing a company's marketing strategy", scores: { BIZ_MKT: 3, SOC_BA: 2, BIZ_BIZEC: 2 } }, // Marketing, Business Analytics, Business Economics
     { text: "Researching mental health solutions", scores: { CHS_PSY: 3, CHS_SOCWORK: 2, CHS_LIFESCI: 2 } }, // Psychology, Social Work, Life Sciences
     { text: "Designing a cityscape or infrastructure", scores: { DES_ARCH: 3, ENG_CIVIL: 2, DES_LARCH: 2 } }, // Architecture, Civil Engineering, Landscape Architecture
@@ -156,7 +159,7 @@
     { text: "A research lab or tech firm", scores: { SOC_CS: 3, SOC_AI: 2, ENG_ENGSCI: 2 } }, // Computer Science, Artificial Intelligence, Engineering Science
     { text: "A hospital or healthcare setting", scores: { MED_MBBS: 3, NUR_NURS: 2, PHA_PHARM: 2 } }, // Medicine, Nursing, Pharmacy
     { text: "A studio or creative agency", scores: { DES_ID: 3, CHS_CNM: 2, CHS_TPS: 2 } }, // Industrial Design, Communications & New Media, Theatre & Performance Studies
-    { text: "A government or NGO setting", scores: { CHS_POLSCI: 3, CHS_SOC: 2, CHS_GS: 2 } } // Political Science, Sociology, Global Studies
+    { text: "A government or NGO setting", scores: { CHS_POLSCI: 3, CHS_SOC: 2, CHS_GLOBL: 2 } } // Political Science, Sociology, Global Studies
   ]
 },
 {
@@ -164,7 +167,7 @@
   category: "Learning Style & Preferences",
   text: "If you had to give a TED Talk, what would it be about?",
   options: [
-    { text: "The future of artificial intelligence", scores: { SOC_AI: 3, SOC_CS: 2, SOC_IS: 2 } }, // Artificial Intelligence, Computer Science, Information Systems
+    { text: "The future of artificial intelligence", scores: { SOC_AI: 3, SOC_CS: 2, SOC_BA: 2 } }, // Artificial Intelligence, Computer Science, Information Systems
     { text: "How to invest wisely", scores: { BIZ_FIN: 3, BIZ_BIZEC: 2, CHS_QFIN: 2 } }, // Finance, Business Economics, Quantitative Finance
     { text: "Mental health awareness", scores: { CHS_PSY: 3, CHS_SOCWORK: 2, CHS_LIFESCI: 2 } }, // Psychology, Social Work, Life Sciences
     { text: "The impact of literature on society", scores: { CHS_LIT: 3, CHS_TPS: 2, CHS_CNM: 2 } }, // English Literature, Theatre & Performance Studies, Communications & New Media
@@ -190,7 +193,7 @@
   category: "Personal Values & Goals",
   text: "What role do you naturally take in group projects?",
   options: [
-    { text: "Data analyst or strategist", scores: { CHS_DSA: 3, SOC_BA: 2, CHS_STATS: 2 } }, // Data Science & Analytics, Business Analytics, Statistics
+    { text: "Data analyst or strategist", scores: { CHS_DSA: 3, SOC_BA: 2, CHS_STAT: 2 } }, // Data Science & Analytics, Business Analytics, Statistics
     { text: "Creative lead or designer", scores: { DES_ID: 3, DES_ARCH: 2, CHS_CNM: 2 } }, // Industrial Design, Architecture, Communications & New Media
     { text: "Mediator or communicator", scores: { CHS_PSY: 3, BIZ_LHCM: 2, CHS_SOCWORK: 2 } }, // Psychology, Leadership & Human Capital Management, Social Work
     { text: "Researcher or writer", scores: { CHS_PHIL: 3, CHS_HIST: 2, CHS_POLSCI: 2 } }, // Philosophy, History, Political Science
@@ -202,7 +205,7 @@
   category: "Personal Values & Goals",
   text: "How do you prefer to learn?",
   options: [
-    { text: "Through numbers, data, and calculations", scores: { CHS_MATH: 3, CHS_STATS: 2, CHS_QFIN: 2 } }, // Mathematics, Statistics, Quantitative Finance
+    { text: "Through numbers, data, and calculations", scores: { CHS_MATH: 3, CHS_STAT: 2, CHS_QFIN: 2 } }, // Mathematics, Statistics, Quantitative Finance
     { text: "By doing hands-on work or creating things", scores: { DES_ID: 3, ENG_MECH: 2, DES_ARCH: 2 } }, // Industrial Design, Mechanical Engineering, Architecture
     { text: "By discussing ideas and engaging in debates", scores: { LAW_LLB: 3, CHS_PHIL: 2, CHS_POLSCI: 2 } }, // Law, Philosophy, Political Science
     { text: "Through observation and research", scores: { CHS_PSY: 3, CHS_SOC: 2, CHS_ANTH: 2 } }, // Psychology, Sociology, Anthropology
@@ -226,7 +229,7 @@
   category: "Personal Values & Goals",
   text: "If you had unlimited resources, what would you do?",
   options: [
-    { text: "Launch a tech startup", scores: { BIZ_ENT: 3, SOC_CS: 2, SOC_IS: 2 } }, // Innovation & Entrepreneurship, Computer Science, Information Systems
+    { text: "Launch a tech startup", scores: { BIZ_ENT: 3, SOC_CS: 2, SOC_BA: 2 } }, // Innovation & Entrepreneurship, Computer Science, Information Systems
     { text: "Write a book or produce a film", scores: { CHS_LIT: 3, CHS_CNM: 2, CHS_TPS: 2 } }, // English Literature, Communications & New Media, Theatre & Performance Studies
     { text: "Build infrastructure for underprivileged communities", scores: { ENG_CIVIL: 3, ENG_IPM: 2, CHS_SOCWORK: 2 } }, // Civil Engineering, Infrastructure & Project Management, Social Work
     { text: "Revolutionize the financial industry", scores: { BIZ_FIN: 3, CHS_QFIN: 2, SOC_BA: 2 } }, // Finance, Quantitative Finance, Business Analytics
@@ -264,7 +267,7 @@
   category: "Miscellaneous Interests & Hobbies",
   text: "How do you approach challenges?",
   options: [
-    { text: "Logical and systematic thinking", scores: { CHS_MATH: 3, CHS_STATS: 2, CHS_DSA: 2 } }, // Mathematics, Statistics, Data Science & Analytics
+    { text: "Logical and systematic thinking", scores: { CHS_MATH: 3, CHS_STAT: 2, CHS_DSA: 2 } }, // Mathematics, Statistics, Data Science & Analytics
     { text: "Empathy and social understanding", scores: { CHS_PSY: 3, CHS_SOCWORK: 2, CHS_POLSCI: 2 } }, // Psychology, Social Work, Political Science
     { text: "Hands-on innovation and design", scores: { DES_ID: 3, DES_ARCH: 2, ENG_CIVIL: 2 } }, // Industrial Design, Architecture, Civil Engineering
     { text: "Analyzing data and trends", scores: { BIZ_FIN: 3, SOC_BA: 2, CHS_ECON: 2 } }, // Finance, Business Analytics, Economics
@@ -280,7 +283,7 @@
     { text: "Debating ideas and challenging perspectives", scores: { CHS_PHIL: 3, CHS_POLSCI: 2, LAW_LLB: 2 } }, // Philosophy, Political Science, Law
     { text: "Creating performances or media projects", scores: { CHS_TPS: 3, CHS_CNM: 2, CHS_LIT: 2 } }, // Theatre & Performance Studies, Communications & New Media, English Literature
     { text: "Leading student initiatives or startups", scores: { BIZ_ENT: 3, BIZ_BIZEC: 2, BIZ_MKT: 2 } }, // Innovation & Entrepreneurship, Business Economics, Marketing
-    { text: "Exploring cultural and historical contexts", scores: { CHS_GS: 3, CHS_HIST: 2, CHS_SEAS: 2 } } // Global Studies, History, Southeast Asian Studies
+    { text: "Exploring cultural and historical contexts", scores: { CHS_GLOBL: 3, CHS_HIST: 2, CHS_SEAS: 2 } } // Global Studies, History, Southeast Asian Studies
   ]
 },
 {
@@ -288,7 +291,7 @@
   category: "Miscellaneous Interests & Hobbies",
   text: "How do you prefer to express yourself?",
   options: [
-    { text: "Through data and analysis", scores: { SOC_BA: 3, CHS_STATS: 2, CHS_DSA: 2 } }, // Business Analytics, Statistics, Data Science & Analytics
+    { text: "Through data and analysis", scores: { SOC_BA: 3, CHS_STAT: 2, CHS_DSA: 2 } }, // Business Analytics, Statistics, Data Science & Analytics
     { text: "Through persuasive writing or speeches", scores: { LAW_LLB: 3, CHS_LIT: 2, CHS_CNM: 2 } }, // Law, English Literature, Communications & New Media
     { text: "Through creative designs and visuals", scores: { DES_ID: 3, DES_ARCH: 2, CHS_TPS: 2 } }, // Industrial Design, Architecture, Theatre & Performance Studies
     { text: "Through scientific research and experiments", scores: { CHS_CHEM: 3, CHS_LIFESCI: 2, PHA_PSCI: 2 } }, // Chemistry, Life Sciences, Pharmaceutical Science
@@ -304,7 +307,7 @@
     { text: "Creative and exploratory", scores: { CHS_CNM: 3, CHS_TPS: 2, CHS_LIT: 2 } }, // Communications & New Media, Theatre & Performance Studies, English Literature
     { text: "Hands-on and practical", scores: { ENG_MECH: 3, ENG_CIVIL: 2, DES_ARCH: 2 } }, // Mechanical Engineering, Civil Engineering, Architecture
     { text: "Research-driven and theoretical", scores: { CHS_DSA: 3, CHS_PHIL: 2, CHS_PHYS: 2 } }, // Data Science & Analytics, Philosophy, Physics
-    { text: "Community-oriented and collaborative", scores: { NUR_NURS: 3, CHS_SOCWORK: 2, CHS_GS: 2 } } // Nursing, Social Work, Global Studies
+    { text: "Community-oriented and collaborative", scores: { NUR_NURS: 3, CHS_SOCWORK: 2, CHS_GLOBL: 2 } } // Nursing, Social Work, Global Studies
   ]
 },
 {
@@ -327,7 +330,7 @@
     { text: "Shaping businesses and organizations", scores: { BIZ_BIZEC: 3, BIZ_MKT: 2, BIZ_FIN: 2 } }, // Business Economics, Marketing, Finance
     { text: "Advancing healthcare and well-being", scores: { MED_MBBS: 3, NUR_NURS: 2, PHA_PSCI: 2 } }, // Medicine, Nursing, Pharmaceutical Science
     { text: "Driving cultural or artistic movements", scores: { CHS_TPS: 3, CHS_CNM: 2, MUS_MUS: 2 } }, // Theatre & Performance Studies, Communications & New Media, Music
-    { text: "Leading social and policy change", scores: { CHS_POLSCI: 3, CHS_SOCWORK: 2, CHS_GS: 2 } } // Political Science, Social Work, Global Studies
+    { text: "Leading social and policy change", scores: { CHS_POLSCI: 3, CHS_SOCWORK: 2, CHS_GLOBL: 2 } } // Political Science, Social Work, Global Studies
   ]
 },
 {
@@ -360,9 +363,9 @@
   text: "What is your long-term academic goal?",
   options: [
     { text: "Building expertise in business and finance", scores: { BIZ_FIN: 3, BIZ_ACC: 2, BIZ_BIZEC: 2 } }, // Finance, Accountancy, Business Economics
-    { text: "Driving innovations in tech", scores: { SOC_CS: 3, SOC_AI: 2, SOC_IS: 2 } }, // Computer Science, Artificial Intelligence, Information Systems
+    { text: "Driving innovations in tech", scores: { SOC_CS: 3, SOC_AI: 2, SOC_BA: 2 } }, // Computer Science, Artificial Intelligence, Information Systems
     { text: "Making an impact in healthcare", scores: { MED_MBBS: 3, NUR_NURS: 2, DEN_BDS: 2 } }, // Medicine, Nursing, Dentistry
     { text: "Advancing arts, culture, or communication", scores: { CHS_CNM: 3, CHS_TPS: 2, MUS_MUS: 2 } }, // Communications & New Media, Theatre & Performance Studies, Music
-    { text: "Contributing to social change and policy", scores: { CHS_POLSCI: 3, CHS_SOC: 2, CHS_GS: 2 } } // Political Science, Sociology, Global Studies
+    { text: "Contributing to social change and policy", scores: { CHS_POLSCI: 3, CHS_SOC: 2, CHS_GLOBL: 2 } } // Political Science, Sociology, Global Studies
   ]
 },
