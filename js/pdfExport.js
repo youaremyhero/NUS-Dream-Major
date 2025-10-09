@@ -1,46 +1,39 @@
 // js/pdfExport.js
-import html2canvas from "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js";
-import jsPDF from "https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js";
+// Load html2pdf bundle (includes html2canvas + jsPDF) as a global.
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    if (document.querySelector(`script[src="${src}"]`)) return resolve();
+    const s = document.createElement("script");
+    s.src = src;
+    s.async = true;
+    s.onload = resolve;
+    s.onerror = () => reject(new Error(`Failed to load ${src}`));
+    document.head.appendChild(s);
+  });
+}
 
-const btn = document.getElementById("downloadPdfBtn");
-btn?.addEventListener("click", generatePDF);
-
-async function generatePDF(){
-  const page = document.getElementById("resultsPage");
-  const footer = document.querySelector(".site-footer");
-  if (footer) footer.style.display = "none";
-  await new Promise(r=>setTimeout(r,300));
-
-  const canvas = await html2canvas(page, { scale:2, useCORS:true, scrollY:0, windowWidth:document.body.scrollWidth });
-  const img = canvas.toDataURL("image/png");
-  const pdf = new jsPDF.jsPDF("p","mm","a4");
-  const pdfW = pdf.internal.pageSize.getWidth();
-  const pdfH = (canvas.height * pdfW) / canvas.width;
-  const pageH = pdf.internal.pageSize.getHeight();
-
-  if (pdfH <= pageH){
-    pdf.addImage(img, "PNG", 0, 0, pdfW, pdfH);
-  } else {
-    let y = 0;
-    while (y < pdfH){
-      pdf.addImage(img, "PNG", 0, -y, pdfW, pdfH);
-      y += pageH;
-      if (y < pdfH) pdf.addPage();
-    }
+/**
+ * Download the Results block as PDF.
+ * @param {HTMLElement} targetEl - Node to render
+ * @param {string} filename - Output filename
+ */
+export async function downloadResultsPdf(targetEl, filename = "NUS-major-results.pdf") {
+  // Ensure the bundle is loaded once
+  if (!window.html2pdf) {
+    await loadScript("https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js");
   }
 
-  // clickable links
-  document.querySelectorAll("#resultsPage a[href]").forEach(a=>{
-    const href = a.getAttribute("href");
-    if (!href || !href.startsWith("http")) return;
-    const rect = a.getBoundingClientRect();
-    const x = (rect.left / canvas.width) * pdfW;
-    const y = (rect.top / canvas.height) * pdfH;
-    const w = (rect.width / canvas.width) * pdfW;
-    const h = (rect.height / canvas.height) * pdfH;
-    pdf.link(x, y, w, h, { url: href });
-  });
+  // Make sure the content isn’t clipped
+  const opt = {
+    margin: 10,
+    filename,
+    html2canvas: {
+      scale: 2,
+      useCORS: true,
+      windowHeight: targetEl.scrollHeight  // capture full content
+    },
+    jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+  };
 
-  pdf.save("NUS-Dream-Major-Results.pdf");
-  if (footer) footer.style.display = "";
+  return window.html2pdf().from(targetEl).set(opt).save();
 }
