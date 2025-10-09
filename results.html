@@ -31,36 +31,43 @@
   </footer>
 
   <!-- Minimal inline module entry for the results page -->
-  <script type="module">
-    // Load only the entry points you need; results.js will import its own dependencies
-    import "./js/results.js";
-    import "./js/pdfExport.js";
+<script type="module">
+  import { loadResults } from "./js/scoring.js";
+  import { renderResultsPage, prepareResultsForPdf } from "./js/results.js";
+  import { downloadResultsPdf } from "./js/pdfExport.js";
 
-    // Confetti once on results load
-    import confetti from "https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.module.mjs";
-    window.addEventListener("DOMContentLoaded", () => {
-      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        const duration = 2000;
-        const end = Date.now() + duration;
-        (function frame() {
-          confetti({
-            particleCount: 5,
-            angle: 60,
-            spread: 70,
-            origin: { x: 0 },
-            colors: ["#2563eb", "#facc15", "#f87171", "#34d399", "#a78bfa"]
-          });
-          confetti({
-            particleCount: 5,
-            angle: 120,
-            spread: 70,
-            origin: { x: 1 },
-            colors: ["#2563eb", "#facc15", "#f87171", "#34d399", "#a78bfa"]
-          });
-          if (Date.now() < end) requestAnimationFrame(frame);
-        })();
-      }
+  // 1) Bootstrap rendering
+  window.addEventListener("DOMContentLoaded", async () => {
+    const stored = loadResults();
+    if (!stored || !stored.topMajors || !stored.topMajors.length) {
+      // If results are missing (e.g., direct navigation), send user back
+      window.location.href = "./index.html";
+      return;
+    }
+
+    const topIds = stored.topMajors.map(m => m.id);
+    const qualities = stored.identifiedQualities || []; // optional
+
+    renderResultsPage({
+      topMajorIds: topIds,
+      identifiedQualities: qualities
     });
-  </script>
+
+    // 2) Wire the PDF button
+    const btn = document.getElementById("downloadPdfBtn");
+    if (btn) {
+      btn.addEventListener("click", async () => {
+        const node = prepareResultsForPdf();
+        if (node) await downloadResultsPdf(node);
+      });
+    }
+
+    // 3) (Optional) Light confetti on first paint
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const { default: confetti } = await import("https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.module.mjs");
+      confetti({ particleCount: 100, spread: 70, origin: { y: 0.2 } });
+    }
+  });
+</script>
 </body>
 </html>
