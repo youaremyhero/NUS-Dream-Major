@@ -146,7 +146,6 @@ export const majorsBatch1 = [
     description:
       "Develop expertise in cybersecurity, digital forensics, and information assurance. Protect systems and data through secure design and ethical computing practices.",
     tags: ["Cybersecurity", "Information Security", "Technology", "Computing"],
-    commonAdmission: { name: "Common Computer Science Programmes" }
   },
   {
     id: "SOC_BAIS",
@@ -611,7 +610,7 @@ export const majorsBatch4 = [
     id: "MED_MBBS",
     name: "Medicine",
     faculty: "Yong Loo Lin School of Medicine",
-    cluster: "Health Sciences",
+    cluster: "Health & Life Sciences",
     qualities: ["Empathy", "Discipline", "Ethical Thinking", "Attention to Detail"],
     description:
       "Train to become a competent, compassionate doctor through a rigorous curriculum that integrates clinical experience with medical science. Develop the skills and values needed to provide safe, ethical, and patient-centred care.",
@@ -625,7 +624,7 @@ export const majorsBatch4 = [
     id: "DEN_BDS",
     name: "Dentistry",
     faculty: "Faculty of Dentistry",
-    cluster: "Health Sciences",
+    cluster: "Health & Life Sciences",
     qualities: ["Empathy", "Attention to Detail", "Ethical Thinking", "Discipline"],
     description:
       "Prepare for a professional career in oral health through hands-on clinical training and foundational biomedical sciences. Learn to diagnose, prevent, and treat dental conditions while promoting community health.",
@@ -639,7 +638,7 @@ export const majorsBatch4 = [
     id: "NUR_NURS",
     name: "Nursing",
     faculty: "Alice Lee Centre for Nursing Studies",
-    cluster: "Health Sciences",
+    cluster: "Health & Life Sciences",
     qualities: ["Empathy", "Discipline", "Leadership Potential", "Ethical Thinking"],
     description:
       "Develop clinical, communication, and leadership skills to provide safe and holistic patient care. Gain exposure to hospital and community settings while learning to advocate for patient well-being.",
@@ -653,7 +652,7 @@ export const majorsBatch4 = [
     id: "PHA_PSCI",
     name: "Pharmaceutical Science",
     faculty: "Faculty of Pharmacy",
-    cluster: "Health Sciences",
+    cluster: "Health & Life Sciences",
     qualities: ["Analytical Thinking", "Attention to Detail", "Ethical Thinking"],
     description:
       "Study how medicines work and how new drugs are developed. Learn the science behind pharmaceuticals, from chemistry to pharmacology, to support innovation in healthcare and biotechnology.",
@@ -663,7 +662,7 @@ export const majorsBatch4 = [
     id: "PHA_PHAM",
     name: "Pharmacy",
     faculty: "Faculty of Pharmacy",
-    cluster: "Health Sciences",
+    cluster: "Health & Life Sciences",
     qualities: ["Analytical Thinking", "Ethical Thinking", "Attention to Detail"],
     description:
       "Train to become a professional pharmacist capable of improving patient outcomes through effective medication management. Combine science, communication, and ethics in pharmaceutical care.",
