@@ -1,5 +1,5 @@
 // js/main.js
-import { questions, TOTAL_QUESTIONS } from "./questions.js";
+import { QUESTIONS } from "./questions.js";
 import { calculateResults, saveResults } from "./scoring.js";
 
 let current = 0;
