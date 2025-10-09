@@ -368,4 +368,6 @@ export const QUESTIONS = [
     { text: "Advancing arts, culture, or communication", scores: { CHS_CNM: 3, CHS_TPS: 2, MUS_MUS: 2 } }, // Communications & New Media, Theatre & Performance Studies, Music
     { text: "Contributing to social change and policy", scores: { CHS_POLSCI: 3, CHS_SOC: 2, CHS_GLOBL: 2 } } // Political Science, Sociology, Global Studies
   ]
-},
+}
+];
+  
