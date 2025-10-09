@@ -423,6 +423,18 @@ export const majorsBatch3 = [
     tags: ["Sociology", "Society", "Culture", "Research"],
     commonAdmission: { name: "College of Humanities and Sciences (Common Admission)" }
   },
+  {
+  id: "CHS_PPE",
+  name: "Philosophy, Politics and Economics (PPE)",
+  faculty: "College of Humanities and Sciences",
+  cluster: "Social Sciences",
+  qualities: ["Critical Thinking", "Analytical Thinking", "Strategic Planning"],
+  description:
+    "Integrate rigorous thinking from philosophy, political science, and economics to evaluate trade-offs, design policies, and reason about society’s biggest challenges.",
+  tags: ["PPE", "Policy", "Ethics", "Economics"],
+  // If your Excel marks PPE as direct admission, leave it without commonAdmission:
+  // commonAdmission: { name: "College of Humanities and Sciences (Common Admission)" }
+},
 
   // ---------------------------------------------------
   // CHS – HUMANITIES
@@ -438,6 +450,17 @@ export const majorsBatch3 = [
     tags: ["Humanities", "Chinese Studies", "Culture", "Language"],
     commonAdmission: { name: "College of Humanities and Sciences (Common Admission)" }
   },
+  {
+  id: "CHS_CHL",
+  name: "Chinese Language",
+  faculty: "College of Humanities and Sciences",
+  cluster: "Humanities & Cultural Studies",
+  qualities: ["Analytical Thinking", "Communication Skills", "Intercultural Competence"],
+  description:
+    "Deepen your understanding of the Chinese language and its cultural context. Explore linguistics, translation, and modern Chinese communication to enhance cross-cultural literacy.",
+  tags: ["Chinese Language", "Linguistics", "Culture", "Humanities"],
+  commonAdmission: { name: "College of Humanities and Sciences (Common Admission)" }
+},
   {
     id: "CHS_LIT",
     name: "English Literature",
@@ -461,6 +484,17 @@ export const majorsBatch3 = [
     commonAdmission: { name: "College of Humanities and Sciences (Common Admission)" }
   },
   {
+  id: "CHS_GLOBL",
+  name: "Global Studies",
+  faculty: "College of Humanities and Sciences",
+  cluster: "Humanities & Cultural Studies",
+  qualities: ["Intercultural Competence", "Critical Thinking", "Analytical Thinking"],
+  description:
+    "Examine global issues across cultures, economies, and politics. Develop an interdisciplinary understanding of international challenges and globalisation’s impact on societies.",
+  tags: ["Global Studies", "International", "Policy", "Culture"],
+  commonAdmission: { name: "College of Humanities and Sciences (Common Admission)" }
+  },
+  {
     id: "CHS_HIST",
     name: "History",
     faculty: "College of Humanities and Sciences",
@@ -472,6 +506,28 @@ export const majorsBatch3 = [
     commonAdmission: { name: "College of Humanities and Sciences (Common Admission)" }
   },
   {
+  id: "CHS_JPN",
+  name: "Japanese Studies",
+  faculty: "College of Humanities and Sciences",
+  cluster: "Humanities & Cultural Studies",
+  qualities: ["Intercultural Competence", "Analytical Thinking", "Critical Thinking"],
+  description:
+    "Explore Japanese society, language, and culture through literature, media, and history. Gain cultural fluency and analytical insight into Japan’s role in Asia and the world.",
+  tags: ["Japanese Studies", "Language", "Culture", "Humanities"],
+  commonAdmission: { name: "College of Humanities and Sciences (Common Admission)" }
+  },
+{
+  id: "CHS_MLY",
+  name: "Malay Studies",
+  faculty: "College of Humanities and Sciences",
+  cluster: "Humanities & Cultural Studies",
+  qualities: ["Intercultural Competence", "Critical Thinking", "Empathy"],
+  description:
+    "Delve into the Malay world’s culture, history, and society. Study literature, heritage, and contemporary issues shaping the Malay Archipelago and Southeast Asia.",
+  tags: ["Malay Studies", "Culture", "Heritage", "Humanities"],
+  commonAdmission: { name: "College of Humanities and Sciences (Common Admission)" }
+},
+  {
     id: "CHS_PHIL",
     name: "Philosophy",
     faculty: "College of Humanities and Sciences",
@@ -482,6 +538,28 @@ export const majorsBatch3 = [
     tags: ["Philosophy", "Ethics", "Logic", "Humanities"],
     commonAdmission: { name: "College of Humanities and Sciences (Common Admission)" }
   },
+{
+  id: "CHS_SAS",
+  name: "South Asian Studies",
+  faculty: "College of Humanities and Sciences",
+  cluster: "Humanities & Cultural Studies",
+  qualities: ["Intercultural Competence", "Analytical Thinking", "Critical Thinking"],
+  description:
+    "Explore South Asia’s diverse societies, histories, and cultures. Develop analytical and comparative perspectives on India and its neighbouring regions in a global context.",
+  tags: ["South Asian Studies", "Culture", "History", "Humanities"],
+  commonAdmission: { name: "College of Humanities and Sciences (Common Admission)" }
+},
+{
+  id: "CHS_SEAS",
+  name: "Southeast Asian Studies",
+  faculty: "College of Humanities and Sciences",
+  cluster: "Humanities & Cultural Studies",
+  qualities: ["Intercultural Competence", "Critical Thinking", "Analytical Thinking"],
+  description:
+    "Study the cultures, politics, and economies of Southeast Asia. Gain regional expertise and interdisciplinary perspectives on this dynamic and diverse region.",
+  tags: ["Southeast Asian Studies", "Regional Studies", "Culture", "Humanities"],
+  commonAdmission: { name: "College of Humanities and Sciences (Common Admission)" }
+},
   {
     id: "CHS_TPS",
     name: "Theatre and Performance Studies",
@@ -590,6 +668,17 @@ export const majorsBatch3 = [
     // Direct admission
   },
   {
+  id: "CHS_STAT",
+  name: "Statistics",
+  faculty: "College of Humanities and Sciences",
+  cluster: "Sciences & Quantitative",
+  qualities: ["Analytical Thinking", "Problem Solving", "Attention to Detail"],
+  description:
+    "Model uncertainty and extract insights from data using probability, inference, and statistical computing. Build strong analytical skills for data analysis and research applications.",
+  tags: ["Statistics", "Data Science", "Analytics", "Quantitative"],
+  commonAdmission: { name: "College of Humanities and Sciences (Common Admission)" }
+  },
+  {
     id: "CHS_ENVSTUD",
     name: "Environmental Studies",
     faculty: "College of Humanities and Sciences",
@@ -659,7 +748,7 @@ export const majorsBatch4 = [
     tags: ["Pharmaceutical Science", "Chemistry", "Biotechnology", "Healthcare"]
   },
   {
-    id: "PHA_PHAM",
+    id: "PHA_PHARM",
     name: "Pharmacy",
     faculty: "Faculty of Pharmacy",
     cluster: "Health & Life Sciences",
