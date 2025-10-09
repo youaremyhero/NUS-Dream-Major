@@ -1,6 +1,15 @@
 // results.js
-// Renders the Results view: top qualities, top majors strip, tabs with majors/clusters, resources, and special programmes
+// Dynamically load results.css if not already loaded
+(function loadResultsStyles() {
+  if (!document.querySelector('link[href="css/results.css"]')) {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "css/results.css";
+    document.head.appendChild(link);
+  }
+})();
 
+// Renders the Results view: top qualities, top majors strip, tabs with majors/clusters, resources, and special programmes
 import { majorsBatch1, majorsBatch2, majorsBatch3, majorsBatch4, majorsBatch5 } from "./majors.js";
 import { getResourcesForMajor, getSpecialProgrammeRecs } from "./results-helpers.js";
 
