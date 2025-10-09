@@ -1,4 +1,3 @@
-<!-- index.html (fixed) -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,46 +5,47 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NUS Dream Major Quiz</title>
 
-  <!-- Global + Quiz styles -->
+  <!-- Shared global + quiz-specific styles -->
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/questions.css" />
-
-  <!-- Single entry module only -->
-  <script type="module" src="js/main.js"></script>
 </head>
+
 <body>
+  <!-- Fixed Header -->
   <header class="site-header">
-    <h1>NUS Dream Major Quiz</h1>
+    <h1>NUS Major-Matching Quiz</h1>
   </header>
 
- <main class="container quiz-page">
-  <div id="quizWrapper" class="quiz-container">
-    <div class="quiz-header">
-      <div class="progress-bar">
-        <div class="progress-bar-fill" id="progressFill"></div>
+  <!-- Main Quiz Container -->
+  <main class="container quiz-page">
+    <div id="quizWrapper" class="quiz-container">
+      <!-- Progress Bar -->
+      <div class="quiz-header">
+        <div class="progress-bar">
+          <div class="progress-bar-fill" id="progressFill"></div>
+        </div>
+      </div>
+
+      <!-- Dynamic Question Block -->
+      <div class="quiz-question" id="quizContainer" role="region" aria-live="polite">
+        <!-- main.js will render questions here -->
+      </div>
+
+      <!-- Quiz Navigation Buttons -->
+      <div class="quiz-footer">
+        <button id="btnBack" type="button" class="btn secondary">Back</button>
+        <button id="continueBtn" type="button" class="btn primary" disabled>Continue</button>
       </div>
     </div>
+  </main>
 
-    <!-- The form wraps question content + footer buttons -->
-    <form id="questionForm" class="quiz-body">
-      <div class="question-header">
-        <h2 id="qNum" class="muted">Question 1 of 30</h2>
-        <div id="question" class="question-text"></div>
-      </div>
-
-      <div id="options" class="options-list"></div>
-
-      <div class="quiz-footer">
-        <button id="btnBack" class="secondary" type="button">Back</button>
-        <button id="continueBtn" type="submit" disabled>Continue</button>
-      </div>
-    </form>
-  </div>
-</main>
-
-
+  <!-- Fixed Footer -->
   <footer class="site-footer">
     <p>© Prysillia</p>
   </footer>
+
+  <!-- JavaScript Modules -->
+  <script type="module" src="js/questions.js"></script>
+  <script type="module" src="js/main.js"></script>
 </body>
 </html>
