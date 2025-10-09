@@ -12,10 +12,10 @@
   <!-- Fixed header -->
   <header id="appHeader" class="site-header" role="banner">
     <div class="brand">NUS Dream Major Quiz</div>
-    <nav class="header-actions" aria-label="Results actions">
-      <a href="./index.html" class="btn small">Restart Quiz</a>
-      <button id="downloadPdfBtn" class="btn small secondary" type="button">Download PDF</button>
-    </nav>
+  <nav class="header-actions" aria-label="Results actions">
+    <a href="index.html" data-restart class="btn small">Restart Quiz</a>
+    <button id="downloadPdfBtn" class="btn small secondary" type="button">Download PDF</button>
+  </nav>
   </header>
 
   <!-- Results root scaffold. results.js will mount #resultsRoot inside here -->
@@ -68,6 +68,14 @@
       confetti({ particleCount: 100, spread: 70, origin: { y: 0.2 } });
     }
   });
+
+    // Make the Restart link robust for both user pages and project pages
+  const restart = document.querySelector('a[data-restart]');
+  if (restart) {
+    // Build a URL relative to the current directory of results.html
+    const base = location.href.replace(/[^\/]+$/, ""); // strip 'results.html'
+    restart.href = `${base}index.html`;
+  }
 </script>
 </body>
 </html>
