@@ -15,10 +15,17 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  /* Keeps content above the fixed footer */
+
+  height: calc(100vh - var(--header-h) - var(--footer-h));
   min-height: calc(100vh - var(--header-h) - var(--footer-h));
+
+  /* No inner scroll for questions */
+  overflow: hidden;
+
   padding: 16px 20px;
-  padding-bottom: calc(16px + var(--footer-h));
+  /* Leave only small bottom padding, since we won't rely on sticky mechanics */
+  padding-bottom: 16px;
+
   background: transparent;
 }
 
@@ -149,3 +156,48 @@
   opacity: .6;
   cursor: not-allowed;
 }
+
+/* ===== COMPACT MODE (dense/short screens) ===== */
+/* Applies when height is short or viewport is small */
+@media (max-height: 720px), (max-width: 400px) {
+  .quiz-container {
+    gap: 10px;
+    padding: 12px 14px;
+  }
+
+  .quiz-header { margin-bottom: 6px; }
+  .progress-bar { height: 8px; }
+
+  .quiz-question .question-header h2 {
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+  .quiz-question .question-text {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+
+  .options-list { gap: 8px; }
+
+  .option-card {
+    grid-template-columns: 18px 1fr;
+    padding: 12px 12px 12px 12px;
+  }
+  .option-card::before {
+    width: 16px; height: 16px;
+  }
+  .option-card span {
+    font-size: 15px;
+  }
+
+  .quiz-footer {
+    gap: 8px;
+  }
+  #continueBtn,
+  .quiz-footer .secondary {
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+  }
+}
+
