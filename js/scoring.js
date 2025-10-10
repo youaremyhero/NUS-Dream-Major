@@ -1,51 +1,45 @@
 // js/scoring.js
 import { QUESTIONS } from "./questions.js";
+import { majorsBatch1, majorsBatch2, majorsBatch3, majorsBatch4, majorsBatch5 } from "./majors.js";
 
-/**
- * Calculate aggregate scores for each major based on answers.
- * @param {number[]} answers - array of selected option indices for each question
- * @returns {{
- *   totals: Record<string, number>,
- *   resultsArray: {id: string, score: number, percent: number}[],
- *   topMajors: {id: string, score: number, percent: number}[],
- *   topMajorIds: string[],
- *   clusters: Record<string, any[]>
- * }}
- */
+const ALL_MAJORS = [
+  ...majorsBatch1,
+  ...majorsBatch2,
+  ...majorsBatch3,
+  ...majorsBatch4,
+  ...majorsBatch5
+];
+
+// index by id
+const MAJOR_BY_ID = ALL_MAJORS.reduce((acc, m) => {
+  acc[m.id] = m;
+  return acc;
+}, {});
+
 export function calculateResults(answers) {
-  const totals = {};
-
-  // Safeguard: if answers length doesn't match QUESTIONS length, handle gracefully
-  const count = Math.min(answers.length, QUESTIONS.length);
-
-  for (let idx = 0; idx < count; idx++) {
-    const ans = answers[idx];
-    if (ans == null) continue; // unanswered
-
-    const q = QUESTIONS[idx];                       // ✅ use the imported QUESTIONS
-    const option = q?.options?.[ans];
-    if (!option) continue;
-
-    Object.entries(option.scores || {}).forEach(([id, val]) => {
-      const n = Number(val) || 0;
-      totals[id] = (totals[id] || 0) + n;
+  // 1) Aggregate MAJOR scores exactly as you do now
+  const majorTotals = {};
+  answers.forEach((ansIdx, qIdx) => {
+    const q = QUESTIONS[qIdx];
+    const option = q?.options?.[ansIdx];
+    if (!option || !option.scores) return;
+    Object.entries(option.scores).forEach(([majorId, val]) => {
+      majorTotals[majorId] = (majorTotals[majorId] || 0) + Number(val);
     });
-  }
+  });
 
-  const entries = Object.entries(totals);
+  // 2) Rank majors
+  const entries = Object.entries(majorTotals);
   if (!entries.length) {
     return {
-      totals: {},
+      majorTotals: {},
       resultsArray: [],
       topMajors: [],
-      topMajorIds: [],
-      clusters: {}
+      qualityScores: {}
     };
   }
 
-  const maxScore = Math.max(...entries.map(([, v]) => v)) || 1; // prevent divide-by-zero
-
-  // Build sorted result array with normalized percentage
+  const maxScore = Math.max(...entries.map(([, v]) => v));
   const resultsArray = entries
     .map(([id, score]) => ({
       id,
@@ -54,48 +48,34 @@ export function calculateResults(answers) {
     }))
     .sort((a, b) => (b.score === a.score ? a.id.localeCompare(b.id) : b.score - a.score));
 
-  // Top 5
   const topMajors = resultsArray.slice(0, 5);
-  const topMajorIds = topMajors.map(m => m.id);
 
-  // (Optional placeholder) Clusters are better resolved in results.js using majors metadata
-  const clusters = {};
-  topMajors.forEach(m => {
-    const cluster = "Cluster"; // real mapping done in results.js using majors metadata
-    clusters[cluster] = clusters[cluster] || [];
-    clusters[cluster].push(m);
-  });
+  // 3) Derive QUALITY scores by pushing each major’s score into its qualities
+  const qualityScores = {};
+  for (const [majorId, score] of Object.entries(majorTotals)) {
+    const meta = MAJOR_BY_ID[majorId];
+    if (!meta?.qualities || !meta.qualities.length) continue;
+    const share = score / meta.qualities.length; // equal spread into tagged qualities
+    meta.qualities.forEach(q => {
+      qualityScores[q] = (qualityScores[q] || 0) + share;
+    });
+  }
 
-  return { totals, resultsArray, topMajors, topMajorIds, clusters };
+  return {
+    majorTotals,      // map for debug/analytics
+    resultsArray,     // sorted majors with percent
+    topMajors,        // top-5 majors (downstream you’ll show top-3)
+    qualityScores     // NEW: aggregate per quality
+  };
 }
 
-/**
- * Derive qualities from majors metadata (optional — actual mapping can be in results.js)
- * @param {{id:string}[]} topMajors
- * @param {Record<string,string>} qualitiesMap
- * @returns {{name:string, description:string}[]}
- */
-export function identifyQualities(topMajors, qualitiesMap) {
-  // Placeholder: if you're computing qualities in results.js, you can ignore this
-  return Object.keys(qualitiesMap)
-    .slice(0, 6)
-    .map(k => ({ name: k, description: qualitiesMap[k] }));
-}
-
-/**
- * Save data to localStorage. Navigation is handled in main.js.
- * @param {any} data
- */
 export function saveResults(data) {
   localStorage.setItem("quizResults", JSON.stringify(data));
-  // Do NOT pushState to '/results' for GitHub Pages — it will 404 without SPA routing.
-  // Navigation is done in main.js after calling saveResults().
+  // Keep URL change if you like the clean /results. If it breaks GH Pages, keep relative:
+  try { history.pushState({}, "", "/results"); } catch {}
+  window.location.href = "./results.html";
 }
 
-/**
- * Load results from localStorage
- * @returns {any|null}
- */
 export function loadResults() {
   const data = localStorage.getItem("quizResults");
   return data ? JSON.parse(data) : null;
