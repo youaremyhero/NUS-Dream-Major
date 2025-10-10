@@ -40,11 +40,12 @@ export function calculateResults(answers) {
   }
 
   const maxScore = Math.max(...entries.map(([, v]) => v));
+  const safeMaxScore = maxScore > 0 ? maxScore : 1;
   const resultsArray = entries
     .map(([id, score]) => ({
       id,
       score,
-      percent: Math.round((score / maxScore) * 100)
+      percent: Math.round((score / safeMaxScore) * 100)
     }))
     .sort((a, b) => (b.score === a.score ? a.id.localeCompare(b.id) : b.score - a.score));
 
@@ -71,8 +72,6 @@ export function calculateResults(answers) {
 
 export function saveResults(data) {
   localStorage.setItem("quizResults", JSON.stringify(data));
-  // Keep URL change if you like the clean /results. If it breaks GH Pages, keep relative:
-  try { history.pushState({}, "", "/results"); } catch {}
   window.location.href = "./results.html";
 }
 
