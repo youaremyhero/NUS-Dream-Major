@@ -1,5 +1,5 @@
 // js/scoring.js
-import { QUESTIONS } from "./questions.js";
+import { QUESTIONS_LIKERT } from "./config/questionsLikert.js";
 import { majorsBatch1, majorsBatch2, majorsBatch3, majorsBatch4, majorsBatch5 } from "./majors.js";
 
 const ALL_MAJORS = [
@@ -10,64 +10,78 @@ const ALL_MAJORS = [
   ...majorsBatch5
 ];
 
-// index by id
 const MAJOR_BY_ID = ALL_MAJORS.reduce((acc, m) => {
   acc[m.id] = m;
   return acc;
 }, {});
 
+// Converts a 1–5 Likert value to a 0–1 weight
+function scaleLikert(val) {
+  const num = Number(val);
+  return num < 1 ? 0 : (num - 1) / 4; // 1→0, 5→1
+}
+
 export function calculateResults(answers) {
-  // 1) Aggregate MAJOR scores exactly as you do now
+  const clusterTotals = {};
   const majorTotals = {};
-  answers.forEach((ansIdx, qIdx) => {
-    const q = QUESTIONS[qIdx];
-    const option = q?.options?.[ansIdx];
-    if (!option || !option.scores) return;
-    Object.entries(option.scores).forEach(([majorId, val]) => {
-      majorTotals[majorId] = (majorTotals[majorId] || 0) + Number(val);
+  const qualityScores = {};
+
+  answers.forEach((val, idx) => {
+    const q = QUESTIONS_LIKERT[idx];
+    const weight = scaleLikert(val);
+    if (weight <= 0 || !q) return;
+
+    // Cluster scores
+    q.clusters?.forEach(({ id, w }) => {
+      clusterTotals[id] = (clusterTotals[id] || 0) + w * weight;
+    });
+
+    // Major hints
+    q.majorsHints?.forEach(({ id, w }) => {
+      majorTotals[id] = (majorTotals[id] || 0) + w * weight;
+    });
+
+    // Quality hints
+    q.qualitiesHints?.forEach(({ quality, w }) => {
+      qualityScores[quality] = (qualityScores[quality] || 0) + w * weight;
     });
   });
 
-  // 2) Rank majors
-  const entries = Object.entries(majorTotals);
-  if (!entries.length) {
-    return {
-      majorTotals: {},
-      resultsArray: [],
-      topMajors: [],
-      qualityScores: {}
-    };
+  // Spread cluster influence to majors within that cluster
+  for (const [clusterId, score] of Object.entries(clusterTotals)) {
+    ALL_MAJORS.filter((m) => m.clusterId === clusterId).forEach((m) => {
+      majorTotals[m.id] = (majorTotals[m.id] || 0) + score / 2; // distribute softly
+    });
   }
 
-  const maxScore = Math.max(...entries.map(([, v]) => v));
-  const safeMaxScore = maxScore > 0 ? maxScore : 1;
+  // Rank majors
+  const entries = Object.entries(majorTotals);
+  if (!entries.length) {
+    return { majorTotals: {}, resultsArray: [], topMajors: [], qualityScores };
+  }
+
+  const maxScore = Math.max(...entries.map(([, v]) => v)) || 1;
   const resultsArray = entries
     .map(([id, score]) => ({
       id,
       score,
-      percent: Math.round((score / safeMaxScore) * 100)
+      percent: Math.round((score / maxScore) * 100)
     }))
-    .sort((a, b) => (b.score === a.score ? a.id.localeCompare(b.id) : b.score - a.score));
+    .sort((a, b) => b.score - a.score);
 
   const topMajors = resultsArray.slice(0, 5);
 
-  // 3) Derive QUALITY scores by pushing each major’s score into its qualities
-  const qualityScores = {};
+  // Quality smoothing: include major qualities
   for (const [majorId, score] of Object.entries(majorTotals)) {
     const meta = MAJOR_BY_ID[majorId];
-    if (!meta?.qualities || !meta.qualities.length) continue;
-    const share = score / meta.qualities.length; // equal spread into tagged qualities
-    meta.qualities.forEach(q => {
-      qualityScores[q] = (qualityScores[q] || 0) + share;
+    if (!meta?.qualities?.length) continue;
+    const share = score / meta.qualities.length;
+    meta.qualities.forEach((q) => {
+      qualityScores[q] = (qualityScores[q] || 0) + share * 0.3;
     });
   }
 
-  return {
-    majorTotals,      // map for debug/analytics
-    resultsArray,     // sorted majors with percent
-    topMajors,        // top-5 majors (downstream you’ll show top-3)
-    qualityScores     // NEW: aggregate per quality
-  };
+  return { majorTotals, resultsArray, topMajors, qualityScores };
 }
 
 export function saveResults(data) {
