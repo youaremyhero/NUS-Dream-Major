@@ -1,113 +1,77 @@
 // js/main.js
-import { QUESTIONS } from "./questions.js";
+import { QUESTIONS_LIKERT, LIKERT } from "./config/questionsLikert.js";
 import { calculateResults, saveResults } from "./scoring.js";
 
 let current = 0;
-const TOTAL_QUESTIONS = QUESTIONS.length;
+const TOTAL_QUESTIONS = QUESTIONS_LIKERT.length;
 let answers = new Array(TOTAL_QUESTIONS).fill(null);
 
 window.addEventListener("DOMContentLoaded", () => {
-  // Guard required elements
   const continueBtn = document.getElementById("continueBtn");
-  const backBtn = document.getElementById("btnBack"); // optional
+  const backBtn = document.getElementById("btnBack");
   const container = document.getElementById("quizContainer");
   const progressFill = document.getElementById("progressFill");
 
   if (!continueBtn || !container || !progressFill) {
-    console.error("[main.js] Missing required DOM elements (#continueBtn, #quizContainer, #progressFill)");
+    console.error("[main.js] Missing required DOM elements");
     return;
   }
 
-  // Attach events
   continueBtn.addEventListener("click", onNext);
   if (backBtn) backBtn.addEventListener("click", onBack);
-
-  renderQuestion(); // initial render
+  renderQuestion();
 });
 
 function renderQuestion() {
-  const q = QUESTIONS[current];
+  const q = QUESTIONS_LIKERT[current];
   const container = document.getElementById("quizContainer");
+
+  const likertLabels = Object.entries(LIKERT.labels)
+    .map(([val, label]) => {
+      const selected = answers[current] === Number(val);
+      return `
+        <label class="likert-option ${selected ? "selected" : ""}" tabindex="0">
+          <input type="radio" name="q${q.id}" value="${val}" ${selected ? "checked" : ""}/>
+          <span>${label}</span>
+        </label>
+      `;
+    })
+    .join("");
 
   container.innerHTML = `
     <div class="question-header">
       <h2>Question ${current + 1} of ${TOTAL_QUESTIONS}</h2>
       <p class="question-text">${q.text}</p>
     </div>
-
-    <div class="options-list" role="radiogroup" aria-label="Options for current question">
-      ${q.options
-        .map(
-          (opt, i) => `
-        <label class="option-card ${answers[current] === i ? "selected" : ""}" tabindex="0">
-          <input type="radio" name="q${q.id}" value="${i}" ${answers[current] === i ? "checked" : ""} />
-          <span>${opt.text}</span>
-        </label>
-      `
-        )
-        .join("")}
+    <div class="likert-scale" role="radiogroup" aria-label="Likert scale">
+      ${likertLabels}
     </div>
   `;
 
   updateProgress();
+  enableInteraction();
+  updateButtons();
+}
 
-  // Enable selection via click/keyboard
-  const optionCards = container.querySelectorAll(".option-card");
+function enableInteraction() {
+  const optionCards = document.querySelectorAll(".likert-option");
   optionCards.forEach((card, idx) => {
-    // Mouse click
-    card.addEventListener("click", () => selectOption(idx));
-    // Keyboard
+    card.addEventListener("click", () => selectOption(idx + 1));
     card.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " ") {
+      if (["Enter", " "].includes(e.key)) {
         e.preventDefault();
-        selectOption(idx);
-      }
-      if (e.key === "ArrowDown" || e.key === "ArrowRight") {
-        e.preventDefault();
-        const next = optionCards[idx + 1] || optionCards[0];
-        next.focus();
-      }
-      if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
-        e.preventDefault();
-        const prev = optionCards[idx - 1] || optionCards[optionCards.length - 1];
-        prev.focus();
+        selectOption(idx + 1);
       }
     });
   });
-
-  // Also listen to radio change directly (for screen readers / assistive tech)
-  container.querySelectorAll('input[type="radio"]').forEach((inp, idx) => {
-    inp.addEventListener("change", () => selectOption(idx));
-  });
-
-  // Footer buttons
-  const continueBtn = document.getElementById("continueBtn");
-  const backBtn = document.getElementById("btnBack");
-
-  continueBtn.disabled = answers[current] == null;
-  continueBtn.textContent = current === TOTAL_QUESTIONS - 1 ? "See Results" : "Continue";
-
-  if (backBtn) {
-    if (current === 0) {
-      backBtn.disabled = true;
-      backBtn.classList.add("is-disabled");
-    } else {
-      backBtn.disabled = false;
-      backBtn.classList.remove("is-disabled");
-    }
-  }
 }
 
-function selectOption(idx) {
-  answers[current] = idx;
-
-  const container = document.getElementById("quizContainer");
-  container.querySelectorAll(".option-card").forEach((c) => c.classList.remove("selected"));
-  const selected = container.querySelectorAll(".option-card")[idx];
+function selectOption(val) {
+  answers[current] = val;
+  document.querySelectorAll(".likert-option").forEach((c) => c.classList.remove("selected"));
+  const selected = document.querySelectorAll(".likert-option")[val - 1];
   if (selected) selected.classList.add("selected");
-
-  const continueBtn = document.getElementById("continueBtn");
-  if (continueBtn) continueBtn.disabled = false;
+  document.getElementById("continueBtn").disabled = false;
 }
 
 function onNext() {
@@ -119,10 +83,8 @@ function onNext() {
     current++;
     renderQuestion();
   } else {
-    // Final: score → save → go to results page
     const result = calculateResults(answers);
     saveResults(result);
-    window.location.href = "results.html";
   }
 }
 
@@ -133,7 +95,15 @@ function onBack() {
   }
 }
 
+function updateButtons() {
+  const continueBtn = document.getElementById("continueBtn");
+  const backBtn = document.getElementById("btnBack");
+  continueBtn.disabled = answers[current] == null;
+  continueBtn.textContent = current === TOTAL_QUESTIONS - 1 ? "See Results" : "Continue";
+  if (backBtn) backBtn.disabled = current === 0;
+}
+
 function updateProgress() {
-  const progressFill = document.getElementById("progressFill");
-  progressFill.style.width = ((current + 1) / TOTAL_QUESTIONS) * 100 + "%";
+  document.getElementById("progressFill").style.width =
+    ((current + 1) / TOTAL_QUESTIONS) * 100 + "%";
 }
