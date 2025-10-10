@@ -19,10 +19,10 @@ import {
   pickTop3DisplayQualities
 } from "./config/qualitiesConfig.js";
 
-
-// Renders the Results view: top qualities, top majors strip, tabs with majors/clusters, resources, and special programmes
 import { majorsBatch1, majorsBatch2, majorsBatch3, majorsBatch4, majorsBatch5 } from "./majors.js";
 import { getResourcesForMajor, getSpecialProgrammeRecs } from "./results-helpers.js";
+// NEW: read saved results (majorTotals, resultsArray, topMajors, qualityScores)
+import { loadResults } from "./scoring.js";
 
 // -----------------------------
 // Utilities
@@ -56,7 +56,8 @@ function el(tag, opts = {}) {
   return node;
 }
 
-// Confetti (fire once on results load)
+// Confetti (fire once on results load) – uses window.confetti if present.
+// Note: results.html already has a confetti burst. Keep this guard to avoid double-firing.
 let confettiHasFired = false;
 function fireConfettiOnce() {
   if (confettiHasFired) return;
@@ -71,28 +72,24 @@ function fireConfettiOnce() {
 }
 
 // -----------------------------
-// Public API
+// Public Entry (Auto-Init)
 // -----------------------------
 /**
- * Call this AFTER scoring is done.
- * @param {Object} opts
- * @param {string[]} opts.topMajorIds - ranked (best → fifth)
- * @param {string[]} opts.identifiedQualities - top qualities extracted from answers
+ * If you still want to support direct calls (legacy), keep this,
+ * but the new default is to auto-initialise from loadResults().
  */
-export function renderResultsPage({ topMajorIds = [], identifiedQualities = [] }) {
+export function renderResultsPage({ topMajorIds = [], identifiedQualities = [] } = {}) {
   const container = $("#resultsRoot") || mountResultsRoot();
   container.innerHTML = ""; // reset
 
-  // Keep a stable URL for the results page without breaking subdirectory hosting
+  // Keep a stable URL only if it doesn't break GH Pages routing.
   try {
     const desired = new URL("./results.html", window.location.href);
     desired.search = "";
     desired.hash = "";
-
     const current = new URL(window.location.href);
     current.search = "";
     current.hash = "";
-
     if (current.href !== desired.href) {
       history.replaceState({}, "", desired.pathname);
     }
@@ -100,7 +97,7 @@ export function renderResultsPage({ topMajorIds = [], identifiedQualities = [] }
 
   fireConfettiOnce();
 
-  // Empty-state guard
+  // If we received explicit topMajorIds & identifiedQualities (legacy), just show a minimal state
   if (!topMajorIds.length) {
     container.appendChild(
       el("section", {
@@ -114,23 +111,65 @@ export function renderResultsPage({ topMajorIds = [], identifiedQualities = [] }
     return;
   }
 
-  // Build sections
-  container.appendChild(renderQualities(identifiedQualities));
-  container.appendChild(renderTopMajorsStrip(topMajorIds));
-  container.appendChild(renderTabs(topMajorIds));
-
-  // Optional: scroll to top of container (page itself remains scrollable only inside results)
-  container.scrollTo({ top: 0, behavior: "smooth" });
+  // Legacy path: map ids to data
+  const majors = topMajorIds.map(id => byId[id]).filter(Boolean);
+  // Basic render (legacy): only top 3 majors
+  container.appendChild(renderTopQualitiesLegacy(identifiedQualities));
+  container.appendChild(renderTopMajorsCards(majors.slice(0, 3), null)); // no qualityScores here
+  container.appendChild(renderExploreSimilarSection(majors[0]?.cluster || ""));
+  container.appendChild(renderSpecialProgrammesSection(topMajorIds));
 }
 
 /**
- * Returns the DOM node you want to pass to your html2pdf (or similar).
- * Keeps the PDF export stable and self-contained.
+ * Auto-init on module load — grabs saved results (majorTotals, resultsArray, topMajors, qualityScores)
+ * and renders the new structure (Top 3 Qualities + Top 3 Majors + Similar Majors + Special Programmes).
  */
-export function prepareResultsForPdf() {
-  // Export the whole results container
-  return $("#resultsRoot");
-}
+(function initFromStorage() {
+  // only auto-init if we are on results.html (presence of #resultsPage)
+  if (!document.getElementById("resultsPage")) return;
+
+  const container = $("#resultsRoot") || mountResultsRoot();
+  container.innerHTML = ""; // reset
+  fireConfettiOnce();
+
+  const data = loadResults(); // { majorTotals, resultsArray, topMajors, qualityScores }
+  if (!data || !data.resultsArray || !data.resultsArray.length) {
+    container.appendChild(
+      el("section", {
+        className: "results-section",
+        html: `
+          <h2 class="section-title">Your Results</h2>
+          <p class="muted">We couldn’t calculate matches this time. Please return to the quiz and try again.</p>
+        `
+      })
+    );
+    return;
+  }
+
+  // Choose top 3 majors
+  const topMajorsIds = (data.topMajors || data.resultsArray).slice(0, 3).map(x => x.id);
+  const topMajorsMeta = topMajorsIds.map(id => byId[id]).filter(Boolean);
+
+  // 1) Global Top 3 Qualities (bias to top major’s cluster)
+  const baseCluster = topMajorsMeta[0]?.cluster || "";
+  const globalTopQualities = pickTop3DisplayQualities({
+    qualityScores: data.qualityScores || {},
+    clusterName: baseCluster,
+    displayRules: DISPLAY_RULES,
+    families: QUALITY_FAMILIES
+  });
+
+  container.appendChild(renderTopQualities(globalTopQualities));
+
+  // 2) Top 3 Major Cards (each card shows: top 3 display qualities & why it fits)
+  container.appendChild(renderTopMajorsCards(topMajorsMeta, data.qualityScores || {}));
+
+  // 3) Explore Similar Majors (outbound links)
+  container.appendChild(renderExploreSimilarSection(baseCluster, topMajorsIds));
+
+  // 4) Special Programmes
+  container.appendChild(renderSpecialProgrammesSection(topMajorsIds));
+})();
 
 // -----------------------------
 // Mounting root
@@ -151,13 +190,13 @@ function mountResultsRoot() {
 }
 
 // -----------------------------
-// Section: Identified Qualities
+// Section: Top Qualities (GLOBAL)
 // -----------------------------
-function renderQualities(qualities = []) {
+function renderTopQualities(qualities = []) {
   const wrap = el("section", { className: "results-section qualities-section" });
   wrap.appendChild(el("h2", { className: "section-title", text: "Your Top Qualities" }));
 
-  // Student-friendly descriptions
+  // Student-friendly descriptions (fallback – you can remove if you now rely on templates)
   const desc = {
     "Analytical Thinking": "You break down complex problems and make sense of data and patterns.",
     "Creativity": "You generate fresh ideas and enjoy imaginative problem-solving.",
@@ -190,222 +229,152 @@ function renderQualities(qualities = []) {
   return wrap;
 }
 
-// -----------------------------
-// Section: Top 5 majors strip (horizontal)
-// -----------------------------
-function renderTopMajorsStrip(topIds = []) {
-  const wrap = el("section", { className: "results-section topmajors-section" });
-  wrap.appendChild(el("h2", { className: "section-title", text: "Your Top 5 Matches" }));
-
-  const rail = el("div", { className: "topmajors-rail", attrs: { role: "list" } });
-
-  topIds.slice(0, 5).forEach((id, i) => {
-    const m = byId[id];
-    if (!m) return;
-    const item = el("article", { className: "topmajor-card", attrs: { role: "listitem" } });
-    const rank = el("div", { className: "rank-badge", text: String(i + 1) });
-    const title = el("h3", { className: "topmajor-title", text: m.name });
-    const fac = el("div", { className: "topmajor-faculty", text: m.faculty });
-    const cluster = el("div", { className: "topmajor-cluster", text: m.cluster });
-    const blurb = el("p", { className: "topmajor-blurb", text: m.description });
-
-    // “More info” CTA: scroll user to tabs below, selecting the same major
-    const btn = el("button", {
-      className: "btn btn-moreinfo",
-      text: "More info",
-      attrs: { "data-major-id": m.id }
-    });
-    btn.addEventListener("click", () => selectTabForMajor(m.id));
-
-    item.append(rank, title, fac, cluster, blurb, btn);
-    rail.appendChild(item);
-  });
-
-  wrap.appendChild(rail);
-
-  // Note
-  wrap.appendChild(
-    el("p", {
-      className: "link-note",
-      text: "Tap a major to view its description and resources. For detailed admissions info, see the links in each tab."
-    })
-  );
-
-  return wrap;
+// (Legacy, if someone still calls renderResultsPage with identifiedQualities)
+function renderTopQualitiesLegacy(qualities = []) {
+  return renderTopQualities(qualities.slice(0, 3));
 }
 
 // -----------------------------
-// Section: Tabs (Majors + Cluster + Special Programmes)
+// Section: Top 3 Majors (Cards)
 // -----------------------------
-function renderTabs(topIds = []) {
-  const wrap = el("section", { className: "results-section tabs-section" });
+function renderTopMajorsCards(majors = [], qualityScores = {}) {
+  const wrap = el("section", { className: "results-section topmajors-section" });
+  wrap.appendChild(el("h2", { className: "section-title", text: "Your Top Matches" }));
 
-  // Tabs header
-  const tablist = el("div", { className: "tabs-header", attrs: { role: "tablist", "aria-label": "Results tabs" } });
+  const grid = el("div", { className: "topmajors-grid", attrs: { role: "list" } });
 
-  // Tab panels container
-  const panels = el("div", { className: "tabs-panels" });
+  majors.forEach((m, idx) => {
+    const card = el("article", { className: "topmajor-card", attrs: { role: "listitem" } });
 
-  // 1) Major tabs (Recommendation #1..#5)
-  const majors = topIds.slice(0, 5).map((id, idx) => ({
-    id,
-    label: `Recommendation #${idx + 1}`,
-    type: "major"
-  }));
+    // Header
+    const head = el("div", { className: "topmajor-head" });
+    head.appendChild(el("div", { className: "rank-badge", text: String(idx + 1) }));
+    head.appendChild(el("h3", { className: "topmajor-title", text: m.name }));
+    head.appendChild(el("div", { className: "topmajor-sub", text: `${m.faculty} • ${m.cluster}` }));
+    card.appendChild(head);
 
-  // 2) Cluster tab (groups similar majors at the faculty/cluster level)
-  const clusterName = inferClusterName(topIds[0]); // base cluster from top match
-  const clusterTab = { id: `CLUSTER_${sanitizeId(clusterName)}`, label: "Explore Similar Majors", type: "cluster" };
+    // Description
+    card.appendChild(el("p", { className: "topmajor-blurb", text: m.description || "" }));
 
-  // 3) Special Programmes tab
-  const spTab = { id: "TAB_SPECIAL_PROGRAMMES", label: "Special Programmes", type: "special" };
-
-  const allTabs = [...majors, clusterTab, spTab];
-
-  allTabs.forEach((t, i) => {
-    const tabBtn = el("button", {
-      className: "tab-btn",
-      text: t.label,
-      attrs: {
-        role: "tab",
-        "data-tab-id": t.id,
-        "aria-selected": i === 0 ? "true" : "false",
-        id: `tab_${t.id}`,
-        tabindex: i === 0 ? "0" : "-1"
-      }
+    // Top 3 display qualities (cluster-aware, using qualityScores)
+    const displayQuals = pickTop3DisplayQualities({
+      qualityScores,
+      clusterName: m.cluster,
+      displayRules: DISPLAY_RULES,
+      families: QUALITY_FAMILIES
     });
-    tabBtn.addEventListener("click", () => selectTab(t.id, tablist, panels));
-    tablist.appendChild(tabBtn);
 
-    // Panel
-    let panel;
-    if (t.type === "major") {
-      panel = renderMajorPanel(t.id, topIds);
-    } else if (t.type === "cluster") {
-      panel = renderClusterPanel(clusterName);
-    } else {
-      panel = renderSpecialProgrammesPanel(topIds);
+    // Qualities chips
+    const qRow = el("div", { className: "topmajor-qualities" });
+    displayQuals.forEach(q => {
+      const chip = el("span", { className: "quality-chip", text: q });
+      qRow.appendChild(chip);
+    });
+    card.appendChild(qRow);
+
+    // Why this fits
+    const why = (WHY_TEMPLATES_MAJOR[m.id] || WHY_TEMPLATES_CLUSTER[m.cluster] || "").trim();
+    if (why) {
+      const whyBox = el("div", { className: "why-fits" });
+      whyBox.appendChild(el("h4", { className: "why-title", text: "Why this fits" }));
+      // If your templates include placeholders, you can do a simple replacement here:
+      // e.g., why.replace("{qualities}", displayQuals.join(", "))
+      const text = why.replace("{qualities}", displayQuals.join(", "));
+      whyBox.appendChild(el("p", { className: "why-body", text }));
+      card.appendChild(whyBox);
     }
 
-    // Accessibility wiring for panel
-    panel.setAttribute("role", "tabpanel");
-    panel.setAttribute("aria-labelledby", `tab_${t.id}`);
-    panel.id = `panel_${t.id}`;
+    // Resources (outbound links)
+    const res = getResourcesForMajor(m.id, m);
+    const links = [].concat(res.major || [], res.faculty || [], res.general || []);
+    if (links.length) {
+      card.appendChild(renderLinksBlock("Explore this programme", links.slice(0, 3)));
+    }
 
-    if (i !== 0) panel.classList.add("is-hidden");
-    panels.appendChild(panel);
-  });
-
-  wrap.append(tablist, panels);
-  return wrap;
-}
-
-function selectTab(tabId, tablist, panels) {
-  // header
-  $all(".tab-btn", tablist).forEach(btn => {
-    const on = btn.getAttribute("data-tab-id") === tabId;
-    btn.setAttribute("aria-selected", on ? "true" : "false");
-    btn.setAttribute("tabindex", on ? "0" : "-1");
-  });
-  // panels
-  $all(".tab-panel", panels).forEach(p => {
-    if (p.id === `panel_${tabId}`) p.classList.remove("is-hidden");
-    else p.classList.add("is-hidden");
-  });
-}
-
-function selectTabForMajor(majorId) {
-  const panels = $(".tabs-panels");
-  const tablist = $(".tabs-header");
-  if (!panels || !tablist) return;
-  const btn = $(`.tab-btn[role="tab"][data-tab-id="${majorId}"]`, tablist);
-  if (btn) btn.click();
-}
-
-function renderMajorPanel(majorId, topIds) {
-  const m = byId[majorId];
-  const panel = el("div", { className: "tab-panel" });
-
-  if (!m) {
-    panel.appendChild(el("p", { className: "muted", text: "This major is not available." }));
-    return panel;
-  }
-
-  const head = el("div", { className: "panel-head" });
-  head.appendChild(el("h3", { className: "panel-title", text: m.name }));
-  head.appendChild(el("div", { className: "panel-sub", text: `${m.faculty} • ${m.cluster}` }));
-
-  const body = el("div", { className: "panel-body" });
-  body.appendChild(el("p", { className: "major-desc", text: m.description }));
-
-  // Resources
-  const res = getResourcesForMajor(m.id, m);
-  body.appendChild(renderLinksBlock("Application Resources (General)", res.general));
-  if (res.faculty?.length) body.appendChild(renderLinksBlock(`${m.faculty} Resources`, res.faculty));
-  if (res.major?.length) body.appendChild(renderLinksBlock(`${m.name} Resources`, res.major));
-
-  // Direct users for more info
-  body.appendChild(
-    el("p", {
-      className: "fineprint",
-      text: "For full details on this programme (structure, admission, and FAQs), visit the official page linked above."
-    })
-  );
-
-  panel.append(head, body);
-  return panel;
-}
-
-function renderClusterPanel(baseClusterName = "") {
-  const panel = el("div", { className: "tab-panel" });
-
-  // simple cluster expansion: show other majors within the same cluster label (deduped)
-  const seen = new Set();
-  const peers = ALL_MAJORS.filter(m => m.cluster === baseClusterName)
-    .filter(m => (seen.has(m.id) ? false : (seen.add(m.id), true)));
-
-  panel.appendChild(el("h3", { className: "panel-title", text: `Explore Similar Majors (${baseClusterName})` }));
-  if (!peers.length) {
-    panel.appendChild(el("p", { className: "muted", text: "No closely related majors found." }));
-    return panel;
-  }
-
-  const grid = el("div", { className: "cluster-grid" });
-  peers.forEach(m => {
-    const card = el("article", { className: "cluster-card" });
-    card.appendChild(el("h4", { className: "cluster-major-title", text: m.name }));
-    card.appendChild(el("p", { className: "cluster-major-desc", text: m.description }));
-    const btn = el("button", { className: "btn btn-moreinfo", text: "View tab", attrs: { "data-major-id": m.id } });
-    btn.addEventListener("click", () => selectTabForMajor(m.id));
-    card.appendChild(btn);
     grid.appendChild(card);
   });
 
-  panel.appendChild(grid);
-  panel.appendChild(
-    el("p", {
-      className: "fineprint",
-      text: "Tip: Use the tabs above to jump into each major’s description and resources."
-    })
-  );
-
-  return panel;
+  wrap.appendChild(grid);
+  return wrap;
 }
 
-function renderSpecialProgrammesPanel(topIds = []) {
-  const panel = el("div", { className: "tab-panel" });
+// -----------------------------
+// Section: Explore Similar Majors (Outbound Links)
+// -----------------------------
+function renderExploreSimilarSection(baseClusterName = "", topMajorIds = []) {
+  const wrap = el("section", { className: "results-section explore-section" });
+  wrap.appendChild(el("h2", { className: "section-title", text: "Explore Similar Majors" }));
 
-  panel.appendChild(el("h3", { className: "panel-title", text: "Special Programmes Recommendation" }));
+  const clustersToShow = [baseClusterName, ...(ADJACENT_CLUSTER_MAP[baseClusterName] || [])]
+    .filter(Boolean);
+
+  if (!clustersToShow.length) {
+    wrap.appendChild(el("p", { className: "muted", text: "No similar clusters found." }));
+    return wrap;
+  }
+
+  const grid = el("div", { className: "cluster-grid" });
+
+  clustersToShow.forEach(cluster => {
+    // list majors in this cluster (excluding already chosen top majors, optional)
+    const majors = ALL_MAJORS.filter(m => m.cluster === cluster && !topMajorIds.includes(m.id));
+    if (!majors.length) return;
+
+    const clusterBlock = el("div", { className: "cluster-block" });
+    clusterBlock.appendChild(el("h3", { className: "cluster-title", text: cluster }));
+
+    const list = el("div", { className: "cluster-list" });
+    majors.forEach(m => {
+      const item = el("article", { className: "cluster-card" });
+      item.appendChild(el("h4", { className: "cluster-major-title", text: m.name }));
+      item.appendChild(el("p", { className: "cluster-major-desc", text: m.description || "" }));
+
+      // outbound link – prefer the programme’s own page
+      const res = getResourcesForMajor(m.id, m);
+      const primary = pickPrimaryUrl(res) || "#";
+
+      const a = el("a", {
+        className: "btn btn-moreinfo",
+        text: "Visit programme page",
+        attrs: { href: primary, target: "_blank", rel: "noopener noreferrer" }
+      });
+      item.appendChild(a);
+
+      list.appendChild(item);
+    });
+
+    clusterBlock.appendChild(list);
+    grid.appendChild(clusterBlock);
+  });
+
+  wrap.appendChild(grid);
+  return wrap;
+}
+
+function pickPrimaryUrl(res) {
+  // Try major-specific link, then faculty, then general
+  if (res?.major?.[0]?.url) return res.major[0].url;
+  if (res?.faculty?.[0]?.url) return res.faculty[0].url;
+  if (res?.general?.[0]?.url) return res.general[0].url;
+  return null;
+}
+
+// -----------------------------
+// Section: Special Programmes
+// -----------------------------
+function renderSpecialProgrammesSection(topIds = []) {
+  const wrap = el("section", { className: "results-section specialprogs-section" });
+  wrap.appendChild(el("h2", { className: "section-title", text: "Recommended Special Programmes" }));
 
   const recs = getSpecialProgrammeRecs(topIds);
   if (!recs.length) {
-    panel.appendChild(
+    wrap.appendChild(
       el("p", {
         className: "muted",
         text: "Your selections don’t strongly match any specific Double/Concurrent/Joint programme patterns. Explore faculty resources for more options."
       })
     );
-    return panel;
+    return wrap;
   }
 
   const list = el("div", { className: "sp-list" });
@@ -413,22 +382,25 @@ function renderSpecialProgrammesPanel(topIds = []) {
     const item = el("article", { className: "sp-item" });
     item.appendChild(el("h4", { className: "sp-title", text: r.title }));
     item.appendChild(el("p", { className: "sp-desc", text: r.description }));
-    // Final line to direct users to official page
-    item.appendChild(
-      el("p", {
-        className: "fineprint",
-        text: "For programme structure, eligibility, and application details, visit the official Special Programmes page."
-      })
-    );
+    // Optionally link to your central special programmes page
+    if (r.url) {
+      item.appendChild(
+        el("a", {
+          className: "btn small",
+          text: "Learn more",
+          attrs: { href: r.url, target: "_blank", rel: "noopener noreferrer" }
+        })
+      );
+    }
     list.appendChild(item);
   });
 
-  panel.appendChild(list);
-  return panel;
+  wrap.appendChild(list);
+  return wrap;
 }
 
 // -----------------------------
-// Helpers
+// Generic Links Block
 // -----------------------------
 function renderLinksBlock(title, links = []) {
   const block = el("div", { className: "links-block" });
@@ -449,11 +421,9 @@ function renderLinksBlock(title, links = []) {
   return block;
 }
 
-function sanitizeId(str = "") {
-  return String(str).toUpperCase().replace(/\s+/g, "_").replace(/[^\w_-]/g, "");
-}
-
-function inferClusterName(top1Id) {
-  const m = byId[top1Id];
-  return m?.cluster || "Explore Programmes";
+// -----------------------------
+// PDF export anchor
+// -----------------------------
+export function prepareResultsForPdf() {
+  return $("#resultsRoot");
 }
