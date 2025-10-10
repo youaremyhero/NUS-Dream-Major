@@ -21,8 +21,7 @@ import {
 
 import { majorsBatch1, majorsBatch2, majorsBatch3, majorsBatch4, majorsBatch5 } from "./majors.js";
 import { getResourcesForMajor, getSpecialProgrammeRecs } from "./results-helpers.js";
-// NEW: read saved results (majorTotals, resultsArray, topMajors, qualityScores)
-import { loadResults } from "./scoring.js";
+import { loadResults } from "./scoring.js"; // read saved results
 
 // -----------------------------
 // Utilities
@@ -72,17 +71,16 @@ function fireConfettiOnce() {
 }
 
 // -----------------------------
-// Public Entry (Auto-Init)
+// Public Entry (Legacy Support)
 // -----------------------------
 /**
- * If you still want to support direct calls (legacy), keep this,
- * but the new default is to auto-initialise from loadResults().
+ * Legacy: If called directly with IDs/qualities, render a minimal page.
+ * New default path is auto-init via loadResults() below.
  */
 export function renderResultsPage({ topMajorIds = [], identifiedQualities = [] } = {}) {
   const container = $("#resultsRoot") || mountResultsRoot();
   container.innerHTML = ""; // reset
 
-  // Keep a stable URL only if it doesn't break GH Pages routing.
   try {
     const desired = new URL("./results.html", window.location.href);
     desired.search = "";
@@ -97,7 +95,6 @@ export function renderResultsPage({ topMajorIds = [], identifiedQualities = [] }
 
   fireConfettiOnce();
 
-  // If we received explicit topMajorIds & identifiedQualities (legacy), just show a minimal state
   if (!topMajorIds.length) {
     container.appendChild(
       el("section", {
@@ -111,19 +108,16 @@ export function renderResultsPage({ topMajorIds = [], identifiedQualities = [] }
     return;
   }
 
-  // Legacy path: map ids to data
   const majors = topMajorIds.map(id => byId[id]).filter(Boolean);
-  // Basic render (legacy): only top 3 majors
   container.appendChild(renderTopQualitiesLegacy(identifiedQualities));
-  container.appendChild(renderTopMajorsCards(majors.slice(0, 3), null)); // no qualityScores here
-  container.appendChild(renderExploreSimilarSection(majors[0]?.cluster || ""));
+  container.appendChild(renderTopMajorsCards(majors.slice(0, 3), null));
+  container.appendChild(renderExploreSimilarSection(majors[0]?.cluster || "", topMajorIds));
   container.appendChild(renderSpecialProgrammesSection(topMajorIds));
 }
 
-/**
- * Auto-init on module load — grabs saved results (majorTotals, resultsArray, topMajors, qualityScores)
- * and renders the new structure (Top 3 Qualities + Top 3 Majors + Similar Majors + Special Programmes).
- */
+// -----------------------------
+// Auto-init on page load
+// -----------------------------
 (function initFromStorage() {
   // only auto-init if we are on results.html (presence of #resultsPage)
   if (!document.getElementById("resultsPage")) return;
@@ -132,7 +126,7 @@ export function renderResultsPage({ topMajorIds = [], identifiedQualities = [] }
   container.innerHTML = ""; // reset
   fireConfettiOnce();
 
-  const data = loadResults(); // { majorTotals, resultsArray, topMajors, qualityScores }
+  const data = loadResults(); // { clusterScores, majorTotals, resultsArray, topMajors, topMajors3, qualityScores, ... }
   if (!data || !data.resultsArray || !data.resultsArray.length) {
     container.appendChild(
       el("section", {
@@ -146,11 +140,16 @@ export function renderResultsPage({ topMajorIds = [], identifiedQualities = [] }
     return;
   }
 
-  // Choose top 3 majors
-  const topMajorsIds = (data.topMajors || data.resultsArray).slice(0, 3).map(x => x.id);
+  // Prefer topMajors3, else topMajors, else resultsArray
+  const baseList =
+    (Array.isArray(data.topMajors3) && data.topMajors3.length && data.topMajors3) ||
+    (Array.isArray(data.topMajors) && data.topMajors.length && data.topMajors) ||
+    data.resultsArray;
+
+  const topMajorsIds = baseList.slice(0, 3).map(x => x.id);
   const topMajorsMeta = topMajorsIds.map(id => byId[id]).filter(Boolean);
 
-  // 1) Global Top 3 Qualities (bias to top major’s cluster)
+  // 1) Global Top 3 Qualities (biased to #1 cluster)
   const baseCluster = topMajorsMeta[0]?.cluster || "";
   const globalTopQualities = pickTop3DisplayQualities({
     qualityScores: data.qualityScores || {},
@@ -158,10 +157,9 @@ export function renderResultsPage({ topMajorIds = [], identifiedQualities = [] }
     displayRules: DISPLAY_RULES,
     families: QUALITY_FAMILIES
   });
-
   container.appendChild(renderTopQualities(globalTopQualities));
 
-  // 2) Top 3 Major Cards (each card shows: top 3 display qualities & why it fits)
+  // 2) Top 3 Major Cards
   container.appendChild(renderTopMajorsCards(topMajorsMeta, data.qualityScores || {}));
 
   // 3) Explore Similar Majors (outbound links)
@@ -175,10 +173,6 @@ export function renderResultsPage({ topMajorIds = [], identifiedQualities = [] }
 // Mounting root
 // -----------------------------
 function mountResultsRoot() {
-  // Expected DOM scaffold:
-  // <main id="resultsPage">
-  //   <div id="resultsRoot" class="results-root"></div>
-  // </main>
   let main = $("#resultsPage");
   if (!main) {
     main = el("main", { id: "resultsPage", className: "results-page" });
@@ -196,7 +190,7 @@ function renderTopQualities(qualities = []) {
   const wrap = el("section", { className: "results-section qualities-section" });
   wrap.appendChild(el("h2", { className: "section-title", text: "Your Top Qualities" }));
 
-  // Student-friendly descriptions (fallback – you can remove if you now rely on templates)
+  // Descriptions are optional backups if you don’t embed them in templates:
   const desc = {
     "Analytical Thinking": "You break down complex problems and make sense of data and patterns.",
     "Creativity": "You generate fresh ideas and enjoy imaginative problem-solving.",
@@ -229,7 +223,7 @@ function renderTopQualities(qualities = []) {
   return wrap;
 }
 
-// (Legacy, if someone still calls renderResultsPage with identifiedQualities)
+// Legacy top-qualities helper
 function renderTopQualitiesLegacy(qualities = []) {
   return renderTopQualities(qualities.slice(0, 3));
 }
@@ -254,9 +248,11 @@ function renderTopMajorsCards(majors = [], qualityScores = {}) {
     card.appendChild(head);
 
     // Description
-    card.appendChild(el("p", { className: "topmajor-blurb", text: m.description || "" }));
+    if (m.description) {
+      card.appendChild(el("p", { className: "topmajor-blurb", text: m.description }));
+    }
 
-    // Top 3 display qualities (cluster-aware, using qualityScores)
+    // Top 3 display qualities (cluster-aware, using aggregate qualityScores)
     const displayQuals = pickTop3DisplayQualities({
       qualityScores,
       clusterName: m.cluster,
@@ -265,21 +261,21 @@ function renderTopMajorsCards(majors = [], qualityScores = {}) {
     });
 
     // Qualities chips
-    const qRow = el("div", { className: "topmajor-qualities" });
-    displayQuals.forEach(q => {
-      const chip = el("span", { className: "quality-chip", text: q });
-      qRow.appendChild(chip);
-    });
-    card.appendChild(qRow);
+    if (displayQuals && displayQuals.length) {
+      const qRow = el("div", { className: "topmajor-qualities" });
+      displayQuals.forEach(q => {
+        const chip = el("span", { className: "quality-chip", text: q });
+        qRow.appendChild(chip);
+      });
+      card.appendChild(qRow);
+    }
 
-    // Why this fits
-    const why = (WHY_TEMPLATES_MAJOR[m.id] || WHY_TEMPLATES_CLUSTER[m.cluster] || "").trim();
-    if (why) {
+    // Why this fits — prefer major template; fallback to cluster template
+    const tpl = (WHY_TEMPLATES_MAJOR[m.id] || WHY_TEMPLATES_CLUSTER[m.cluster] || "").trim();
+    if (tpl) {
       const whyBox = el("div", { className: "why-fits" });
       whyBox.appendChild(el("h4", { className: "why-title", text: "Why this fits" }));
-      // If your templates include placeholders, you can do a simple replacement here:
-      // e.g., why.replace("{qualities}", displayQuals.join(", "))
-      const text = why.replace("{qualities}", displayQuals.join(", "));
+      const text = tpl.replace("{qualities}", displayQuals.join(", "));
       whyBox.appendChild(el("p", { className: "why-body", text }));
       card.appendChild(whyBox);
     }
@@ -329,7 +325,6 @@ function renderExploreSimilarSection(baseClusterName = "", topMajorIds = []) {
       item.appendChild(el("h4", { className: "cluster-major-title", text: m.name }));
       item.appendChild(el("p", { className: "cluster-major-desc", text: m.description || "" }));
 
-      // outbound link – prefer the programme’s own page
       const res = getResourcesForMajor(m.id, m);
       const primary = pickPrimaryUrl(res) || "#";
 
@@ -352,7 +347,6 @@ function renderExploreSimilarSection(baseClusterName = "", topMajorIds = []) {
 }
 
 function pickPrimaryUrl(res) {
-  // Try major-specific link, then faculty, then general
   if (res?.major?.[0]?.url) return res.major[0].url;
   if (res?.faculty?.[0]?.url) return res.faculty[0].url;
   if (res?.general?.[0]?.url) return res.general[0].url;
@@ -382,7 +376,6 @@ function renderSpecialProgrammesSection(topIds = []) {
     const item = el("article", { className: "sp-item" });
     item.appendChild(el("h4", { className: "sp-title", text: r.title }));
     item.appendChild(el("p", { className: "sp-desc", text: r.description }));
-    // Optionally link to your central special programmes page
     if (r.url) {
       item.appendChild(
         el("a", {
