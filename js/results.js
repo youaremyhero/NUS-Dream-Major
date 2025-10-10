@@ -72,11 +72,18 @@ export function renderResultsPage({ topMajorIds = [], identifiedQualities = [] }
   const container = $("#resultsRoot") || mountResultsRoot();
   container.innerHTML = ""; // reset
 
-  // Keep a simple, stable URL for results (no query/hash churn)
+  // Keep a stable URL for the results page without breaking subdirectory hosting
   try {
-    const path = location.pathname.endsWith("/results") ? location.pathname : "/results";
-    if (location.pathname !== path) {
-      history.replaceState({}, "", path);
+    const desired = new URL("./results.html", window.location.href);
+    desired.search = "";
+    desired.hash = "";
+
+    const current = new URL(window.location.href);
+    current.search = "";
+    current.hash = "";
+
+    if (current.href !== desired.href) {
+      history.replaceState({}, "", desired.pathname);
     }
   } catch {}
 
