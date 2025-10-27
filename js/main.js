@@ -6,6 +6,17 @@ let current = 0;
 const TOTAL_QUESTIONS = QUESTIONS_LIKERT.length;
 let answers = new Array(TOTAL_QUESTIONS).fill(null);
 
+// Optional: restore progress (uncomment if you want persistence)
+/*
+try {
+  const saved = JSON.parse(localStorage.getItem("quizProgress"));
+  if (saved && Array.isArray(saved.answers) && Number.isInteger(saved.current)) {
+    answers = saved.answers.slice(0, TOTAL_QUESTIONS);
+    current = Math.min(Math.max(0, saved.current), TOTAL_QUESTIONS - 1);
+  }
+} catch {}
+*/
+
 window.addEventListener("DOMContentLoaded", () => {
   const continueBtn = document.getElementById("continueBtn");
   const backBtn = document.getElementById("btnBack");
@@ -28,7 +39,6 @@ function renderQuestion() {
   const container = document.getElementById("quizContainer");
   if (!q || !container) return;
 
-  // Sort labels by numeric Likert value to be safe
   const likertValues = Object.keys(LIKERT.labels)
     .map(Number)
     .sort((a, b) => a - b);
@@ -61,10 +71,10 @@ function renderQuestion() {
 
   container.innerHTML = `
     <div class="question-header">
-      <h2>Question ${current + 1} of ${TOTAL_QUESTIONS}</h2>
-      <p class="question-text">${q.text}</p>
+      <h2 id="qTitle">Question ${current + 1} of ${TOTAL_QUESTIONS}</h2>
+      <p class="question-text" id="qText">${q.text}</p>
     </div>
-    <div class="likert-scale" role="radiogroup" aria-label="Likert scale">
+    <div class="likert-scale" role="radiogroup" aria-labelledby="qText">
       ${likertLabels}
     </div>
   `;
@@ -72,6 +82,7 @@ function renderQuestion() {
   updateProgress();
   enableInteraction();
   updateButtons();
+  focusInitialOption();
 }
 
 function enableInteraction() {
@@ -81,20 +92,24 @@ function enableInteraction() {
   optionCards.forEach((card, idx) => {
     // Whole-card click
     card.addEventListener("click", () => {
-      const val = Number(card.getAttribute("data-val"));
+      const raw = card.dataset.val;
+      const val = Number(raw);
+      if (!Number.isFinite(val)) return;
       selectOption(val);
     });
 
     // Keyboard access on the label container
     card.addEventListener("keydown", (e) => {
-      const keys = ["Enter", " "];
-      if (keys.includes(e.key)) {
+      if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
-        const val = Number(card.getAttribute("data-val"));
+        const raw = card.dataset.val;
+        const val = Number(raw);
+        if (!Number.isFinite(val)) return;
         selectOption(val);
         return;
       }
-      // Arrow navigation across 5 items
+
+      // Arrow navigation across 5 items (roving focus)
       const horizontalNext = () => {
         const next = optionCards[idx + 1] || optionCards[0];
         next.focus();
@@ -119,9 +134,21 @@ function enableInteraction() {
   inputs.forEach((inp) => {
     inp.addEventListener("change", () => {
       const val = Number(inp.value);
+      if (!Number.isFinite(val)) return;
       selectOption(val);
     });
   });
+}
+
+function focusInitialOption() {
+  // Prefer focusing the selected option, else the first option
+  const sel = document.querySelector(".likert-option.selected");
+  if (sel) {
+    sel.focus();
+    return;
+  }
+  const first = document.querySelector(".likert-option");
+  if (first) first.focus();
 }
 
 function selectOption(val) {
@@ -130,18 +157,27 @@ function selectOption(val) {
   // Update selected classes and aria-checked
   const cards = document.querySelectorAll(".likert-option");
   cards.forEach((card) => {
-    const cVal = Number(card.getAttribute("data-val"));
+    const cVal = Number(card.dataset.val);
     const isSelected = cVal === val;
     card.classList.toggle("selected", isSelected);
     card.setAttribute("aria-checked", isSelected ? "true" : "false");
 
-    // sync the hidden radio too
     const input = card.querySelector('input[type="radio"]');
     if (input) input.checked = isSelected;
   });
 
   const continueBtn = document.getElementById("continueBtn");
   if (continueBtn) continueBtn.disabled = false;
+
+  // Optional: persist progress (uncomment if you want)
+  /*
+  try {
+    localStorage.setItem(
+      "quizProgress",
+      JSON.stringify({ current, answers })
+    );
+  } catch {}
+  */
 }
 
 function onNext() {
@@ -149,11 +185,12 @@ function onNext() {
     alert("Please select an answer before continuing.");
     return;
   }
+
   if (current < TOTAL_QUESTIONS - 1) {
     current++;
     renderQuestion();
   } else {
-    // Final: send Likert array (1..5) to scoring
+    // Final: compute results and save
     const result = calculateResults(answers);
     saveResults(result);
   }
@@ -174,8 +211,9 @@ function updateButtons() {
     continueBtn.textContent = current === TOTAL_QUESTIONS - 1 ? "See Results" : "Continue";
   }
   if (backBtn) {
-    backBtn.disabled = current === 0;
-    backBtn.classList.toggle("is-disabled", current === 0);
+    const atStart = current === 0;
+    backBtn.disabled = atStart;
+    backBtn.classList.toggle("is-disabled", atStart);
   }
 }
 
