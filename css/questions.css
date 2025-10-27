@@ -1,4 +1,4 @@
-/* =============== QUESTIONS LAYOUT (Likert redesign v2.3) =============== */
+/* =============== QUESTIONS LAYOUT (Likert redesign v3) =============== */
 :root {
   --brand:#2563eb; --brand-100:#dbeafe;
   --text:#1f2937; --muted:#6b7280;
@@ -13,9 +13,11 @@
   --lk5:#10b981;    /* emerald */
 
   --card-max: clamp(760px, 78vw, 1040px);
+  --dot-size: 34px;            /* base ring size */
+  --dot-inner: 14px;           /* base inner dot */
 }
 
-/* ------- Progress bar (outside card) ------- */
+/* ===== Progress bar OUTSIDE card ===== */
 .quiz-progress-wrap{
   display:flex; justify-content:center; align-items:center;
   margin: calc(var(--header-h) + 10px) auto 12px;
@@ -30,24 +32,26 @@
   overflow:hidden;
 }
 .quiz-progress-wrap .progress-bar-fill{
-  height: 100%; width: 0%;
+  height: 100%;
+  width: 0%;
   background: linear-gradient(90deg, #34d399, #60a5fa);
   transition: width .20s ease;
 }
 
-/* ------- Main container: allow page to scroll if needed ------- */
+/* ===== Main container (no fixed height; page can scroll) ===== */
 .quiz-container{
   max-width: var(--card-max);
   margin: 0 auto;
-  /* use dynamic vh when supported; fallback to vh */
-  min-height: calc(100dvh - var(--header-h) - var(--footer-h) - 64px);
-  height: auto;                        /* no fixed height that can clip */
-  display:flex; flex-direction:column; gap: 18px;
-  justify-content:flex-start;          /* start, not center (prevents clipping) */
-  padding: 16px 20px clamp(88px, 9vh, 120px); /* larger bottom padding for buttons */
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  gap: 18px;
+  padding: 10px 20px 0;
+  /* reserve a safe space so buttons never hide behind footer */
+  padding-bottom: calc(var(--footer-h) + 120px);
 }
 
-/* ------- Question card (taller but not over-long) ------- */
+/* ===== Question card ===== */
 .quiz-question{
   background:var(--card);
   border:1px solid var(--border);
@@ -55,69 +59,73 @@
   box-shadow: var(--shadow);
   margin: 0 auto;
   width: 100%;
-  padding: clamp(24px, 3.2vw, 32px);
-  min-height: 420px;       /* lower than before so headings aren’t cut off */
-  display:flex;
-  flex-direction:column;
+  padding: clamp(24px, 3.4vw, 34px);
 }
 
-/* ------- Question texts with clearer spacing ------- */
-.question-header{ text-align:center; margin-bottom: clamp(16px, 3.0vw, 26px); }
+/* ===== Question texts & spacing ===== */
+.question-header{
+  text-align:center;
+  margin-bottom: clamp(18px, 2.8vw, 26px);
+}
 .question-header h2{
-  margin: 0 0 clamp(10px, 1.6vw, 14px);
-  font-size: clamp(15px,1.8vw,18px);
+  margin: 0 0 12px;
+  font-size: clamp(16px,1.9vw,19px);
   color: var(--muted);
   font-weight: 700;
 }
 .question-header .question-text{
-  margin: 0 0 clamp(22px, 3.2vw, 30px);  /* space before Likert */
-  font-size: clamp(22px, 2.6vw, 30px);
+  margin:0;
+  font-size: clamp(22px,2.8vw,30px);
   color: var(--text);
   font-weight: 800;
   line-height:1.35;
 }
 
-/* ------- Likert scale (no border / no background) ------- */
+/* ===== Likert scale (no inner border; spacious) ===== */
 .likert-scale{
-  margin-top: clamp(14px, 2.2vw, 20px);
-  padding: 0;
-  border: 0; background: transparent; box-shadow: none;
+  margin-top: clamp(18px, 2.6vw, 24px);
+  padding: clamp(14px, 2.2vw, 18px) 10px 2px;
+  background:#fff;             /* no dashed or faint border */
+  border: 0;
 
   display:grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: clamp(22px, 3.2vw, 34px);
-  align-items:center; justify-items:center;
+  gap: clamp(18px, 2.4vw, 28px);
+  align-items:center;
+  justify-items:center;
 }
 
-/* Likert item */
+/* Each Likert option = label (top) + coloured ring (bottom) */
 .likert-option{
   position:relative;
   display:flex; flex-direction:column; align-items:center;
-  gap:10px; cursor:pointer; outline:none;
-  min-width:90px;
+  gap:10px; cursor:pointer; outline:none; min-width:84px;
   text-align:center; user-select:none;
 }
-.likert-option input[type="radio"]{ position:absolute; opacity:0; pointer-events:none; }
+.likert-option input[type="radio"]{
+  position:absolute; opacity:0; pointer-events:none;
+}
 .likert-option > span{
-  color:var(--muted);
-  font-weight:600;
+  color:var(--muted); font-weight:600;
   font-size: clamp(12px,1.6vw,14px);
   white-space:nowrap;
 }
 
-/* Base circle (ring) */
+/* Base ring */
 .likert-option::after{
   content:"";
-  width: clamp(30px, 2.5vw, 36px);
-  height: clamp(30px, 2.5vw, 36px);
+  width: var(--dot-size);
+  height: var(--dot-size);
   border-radius: 50%;
   border: 3px solid var(--dot-color, #d1d5db);
   background:#fff;
   transition: transform .15s ease, box-shadow .15s, border-color .15s, background-color .15s;
 }
 
-/* Remove inner white dot entirely */
-.likert-option::before{ content:none !important; }
+/* Remove the inner white dot entirely */
+.likert-option::before{
+  content:none;
+}
 
 /* Colour map per value */
 .likert-option[data-val="1"]{ --dot-color: var(--lk1); }
@@ -129,11 +137,11 @@
 /* Hover/focus glow */
 .likert-option:hover::after,
 .likert-option:focus-visible::after{
-  transform: scale(1.06);
+  transform: scale(1.05);
   box-shadow: 0 0 0 6px rgba(37, 99, 235, .12);
 }
 
-/* Selected: solid fill + strong glow */
+/* Selected: solid fill + strong colour glow */
 .likert-option.selected::after{
   background: var(--dot-color);
   border-color: var(--dot-color);
@@ -142,11 +150,10 @@
     0 6px 16px rgba(0,0,0,.08);
 }
 
-/* ------- Buttons row ------- */
+/* ===== Buttons row ===== */
 .quiz-footer{
   display:flex; gap:12px; justify-content:flex-end;
-  margin-top: clamp(18px, 2.6vw, 28px);
-  margin-bottom: clamp(4px, 1.6vh, 12px);
+  margin-top: clamp(18px, 2.6vw, 24px);
   padding: 6px 4px 2px;
 }
 .quiz-footer .secondary{
@@ -160,36 +167,43 @@
 }
 #continueBtn[disabled]{ opacity:.6; cursor:not-allowed; }
 
-/* ------- Mobile responsiveness ------- */
-@media (max-width: 680px){
+/* ====== RESPONSIVE BEHAVIOUR (avoid overflow on mobile) ====== */
+
+/* 481–640px : 3 columns × 2 rows */
+@media (max-width: 640px){
   .quiz-container{
-    min-height: calc(100dvh - var(--header-h) - var(--footer-h) - 48px);
-    padding: 12px 14px clamp(110px, 10vh, 130px); /* more pad so buttons stay visible */
+    padding: 10px 14px calc(var(--footer-h) + 120px);
   }
-
-  .quiz-question{
-    padding: 20px;
-    min-height: 0;            /* let it grow naturally */
+  .likert-scale{
+    grid-template-columns: repeat(3, minmax(78px, 1fr));
+    gap: 16px 18px;
   }
+  :root{
+    --dot-size: 30px;
+  }
+}
 
-  /* Stack Likert options vertically to prevent clipping */
+/* ≤ 480px : 2 columns × 3 rows */
+@media (max-width: 480px){
+  .likert-scale{
+    grid-template-columns: repeat(2, minmax(84px, 1fr));
+    gap: 14px 16px;
+  }
+  .question-header .question-text{
+    font-size: clamp(20px, 5.6vw, 24px);
+  }
+  :root{
+    --dot-size: 28px;
+  }
+}
+
+/* ≤ 330px : single column stack (failsafe) */
+@media (max-width: 330px){
   .likert-scale{
     grid-template-columns: 1fr;
-    gap: 18px;
-    justify-items: center;
-    align-items: start;
+    gap: 10px;
   }
-
-  /* Slightly smaller dots on mobile */
-  .likert-option::after{
-    width: 28px; height: 28px; border-width: 3px;
-  }
-
-  .question-header .question-text{
-    margin-bottom: 18px;
-    font-size: clamp(18px, 5.5vw, 22px);
-  }
-  .question-header h2{
-    font-size: 14px;
+  :root{
+    --dot-size: 26px;
   }
 }
