@@ -70,6 +70,33 @@ function fireConfettiOnce() {
   }
 }
 
+// -----------------------------------
+// NEW: normalise "Why this fits" templates
+// Accepts string / function(ctx) / array / { text } / { lines:[] }.
+// Returns a final string (no errors).
+// -----------------------------------
+function resolveWhyTemplate(tpl, ctx = {}) {
+  if (!tpl) return "";
+  if (typeof tpl === "string") return tpl;
+  if (typeof tpl === "function") {
+    try {
+      const out = tpl(ctx);
+      return typeof out === "string" ? out : (out == null ? "" : String(out));
+    } catch {
+      return "";
+    }
+  }
+  if (Array.isArray(tpl)) {
+    return tpl.filter(Boolean).join(" ");
+  }
+  if (typeof tpl === "object") {
+    if (typeof tpl.text === "string") return tpl.text;
+    if (Array.isArray(tpl.lines)) return tpl.lines.filter(Boolean).join(" ");
+    // If you store template per-major by keys, you can extend this.
+  }
+  return String(tpl);
+}
+
 // -----------------------------
 // Public Entry (Legacy Support)
 // -----------------------------
@@ -190,7 +217,6 @@ function renderTopQualities(qualities = []) {
   const wrap = el("section", { className: "results-section qualities-section" });
   wrap.appendChild(el("h2", { className: "section-title", text: "Your Top Qualities" }));
 
-  // Descriptions are optional backups if you don’t embed them in templates:
   const desc = {
     "Analytical Thinking": "You break down complex problems and make sense of data and patterns.",
     "Creativity": "You generate fresh ideas and enjoy imaginative problem-solving.",
@@ -254,14 +280,14 @@ function renderTopMajorsCards(majors = [], qualityScores = {}) {
 
     // Top 3 display qualities (cluster-aware, using aggregate qualityScores)
     const displayQuals = pickTop3DisplayQualities({
-      qualityScores,
+      qualityScores: qualityScores || {},
       clusterName: m.cluster,
       displayRules: DISPLAY_RULES,
       families: QUALITY_FAMILIES
-    });
+    }) || [];
 
     // Qualities chips
-    if (displayQuals && displayQuals.length) {
+    if (displayQuals.length) {
       const qRow = el("div", { className: "topmajor-qualities" });
       displayQuals.forEach(q => {
         const chip = el("span", { className: "quality-chip", text: q });
@@ -270,13 +296,15 @@ function renderTopMajorsCards(majors = [], qualityScores = {}) {
       card.appendChild(qRow);
     }
 
-    // Why this fits — prefer major template; fallback to cluster template
-    const tpl = (WHY_TEMPLATES_MAJOR[m.id] || WHY_TEMPLATES_CLUSTER[m.cluster] || "").trim();
-    if (tpl) {
+    // Why this fits — robust handling of strings/functions/arrays/objects
+    const tpl = WHY_TEMPLATES_MAJOR[m.id] ?? WHY_TEMPLATES_CLUSTER[m.cluster] ?? "";
+    const base = resolveWhyTemplate(tpl, { displayQuals, major: m });
+    const whyText = String(base || "").replace("{qualities}", displayQuals.join(", ")).trim();
+
+    if (whyText) {
       const whyBox = el("div", { className: "why-fits" });
       whyBox.appendChild(el("h4", { className: "why-title", text: "Why this fits" }));
-      const text = tpl.replace("{qualities}", displayQuals.join(", "));
-      whyBox.appendChild(el("p", { className: "why-body", text }));
+      whyBox.appendChild(el("p", { className: "why-body", text: whyText }));
       card.appendChild(whyBox);
     }
 
@@ -312,7 +340,6 @@ function renderExploreSimilarSection(baseClusterName = "", topMajorIds = []) {
   const grid = el("div", { className: "cluster-grid" });
 
   clustersToShow.forEach(cluster => {
-    // list majors in this cluster (excluding already chosen top majors, optional)
     const majors = ALL_MAJORS.filter(m => m.cluster === cluster && !topMajorIds.includes(m.id));
     if (!majors.length) return;
 
