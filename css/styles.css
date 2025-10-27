@@ -32,11 +32,15 @@ html, body {
   --shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
-/* Page-scoped body behaviour */
-body.quiz-body {   /* Quiz page: no page scroll */
-  overflow: hidden;
+/* Page-scoped body behaviour
+   QUIZ MUST allow page scroll because the footer is fixed.
+*/
+body.quiz-body {
+  overflow-y: auto;            /* was hidden → caused buttons to be cut off */
+  overflow-x: hidden;
+  min-height: 100dvh;
 }
-body.results-body {  /* Results page: page scroll allowed */
+body.results-body {
   overflow: auto;
 }
 
@@ -85,31 +89,38 @@ body.results-body {  /* Results page: page scroll allowed */
   z-index: 90;
 }
 
-/* Main Content Container */
+/* Main Content Container
+   Remove hard height/overflow so page can extend when needed.
+*/
 .container {
   margin-top: var(--header-h);
   margin-bottom: var(--footer-h);
   display: flex;
   justify-content: center;
-  align-items: center;
-  height: calc(100vh - var(--header-h) - var(--footer-h));
+  align-items: flex-start;      /* start so the card does not center off-screen */
+  min-height: calc(100dvh - var(--header-h) - var(--footer-h));
+  height: auto;                 /* was fixed height */
   padding: 1rem;
-  overflow: hidden; /* prevents unwanted page scroll */
+  overflow: visible;            /* allow content to extend and page to scroll */
 }
 
-/* QUIZ PAGE LAYOUT (no inner scroll) */
+/* QUIZ PAGE LAYOUT */
 .container.quiz-page {
-  align-items: stretch; /* let inner take full height */
+  align-items: flex-start;      /* let inner stack naturally */
 }
 
+/* Inner quiz wrapper
+   Remove fixed heights and add bottom padding so content never hides under the fixed footer.
+*/
 .quiz-container {
   width: 100%;
   max-width: var(--content-w);
-  height: calc(100dvh - var(--header-h) - var(--footer-h));
-  min-height: calc(100dvh - var(--header-h) - var(--footer-h));
-  overflow: hidden; /* no inner scroll */
+  height: auto;                 /* was calc(100dvh - ... ) */
+  min-height: 0;                /* allow the card to set its own height */
+  overflow: visible;            /* no inner scroll */
   background: transparent;
   padding: 18px 24px 12px;
+  padding-bottom: calc(var(--footer-h) + 120px);  /* reserve space for buttons above footer */
 }
 
 /* Progress bar (shared) */
@@ -155,7 +166,6 @@ button:focus-visible, .btn:focus-visible {
 .btn.secondary { background: #e5e7eb; color: #374151; }
 
 /* ---- Quiz page text size tweaks (to maximize space) ---- */
-/* These override questions.css subtly to scale text and reduce chance of overflow */
 body.quiz-body .quiz-question .question-text {
   font-size: clamp(18px, 2.2vw, 22px);
 }
@@ -163,19 +173,13 @@ body.quiz-body .option-card span {
   font-size: clamp(14px, 1.9vw, 17px);
 }
 
-/* Allow the quiz page to scroll when content is taller than the viewport */
-.container.quiz-page {
-  overflow: visible;   /* override earlier "overflow:hidden" */
-}
-
-
-/* Compact mode for dense screens (short heights) */
+/* Compact mode for dense screens (short heights)
+   Keep footer smaller and top spacing tighter.
+*/
 @media (max-height: 740px) {
-  .quiz-container { padding: 14px 18px 8px; }
-  .site-header { height: 56px; }
   :root { --header-h: 56px; }
-  body.quiz-body .quiz-question .question-text { font-size: clamp(16px, 2vw, 20px); }
-  body.quiz-body .option-card { padding: 12px 14px; }
+  .site-header { height: 56px; }
+  .quiz-container { padding: 14px 18px calc(var(--footer-h) + 100px); }
 }
 
 /* Slightly wider screens: allow larger max width */
