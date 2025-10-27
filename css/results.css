@@ -124,7 +124,18 @@ body.results-body .site-footer {
   border-radius: 999px;
   padding: 4px 8px;
   font-size: 0.85rem;
+  margin-right: 1.25rem; /* wider spacing */
+  flex-shrink: 0;
 }
+.rank-badge.wide {
+  margin-right: 2rem; /* for tab view variant */
+}
+.topmajor-head, .panel-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* prevent overlap between number and title */
+}
+   
 .topmajor-title { margin: 6px 0 6px; font-size: 1.05rem; }
 .topmajor-faculty { color: var(--muted); font-size: 0.9rem; }
 .topmajor-cluster { color: #111827; font-weight: 600; font-size: 0.92rem; margin: 2px 0 4px; }
@@ -137,6 +148,7 @@ body.results-body .site-footer {
   padding: 8px 12px;
   border-radius: 10px;
 }
+
 
 /* Small note */
 .link-note {
