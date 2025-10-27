@@ -1,4 +1,4 @@
-/* =============== QUESTIONS LAYOUT (Likert redesign v2) =============== */
+/* =============== QUESTIONS LAYOUT (Likert redesign v2.1) =============== */
 :root {
   --brand:#2563eb; --brand-100:#dbeafe;
   --text:#1f2937; --muted:#6b7280;
@@ -15,7 +15,7 @@
   --card-max: clamp(760px, 78vw, 1040px); /* bigger “yellow box” */
 }
 
-/* Progress bar (now outside card) */
+/* Progress bar (outside card) */
 .quiz-progress-wrap{
   display:flex; justify-content:center; align-items:center;
   margin: calc(var(--header-h) + 10px) auto 12px;
@@ -46,7 +46,9 @@
   flex-direction:column;
   justify-content:center;
   gap: 16px;
-  padding: 10px 20px 0;
+
+  /* ↑ Add generous bottom padding so buttons sit higher than the footer */
+  padding: 10px 20px clamp(56px, 8vh, 96px);
 }
 
 /* Yellow box = question card */
@@ -110,17 +112,9 @@
   transition: transform .15s ease, box-shadow .15s, border-color .15s, background-color .15s;
 }
 
-/* Inner white dot – appears when selected */
-.likert-option::before{
-  content:"";
-  position:absolute;
-  bottom: clamp(2px, .4vw, 3px);
-  width: clamp(12px, 1.2vw, 14px);
-  height: clamp(12px, 1.2vw, 14px);
-  border-radius:50%;
-  background: transparent;
-  transition: background-color .15s ease, transform .15s ease;
-}
+/* REMOVE inner white dot — previously ::before 
+   (kept selectors as noop in case of old caches) */
+.likert-option::before{ content:none !important; }
 
 /* Colour map per value */
 .likert-option[data-val="1"]{ --dot-color: var(--lk1); }
@@ -136,7 +130,7 @@
   box-shadow: 0 0 0 6px rgba(37, 99, 235, .12);
 }
 
-/* Selected: solid fill + strong glow + inner white dot */
+/* Selected: solid fill + strong glow (no inner dot) */
 .likert-option.selected::after{
   background: var(--dot-color);
   border-color: var(--dot-color);
@@ -144,15 +138,13 @@
     0 0 0 6px color-mix(in srgb, var(--dot-color) 22%, transparent),
     0 6px 16px rgba(0,0,0,.08);
 }
-.likert-option.selected::before{
-  background: #fff;
-  transform: translateY(-1px);
-}
 
-/* Buttons row (move up from footer) */
+/* Buttons row (moved up from footer) */
 .quiz-footer{
   display:flex; gap:12px; justify-content:flex-end;
   margin-top: clamp(16px, 2.4vw, 22px);
+  /* Added bottom margin to keep extra distance from page footer */
+  margin-bottom: clamp(6px, 1.8vh, 14px);
   padding: 6px 4px 2px;
 }
 .quiz-footer .secondary{
@@ -168,7 +160,7 @@
 
 /* Compact mode */
 @media (max-height: 720px), (max-width: 420px){
-  .quiz-container{ padding: 8px 14px 0; }
+  .quiz-container{ padding: 8px 14px clamp(48px, 9vh, 80px); }
   .quiz-question{ padding: 18px; }
   .likert-scale{ gap: 14px; padding: 12px 10px 8px; }
   .quiz-footer{ margin-top: 12px; }
