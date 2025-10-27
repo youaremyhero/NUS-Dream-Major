@@ -56,7 +56,6 @@ function el(tag, opts = {}) {
 }
 
 // Confetti (fire once on results load) – uses window.confetti if present.
-// Note: results.html already has a confetti burst. Keep this guard to avoid double-firing.
 let confettiHasFired = false;
 function fireConfettiOnce() {
   if (confettiHasFired) return;
@@ -71,7 +70,7 @@ function fireConfettiOnce() {
 }
 
 // -----------------------------------
-// NEW: normalise "Why this fits" templates
+// Normalise "Why this fits" templates
 // Accepts string / function(ctx) / array / { text } / { lines:[] }.
 // Returns a final string (no errors).
 // -----------------------------------
@@ -92,7 +91,6 @@ function resolveWhyTemplate(tpl, ctx = {}) {
   if (typeof tpl === "object") {
     if (typeof tpl.text === "string") return tpl.text;
     if (Array.isArray(tpl.lines)) return tpl.lines.filter(Boolean).join(" ");
-    // If you store template per-major by keys, you can extend this.
   }
   return String(tpl);
 }
@@ -137,7 +135,8 @@ export function renderResultsPage({ topMajorIds = [], identifiedQualities = [] }
 
   const majors = topMajorIds.map(id => byId[id]).filter(Boolean);
   container.appendChild(renderTopQualitiesLegacy(identifiedQualities));
-  container.appendChild(renderTopMajorsCards(majors.slice(0, 3), null));
+  // ⬇️ Use TABS (not cards)
+  container.appendChild(renderTopMajorsTabs(majors.slice(0, 3), {}));
   container.appendChild(renderExploreSimilarSection(majors[0]?.cluster || "", topMajorIds));
   container.appendChild(renderSpecialProgrammesSection(topMajorIds));
 }
@@ -183,13 +182,13 @@ export function renderResultsPage({ topMajorIds = [], identifiedQualities = [] }
     clusterName: baseCluster,
     displayRules: DISPLAY_RULES,
     families: QUALITY_FAMILIES
-  });
+  })?.slice(0, 3) || ["Analytical Thinking", "Creativity", "Problem Solving"];
   container.appendChild(renderTopQualities(globalTopQualities));
 
-  // 2) Top 3 Major Cards
-  container.appendChild(renderTopMajorsCards(topMajorsMeta, data.qualityScores || {}));
+  // 2) Top 3 Major Tabs (not cards)
+  container.appendChild(renderTopMajorsTabs(topMajorsMeta, data.qualityScores || {}));
 
-  // 3) Explore Similar Majors (outbound links)
+  // 3) Explore Similar Majors (outbound links) — capped 2 per cluster
   container.appendChild(renderExploreSimilarSection(baseCluster, topMajorsIds));
 
   // 4) Special Programmes
@@ -255,71 +254,101 @@ function renderTopQualitiesLegacy(qualities = []) {
 }
 
 // -----------------------------
-// Section: Top 3 Majors (Cards)
+// Tabs: Top 3 Majors
 // -----------------------------
-function renderTopMajorsCards(majors = [], qualityScores = {}) {
-  const wrap = el("section", { className: "results-section topmajors-section" });
+function renderTopMajorsTabs(majors = [], qualityScores = {}) {
+  const wrap = el("section", { className: "results-section tabs-section" });
   wrap.appendChild(el("h2", { className: "section-title", text: "Your Top Matches" }));
 
-  const grid = el("div", { className: "topmajors-grid", attrs: { role: "list" } });
+  const tablist = el("div", { className: "tabs-header", attrs: { role: "tablist" } });
+  const panels = el("div", { className: "tabs-panels" });
 
-  majors.forEach((m, idx) => {
-    const card = el("article", { className: "topmajor-card", attrs: { role: "listitem" } });
+  majors.forEach((m, i) => {
+    const id = m.id;
+    const btn = el("button", {
+      className: "tab-btn",
+      text: `Recommendation #${i + 1}`,
+      attrs: {
+        role: "tab",
+        "data-tab-id": id,
+        "aria-selected": i === 0 ? "true" : "false",
+        id: `tab_${id}`,
+        tabindex: i === 0 ? "0" : "-1"
+      }
+    });
+    btn.addEventListener("click", () => selectTab(id, tablist, panels));
+    tablist.appendChild(btn);
 
-    // Header
-    const head = el("div", { className: "topmajor-head" });
-    head.appendChild(el("div", { className: "rank-badge", text: String(idx + 1) }));
-    head.appendChild(el("h3", { className: "topmajor-title", text: m.name }));
-    head.appendChild(el("div", { className: "topmajor-sub", text: `${m.faculty} • ${m.cluster}` }));
-    card.appendChild(head);
-
-    // Description
-    if (m.description) {
-      card.appendChild(el("p", { className: "topmajor-blurb", text: m.description }));
-    }
-
-    // Top 3 display qualities (cluster-aware, using aggregate qualityScores)
-    const displayQuals = pickTop3DisplayQualities({
-      qualityScores: qualityScores || {},
-      clusterName: m.cluster,
-      displayRules: DISPLAY_RULES,
-      families: QUALITY_FAMILIES
-    }) || [];
-
-    // Qualities chips
-    if (displayQuals.length) {
-      const qRow = el("div", { className: "topmajor-qualities" });
-      displayQuals.forEach(q => {
-        const chip = el("span", { className: "quality-chip", text: q });
-        qRow.appendChild(chip);
-      });
-      card.appendChild(qRow);
-    }
-
-    // Why this fits — robust handling of strings/functions/arrays/objects
-    const tpl = WHY_TEMPLATES_MAJOR[m.id] ?? WHY_TEMPLATES_CLUSTER[m.cluster] ?? "";
-    const base = resolveWhyTemplate(tpl, { displayQuals, major: m });
-    const whyText = String(base || "").replace("{qualities}", displayQuals.join(", ")).trim();
-
-    if (whyText) {
-      const whyBox = el("div", { className: "why-fits" });
-      whyBox.appendChild(el("h4", { className: "why-title", text: "Why this fits" }));
-      whyBox.appendChild(el("p", { className: "why-body", text: whyText }));
-      card.appendChild(whyBox);
-    }
-
-    // Resources (outbound links)
-    const res = getResourcesForMajor(m.id, m);
-    const links = [].concat(res.major || [], res.faculty || [], res.general || []);
-    if (links.length) {
-      card.appendChild(renderLinksBlock("Explore this programme", links.slice(0, 3)));
-    }
-
-    grid.appendChild(card);
+    const panel = renderMajorPanel(m, qualityScores, i + 1);
+    panel.id = `panel_${id}`;
+    panel.setAttribute("role", "tabpanel");
+    panel.setAttribute("aria-labelledby", `tab_${id}`);
+    if (i !== 0) panel.classList.add("is-hidden");
+    panels.appendChild(panel);
   });
 
-  wrap.appendChild(grid);
+  wrap.append(tablist, panels);
   return wrap;
+}
+
+function selectTab(tabId, tablist, panels) {
+  $all(".tab-btn", tablist).forEach(btn => {
+    const on = btn.getAttribute("data-tab-id") === tabId;
+    btn.setAttribute("aria-selected", on ? "true" : "false");
+    btn.setAttribute("tabindex", on ? "0" : "-1");
+  });
+  $all(".tab-panel", panels).forEach(p => {
+    if (p.id === `panel_${tabId}`) p.classList.remove("is-hidden");
+    else p.classList.add("is-hidden");
+  });
+}
+
+function renderMajorPanel(m, qualityScores, rankNum = "") {
+  const panel = el("div", { className: "tab-panel" });
+
+  const head = el("div", { className: "panel-head" });
+  head.appendChild(el("div", { className: "rank-badge wide", text: String(rankNum) }));
+  head.appendChild(el("h3", { className: "panel-title", text: m.name }));
+  head.appendChild(el("div", { className: "panel-sub", text: `${m.faculty} • ${m.cluster}` }));
+  panel.appendChild(head);
+
+  if (m.description) {
+    panel.appendChild(el("p", { className: "panel-desc", text: m.description }));
+  }
+
+  // Top 3 display qualities (fallback to ensure 3 chips)
+  const displayQuals = pickTop3DisplayQualities({
+    qualityScores,
+    clusterName: m.cluster,
+    displayRules: DISPLAY_RULES,
+    families: QUALITY_FAMILIES
+  })?.slice(0, 3) || ["Analytical Thinking", "Creativity", "Problem Solving"];
+
+  if (displayQuals.length) {
+    const qRow = el("div", { className: "topmajor-qualities" });
+    displayQuals.forEach(q => qRow.appendChild(el("span", { className: "quality-chip", text: q })));
+    panel.appendChild(qRow);
+  }
+
+  // Why this fits — robust handling of strings/functions/arrays/objects
+  const tpl = WHY_TEMPLATES_MAJOR[m.id] ?? WHY_TEMPLATES_CLUSTER[m.cluster] ?? "";
+  const base = resolveWhyTemplate(tpl, { displayQuals, major: m });
+  const whyText = String(base || "").replace("{qualities}", displayQuals.join(", ")).trim();
+  if (whyText) {
+    const whyBox = el("div", { className: "why-fits" });
+    whyBox.appendChild(el("h4", { className: "why-title", text: "Why this fits" }));
+    whyBox.appendChild(el("p", { className: "why-body", text: whyText }));
+    panel.appendChild(whyBox);
+  }
+
+  // Resources (outbound links)
+  const res = getResourcesForMajor(m.id, m);
+  const links = [].concat(res.major || [], res.faculty || [], res.general || []);
+  if (links.length) {
+    panel.appendChild(renderLinksBlock("Explore this programme", links.slice(0, 3)));
+  }
+
+  return panel;
 }
 
 // -----------------------------
@@ -347,7 +376,7 @@ function renderExploreSimilarSection(baseClusterName = "", topMajorIds = []) {
     clusterBlock.appendChild(el("h3", { className: "cluster-title", text: cluster }));
 
     const list = el("div", { className: "cluster-list" });
-    majors.forEach(m => {
+    majors.slice(0, 2).forEach(m => {       // ⬅️ cap to 2
       const item = el("article", { className: "cluster-card" });
       item.appendChild(el("h4", { className: "cluster-major-title", text: m.name }));
       item.appendChild(el("p", { className: "cluster-major-desc", text: m.description || "" }));
