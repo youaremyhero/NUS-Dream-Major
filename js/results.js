@@ -24,6 +24,9 @@ import { majorsBatch1, majorsBatch2, majorsBatch3, majorsBatch4, majorsBatch5 } 
 import { getResourcesForMajor, getSpecialProgrammeRecs } from "./results-helpers.js";
 import { loadResults } from "./scoring.js"; // read saved results
 
+const ENABLE_CLUSTER_DEBUG = true;     // flip off later if you prefer
+const SHOW_CLUSTER_BANNER = false;     // set true if you want a visible banner
+
 // -----------------------------
 // Utilities
 // -----------------------------
@@ -302,8 +305,7 @@ export function renderResultsPage({ topMajorIds = [], identifiedQualities = [] }
 // -----------------------------
 // Cluster Validation (non-intrusive)
 // -----------------------------
-const ENABLE_CLUSTER_DEBUG = true;     // flip off later if you prefer
-const SHOW_CLUSTER_BANNER = false;     // set true if you want a visible banner
+
 
 function clusterValidationReport(clusterName, topMajors, data) {
   if (!ENABLE_CLUSTER_DEBUG) return;
