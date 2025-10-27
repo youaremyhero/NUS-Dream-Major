@@ -16,7 +16,8 @@ import {
   WHY_TEMPLATES_CLUSTER,
   WHY_TEMPLATES_MAJOR,
   DISPLAY_RULES,
-  pickTop3DisplayQualities
+  pickTop3DisplayQualities,
+  WHY_DEFAULT,
 } from "./config/qualitiesConfig.js";
 
 import { majorsBatch1, majorsBatch2, majorsBatch3, majorsBatch4, majorsBatch5 } from "./majors.js";
