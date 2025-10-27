@@ -1,4 +1,4 @@
-/* =============== QUESTIONS LAYOUT (Likert redesign v2.1) =============== */
+/* =============== QUESTIONS LAYOUT (Likert redesign v2.2) =============== */
 :root {
   --brand:#2563eb; --brand-100:#dbeafe;
   --text:#1f2937; --muted:#6b7280;
@@ -12,10 +12,10 @@
   --lk4:#84cc16;    /* lime */
   --lk5:#10b981;    /* emerald */
 
-  --card-max: clamp(760px, 78vw, 1040px); /* bigger “yellow box” */
+  --card-max: clamp(760px, 78vw, 1040px); /* wider question card */
 }
 
-/* Progress bar (outside card) */
+/* ------- Progress bar (outside card) ------- */
 .quiz-progress-wrap{
   display:flex; justify-content:center; align-items:center;
   margin: calc(var(--header-h) + 10px) auto 12px;
@@ -36,22 +36,20 @@
   transition: width .20s ease;
 }
 
-/* Main container vertically centres the card */
+/* ------- Main container vertically centres the card ------- */
 .quiz-container{
   max-width: var(--card-max);
   margin: 0 auto;
   height: calc(100vh - var(--header-h) - var(--footer-h) - 70px);
-  min-height: 560px;
+  min-height: 600px; /* ↑ Taller overall area */
   display:flex;
   flex-direction:column;
   justify-content:center;
-  gap: 16px;
-
-  /* ↑ Add generous bottom padding so buttons sit higher than the footer */
-  padding: 10px 20px clamp(56px, 8vh, 96px);
+  gap: 18px;
+  padding: 10px 20px clamp(56px, 8vh, 96px); /* space from footer */
 }
 
-/* Yellow box = question card */
+/* ------- Question card (taller “yellow box”) ------- */
 .quiz-question{
   background:var(--card);
   border:1px solid var(--border);
@@ -59,61 +57,76 @@
   box-shadow: var(--shadow);
   margin: 0 auto;
   width: 100%;
-  padding: clamp(22px, 3.2vw, 30px);
+  padding: clamp(26px, 3.6vw, 36px);
+  min-height: clamp(360px, 44vh, 560px);  /* ↑ Taller card */
+  display:flex;
+  flex-direction:column;
 }
 
-/* Question texts */
-.question-header{ text-align:center; margin-bottom: clamp(16px,2.6vw,22px); }
+/* ------- Question texts with larger spacing ------- */
+.question-header{
+  text-align:center;
+  margin-bottom: clamp(18px, 3.2vw, 28px); /* space below number row */
+}
 .question-header h2{
-  margin: 0 0 10px;
+  margin: 0 0 clamp(12px, 1.6vw, 14px);
   font-size: clamp(15px,1.8vw,18px);
   color: var(--muted);
   font-weight: 700;
 }
 .question-header .question-text{
-  margin:0;
+  margin: 0 0 clamp(22px, 3.4vw, 32px);  /* ↑ space before Likert */
   font-size: clamp(22px,2.6vw,30px);
-  color: var(--text); font-weight: 800; line-height:1.35;
+  color: var(--text);
+  font-weight: 800;
+  line-height:1.35;
 }
 
-/* Likert scale box (the “green” area) */
+/* ------- Likert scale (the “green” area) ------- */
 .likert-scale{
-  margin-top: clamp(16px, 2.2vw, 20px);
-  padding: clamp(16px, 2.2vw, 18px) 12px 10px;
-  border: 1px dashed var(--border);
-  border-radius: 12px;
-  background:#fff;
+  /* Remove faint border/background completely */
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+
+  margin-top: clamp(14px, 2.2vw, 20px);
+  padding: 0; /* no box around items */
 
   display:grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: clamp(16px, 2.4vw, 26px);
+  gap: clamp(22px, 3.2vw, 34px);  /* ↑ wider spacing between options */
   align-items:center;
   justify-items:center;
 }
 
-/* Each Likert option = label above, coloured dot below */
+/* Likert option items */
 .likert-option{
   position:relative;
   display:flex; flex-direction:column; align-items:center;
-  gap:10px; cursor:pointer; outline:none; min-width:84px;
+  gap:10px; cursor:pointer; outline:none;
+  min-width:90px; /* a little wider for larger card */
   text-align:center; user-select:none;
 }
 .likert-option input[type="radio"]{ position:absolute; opacity:0; pointer-events:none; }
-.likert-option > span{ color:var(--muted); font-weight:600; font-size: clamp(12px,1.6vw,14px); white-space:nowrap; }
+.likert-option > span{
+  color:var(--muted);
+  font-weight:600;
+  font-size: clamp(12px,1.6vw,14px);
+  white-space:nowrap;
+}
 
 /* Base circle (ring) */
 .likert-option::after{
   content:"";
-  width: clamp(28px, 2.3vw, 34px);
-  height: clamp(28px, 2.3vw, 34px);
+  width: clamp(30px, 2.5vw, 36px);
+  height: clamp(30px, 2.5vw, 36px);
   border-radius: 50%;
   border: 3px solid var(--dot-color, #d1d5db);
   background:#fff;
   transition: transform .15s ease, box-shadow .15s, border-color .15s, background-color .15s;
 }
 
-/* REMOVE inner white dot — previously ::before 
-   (kept selectors as noop in case of old caches) */
+/* Remove the inner white dot entirely */
 .likert-option::before{ content:none !important; }
 
 /* Colour map per value */
@@ -126,7 +139,7 @@
 /* Hover/focus glow */
 .likert-option:hover::after,
 .likert-option:focus-visible::after{
-  transform: scale(1.05);
+  transform: scale(1.06);
   box-shadow: 0 0 0 6px rgba(37, 99, 235, .12);
 }
 
@@ -139,11 +152,10 @@
     0 6px 16px rgba(0,0,0,.08);
 }
 
-/* Buttons row (moved up from footer) */
+/* ------- Buttons row (kept away from footer) ------- */
 .quiz-footer{
   display:flex; gap:12px; justify-content:flex-end;
-  margin-top: clamp(16px, 2.4vw, 22px);
-  /* Added bottom margin to keep extra distance from page footer */
+  margin-top: clamp(18px, 2.6vw, 26px);
   margin-bottom: clamp(6px, 1.8vh, 14px);
   padding: 6px 4px 2px;
 }
@@ -158,10 +170,10 @@
 }
 #continueBtn[disabled]{ opacity:.6; cursor:not-allowed; }
 
-/* Compact mode */
+/* ------- Compact mode ------- */
 @media (max-height: 720px), (max-width: 420px){
   .quiz-container{ padding: 8px 14px clamp(48px, 9vh, 80px); }
-  .quiz-question{ padding: 18px; }
-  .likert-scale{ gap: 14px; padding: 12px 10px 8px; }
-  .quiz-footer{ margin-top: 12px; }
+  .quiz-question{ padding: 20px; min-height: 520px; }
+  .question-header .question-text{ margin-bottom: 18px; }
+  .likert-scale{ gap: 16px; }
 }
