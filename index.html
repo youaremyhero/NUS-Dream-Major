@@ -16,28 +16,26 @@
     <h1>NUS Major-Matching Quiz</h1>
   </header>
 
-  <!-- Main Quiz Container -->
-  <main class="container quiz-page">
-    <div id="quizWrapper" class="quiz-container">
-      <!-- Progress Bar -->
-      <div class="quiz-header">
-        <div class="progress-bar">
-          <div class="progress-bar-fill" id="progressFill"></div>
-        </div>
-      </div>
+  <div class="quiz-progress-wrap">
+  <div class="progress-bar">
+    <div class="progress-bar-fill" id="progressFill"></div>
+  </div>
+</div>
 
-      <!-- Dynamic Question Block -->
-      <div class="quiz-question" id="quizContainer" role="region" aria-live="polite">
-        <!-- main.js will render questions here -->
-      </div>
 
-      <!-- Quiz Navigation Buttons -->
-      <div class="quiz-footer">
-        <button id="btnBack" type="button" class="btn secondary">Back</button>
-        <button id="continueBtn" type="button" class="btn primary" disabled>Continue</button>
-      </div>
+<!-- Main Quiz Container -->
+<main class="container quiz-page">
+  <div id="quizWrapper" class="quiz-container">
+    <!-- Dynamic Question Block (yellow card) -->
+    <div class="quiz-question" id="quizContainer" role="region" aria-live="polite"></div>
+
+    <!-- Buttons row -->
+    <div class="quiz-footer">
+      <button id="btnBack" type="button" class="btn secondary">Back</button>
+      <button id="continueBtn" type="button" class="btn primary" disabled>Continue</button>
     </div>
-  </main>
+  </div>
+</main>
 
   <!-- Fixed Footer -->
   <footer class="site-footer">
