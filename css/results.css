@@ -3,44 +3,61 @@
    ===================================================== */
 
 :root {
-  --brand: #2563eb;
+  --brand: #2563eb;        /* primary blue */
   --brand-100: #dbeafe;
-  --text: #1f2937;
-  --muted: #6b7280;
+  --brand-700: #1d4ed8;
+
+  --text: #1f2937;         /* gray-800 */
+  --muted: #6b7280;        /* gray-500 */
   --card: #ffffff;
-  --border: #e5e7eb;
+  --border: #e5e7eb;       /* gray-200 */
   --radius: 12px;
+
   --header-h: 64px;
   --content-w: 1060px;
+
+  /* Accents for chips/badges */
+  --chip-bg: #eef2ff;      /* indigo-50 */
+  --chip-text: #3730a3;    /* indigo-800 */
+  --chip-border: #e0e7ff;
+  --chip-active-bg: #c7d2fe;
+  --chip-active-text: #111827;
+
+  --success: #10b981;      /* emerald-500 */
+  --link: #0f766e;         /* teal-700 */
 }
 
-/* ----- Page behaviour & layout ----- */
+/* ---------- Page behavior & layout ---------- */
 
-/* Allow full-page scroll */
-body.results-body {
+/* Allow full-page scroll on results */
+body.results-body { 
   overflow: auto;
+  background: #f9fafb;
 }
 
-/* Header can be sticky (change to 'static' if you want it to scroll away) */
+/* Header: sticky by default on results */
 body.results-body .site-header {
-  position: sticky;
+  position: sticky; 
   top: 0;
   z-index: 100;
+  background: #fff;
+  border-bottom: 1px solid var(--border);
 }
 
-/* Footer should not be fixed on results page */
+/* Footer should NOT be fixed on results */
 body.results-body .site-footer {
   position: static;
   border-top: 1px solid var(--border);
   margin-top: 24px;
+  background: #fff;
 }
 
-/* The results main area starts below header to prevent cut-off */
+/* Main content starts below header to prevent cut-off */
 .results-page {
   margin-top: var(--header-h);
   min-height: calc(100dvh - var(--header-h));
   display: block;
-  overflow: visible; /* no inner scrollbars */
+  overflow: visible;               /* no inner scrollbars */
 }
 
 /* Root content wrapper injected by results.js */
@@ -51,19 +68,51 @@ body.results-body .site-footer {
   padding: 20px 20px 48px;
 }
 
-/* ----- Sections ----- */
+/* ---------- Section scaffolding ---------- */
+
 .results-section {
   background: transparent;
   margin: 18px 0;
 }
-.section-title, .results-section > h2 {
+
+.section-title, 
+.results-section > h2 {
   margin: 0 0 12px 0;
   font-size: clamp(20px, 2.2vw, 26px);
   color: var(--text);
   font-weight: 800;
 }
 
-/* ----- Qualities grid ----- */
+/* ---------- Utilities ---------- */
+
+.muted { color: var(--muted); }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--text);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform .05s ease, background .2s ease, border-color .2s ease;
+}
+
+.btn:hover { background: #f8fafc; }
+.btn:active { transform: translateY(1px); }
+
+.btn.small { padding: 6px 10px; font-size: .92rem; }
+.btn.secondary { background: #eef2ff; color: #3730a3; border-color: #e0e7ff; }
+.btn.secondary:hover { background: #e0e7ff; }
+
+.link-note { font-size: .9rem; color: var(--muted); margin-top: 8px; }
+
+/* ---------- Qualities grid ---------- */
+
 .qualities-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -84,8 +133,8 @@ body.results-body .site-footer {
   box-shadow: 0 1px 4px rgba(0,0,0,0.03);
 }
 .quality-name {
-  font-weight: 700;
-  color: var(--brand);
+  font-weight: 800;
+  color: var(--brand-700);
   margin-bottom: 4px;
 }
 .quality-desc {
@@ -94,106 +143,127 @@ body.results-body .site-footer {
   font-size: 0.95rem;
 }
 
-/* ----- Top 5 majors strip (horizontal) ----- */
-.topmajors-section .section-title { margin-bottom: 10px; }
+/* ---------- Tabs: Top 3 majors (Recommendation #1–#3) ---------- */
 
-.topmajors-rail {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(240px, 1fr);
-  gap: 12px;
-  overflow-x: auto;
-  padding-bottom: 6px;
-  scroll-snap-type: x proximity;
-}
-.topmajor-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 14px 16px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-  position: relative;
-  scroll-snap-align: start;
-}
-.rank-badge {
-  position: absolute;
-  top: 8px; left: 8px;
-  background: var(--brand);
-  color: #fff;
-  font-weight: 800;
-  border-radius: 999px;
-  padding: 4px 8px;
-  font-size: 0.85rem;
-  margin-right: 1.25rem; /* wider spacing */
-  flex-shrink: 0;
-}
-.rank-badge.wide {
-  margin-right: 2rem; /* for tab view variant */
-}
-.topmajor-head, .panel-title {
-  display: flex;
-  align-items: center;
-  gap: 1rem; /* prevent overlap between number and title */
-}
-   
-.topmajor-title { margin: 6px 0 6px; font-size: 1.05rem; }
-.topmajor-faculty { color: var(--muted); font-size: 0.9rem; }
-.topmajor-cluster { color: #111827; font-weight: 600; font-size: 0.92rem; margin: 2px 0 4px; }
-.topmajor-blurb { margin: 6px 0 10px; font-size: 0.95rem; color: var(--text); }
-
-.btn.btn-moreinfo {
-  background: #10b981; /* emerald */
-  color: #fff;
-  font-weight: 700;
-  padding: 8px 12px;
-  border-radius: 10px;
-}
-
-
-/* Small note */
-.link-note {
-  font-size: 0.9rem;
-  color: var(--muted);
-  margin-top: 8px;
-}
-
-/* ----- Tabs (Majors / Cluster / Special Programmes) ----- */
-.tabs-section { margin-top: 8px; }
+.tabs-section { margin-top: 10px; }
 
 .tabs-header {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
+
 .tab-btn {
-  background: #eef2ff;
-  color: #3730a3;
-  border: 1px solid #e0e7ff;
+  background: var(--chip-bg);
+  color: var(--chip-text);
+  border: 1px solid var(--chip-border);
   border-radius: 999px;
   padding: 8px 12px;
   font-weight: 700;
+  cursor: pointer;
 }
+
 .tab-btn[aria-selected="true"] {
-  background: #c7d2fe;
-  color: #111827;
+  background: var(--chip-active-bg);
+  color: var(--chip-active-text);
   border-color: #a5b4fc;
 }
 
 .tabs-panels { display: block; }
 .tab-panel.is-hidden { display: none; }
 
-.panel-head { margin-bottom: 8px; }
-.panel-title { margin: 0; font-size: 1.15rem; }
-.panel-sub { color: var(--muted); font-size: 0.93rem; }
+/* Major panel layout */
+.tab-panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+}
 
+.panel-head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+/* Rank badge in-flow: no overlap */
+.rank-badge {
+  min-width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #3142a3;
+  border: 1px solid #e0e7ff;
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+
+.panel-title { 
+  margin: 0; 
+  font-size: 1.15rem; 
+  font-weight: 800; 
+  color: var(--text);
+}
+
+.panel-sub { 
+  color: var(--muted); 
+  font-size: 0.93rem; 
+}
+
+/* Description block */
 .panel-body .major-desc {
   margin: 6px 0 14px;
   color: var(--text);
   line-height: 1.55;
 }
 
-/* Links block */
+/* Qualities chips row */
+.topmajor-qualities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0 12px;
+}
+
+.quality-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--chip-border);
+  background: var(--chip-bg);
+  color: var(--chip-text);
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+
+/* Why this fits */
+.why-fits {
+  background: #f8fafc;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 8px 0 12px;
+}
+.why-title {
+  margin: 0 0 4px;
+  font-weight: 800;
+  color: var(--brand-700);
+}
+.why-body {
+  margin: 0;
+  color: var(--text);
+  line-height: 1.55;
+}
+
+/* Links block (within a panel) */
 .links-block {
   background: var(--card);
   border: 1px solid var(--border);
@@ -208,52 +278,154 @@ body.results-body .site-footer {
   font-weight: 800;
 }
 .links-list {
-  margin: 0; padding-left: 18px;
+  margin: 0; 
+  padding-left: 18px;
 }
 .links-list li { margin: 6px 0; }
 .links-list a {
-  color: #0f766e;
+  color: var(--link);
   font-weight: 700;
   text-decoration: none;
 }
 .links-list a:hover { text-decoration: underline; }
-.link-note-inline { color: var(--muted); font-size: 0.9rem; margin-left: 4px; }
-
-.fineprint {
-  color: var(--muted);
-  font-size: 0.9rem;
+.link-note-inline { 
+  color: var(--muted); 
+  font-size: 0.9rem; 
+  margin-left: 4px; 
 }
 
-/* Cluster grid */
-.cluster-grid {
+/* ---------- Explore Similar Majors ---------- */
+
+.explore-section .cluster-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 12px;
 }
 @media (min-width: 768px) {
-  .cluster-grid { grid-template-columns: 1fr 1fr; }
+  .explore-section .cluster-grid { grid-template-columns: 1fr 1fr; }
 }
+
+.cluster-block {
+  background: transparent;
+  border: none;
+}
+
+.cluster-title {
+  margin: 0 0 8px;
+  font-weight: 800;
+  color: var(--brand-700);
+  font-size: 1rem;
+}
+
+.cluster-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
 .cluster-card {
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 12px 14px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
 }
-.cluster-major-title { margin: 0 0 6px; font-weight: 800; }
-.cluster-major-desc { margin: 0 0 10px; color: var(--text); }
 
-/* Special programmes list */
-.sp-list { display: grid; gap: 12px; }
+.cluster-major-title { 
+  margin: 0 0 6px; 
+  font-weight: 800; 
+  color: var(--text); 
+}
+.cluster-major-desc { 
+  margin: 0 0 10px; 
+  color: var(--text); 
+  line-height: 1.55;
+}
+
+.btn.btn-moreinfo {
+  background: var(--success);
+  color: #fff;
+  font-weight: 700;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid #0ea5a3;
+}
+
+/* ---------- Special Programmes ---------- */
+
+.sp-list { 
+  display: grid; 
+  gap: 12px; 
+}
 .sp-item {
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 12px 14px;
 }
-.sp-title { margin: 0 0 6px; font-weight: 800; }
+.sp-title { 
+  margin: 0 0 6px; 
+  font-weight: 800; 
+  color: var(--text);
+}
+.sp-desc { 
+  margin: 0 8px 10px 0; 
+  color: var(--text);
+  line-height: 1.55; 
+}
 
-/* Responsive polish */
+/* ---------- Optional: Top 5 horizontal rail (if you keep it) ---------- */
+
+.topmajors-section .section-title { margin-bottom: 10px; }
+
+.topmajors-rail {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(240px, 1fr);
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  scroll-snap-type: x proximity;
+}
+
+.topmajor-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  position: relative;
+  scroll-snap-align: start;
+}
+
+.topmajor-head {
+  display: flex;
+  align-items: center;
+  gap: 1rem;              /* prevents overlap between number and title */
+}
+
+.topmajor-title { 
+  margin: 6px 0 6px; 
+  font-size: 1.05rem; 
+  font-weight: 800; 
+}
+.topmajor-faculty { color: var(--muted); font-size: 0.9rem; }
+.topmajor-cluster { color: #111827; font-weight: 600; font-size: 0.92rem; margin: 2px 0 4px; }
+.topmajor-blurb { margin: 6px 0 10px; font-size: 0.95rem; color: var(--text); }
+
+/* ---------- Responsive polish ---------- */
+
 @media (max-width: 480px) {
   .section-title { font-size: 20px; }
   .topmajors-rail { grid-auto-columns: minmax(220px, 1fr); }
+  .links-list { padding-left: 16px; }
+  .panel-title { font-size: 1.05rem; }
+}
+
+/* ---------- Print tweaks (optional) ---------- */
+/* Ensures clean PDF capture */
+@media print {
+  body.results-body .site-header { position: static; }
+  .tabs-header { break-inside: avoid; }
+  .tab-panel { break-inside: avoid; }
 }
