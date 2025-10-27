@@ -256,65 +256,123 @@ function renderTopQualitiesLegacy(qualities = []) {
 // -----------------------------
 // Tabs: Top 3 Majors
 // -----------------------------
+/**
+ * Render Top 3 majors as accessible tabs
+ * - Assigns rank 1..n automatically
+ * - Uses renderMajorPanel(m, qualityScores) for panel content
+ * - Provides keyboard navigation (Left/Right/Home/End)
+ */
 function renderTopMajorsTabs(majors = [], qualityScores = {}) {
   const wrap = el("section", { className: "results-section tabs-section" });
   wrap.appendChild(el("h2", { className: "section-title", text: "Your Top Matches" }));
 
-  const tablist = el("div", { className: "tabs-header", attrs: { role: "tablist" } });
+  // Assign rank (1..n) to each major for the badge in renderMajorPanel
+  majors.forEach((m, i) => (m.rank = i + 1));
+
+  // Tabs header + panels container
+  const tablist = el("div", {
+    className: "tabs-header",
+    attrs: { role: "tablist", "aria-label": "Top Major Recommendations" }
+  });
   const panels = el("div", { className: "tabs-panels" });
 
   majors.forEach((m, i) => {
-    const id = m.id;
+    const tabId = `tab_${m.id}`;
+    const panelId = `panel_${m.id}`;
+
+    // Tab button
     const btn = el("button", {
-      className: "tab-btn",
+      className: `tab-btn ${i === 0 ? "is-active" : ""}`,
       text: `Recommendation #${i + 1}`,
       attrs: {
         role: "tab",
-        "data-tab-id": id,
+        id: tabId,
+        "data-tab-id": m.id,
+        "aria-controls": panelId,
         "aria-selected": i === 0 ? "true" : "false",
-        id: `tab_${id}`,
         tabindex: i === 0 ? "0" : "-1"
       }
     });
-    btn.addEventListener("click", () => selectTab(id, tablist, panels));
+    btn.addEventListener("click", () => selectTab(m.id, tablist, panels));
     tablist.appendChild(btn);
 
-    const panel = renderMajorPanel(m, qualityScores, i + 1);
-    panel.id = `panel_${id}`;
+    // Panel (use your robust renderMajorPanel() from the previous step)
+    const panel = renderMajorPanel(m, qualityScores);
+    panel.id = panelId;
     panel.setAttribute("role", "tabpanel");
-    panel.setAttribute("aria-labelledby", `tab_${id}`);
+    panel.setAttribute("aria-labelledby", tabId);
     if (i !== 0) panel.classList.add("is-hidden");
+
     panels.appendChild(panel);
   });
+
+  // Wire keyboard navigation (ArrowLeft/Right/Home/End)
+  wireTabsKeyboard(tablist, panels);
 
   wrap.append(tablist, panels);
   return wrap;
 }
 
-function selectTab(tabId, tablist, panels) {
-  $all(".tab-btn", tablist).forEach(btn => {
-    const on = btn.getAttribute("data-tab-id") === tabId;
+/**
+ * Toggle active tab & panel
+ */
+function selectTab(majorId, tablist, panels) {
+  const buttons = Array.from(tablist.querySelectorAll('[role="tab"]'));
+  const targetBtn = buttons.find(b => b.getAttribute("data-tab-id") === majorId);
+  if (!targetBtn) return;
+
+  // Update tabs
+  buttons.forEach(btn => {
+    const on = btn === targetBtn;
+    btn.classList.toggle("is-active", on);
     btn.setAttribute("aria-selected", on ? "true" : "false");
     btn.setAttribute("tabindex", on ? "0" : "-1");
   });
-  $all(".tab-panel", panels).forEach(p => {
-    if (p.id === `panel_${tabId}`) p.classList.remove("is-hidden");
-    else p.classList.add("is-hidden");
+
+  // Update panels
+  const allPanels = Array.from(panels.children);
+  allPanels.forEach(panel => {
+    const match = panel.id === `panel_${majorId}`;
+    panel.classList.toggle("is-hidden", !match);
   });
+
+  // Move focus to the active tab (for keyboard users)
+  targetBtn.focus();
 }
 
-function renderMajorPanel(m, qualityScores, rankNum = "") {
-  const panel = el("div", { className: "tab-panel" });
+/**
+ * Keyboard handling for tabs:
+ * - ArrowLeft / ArrowRight: move among tabs
+ * - Home: first tab
+ * - End: last tab
+ */
+function wireTabsKeyboard(tablist, panels) {
+  tablist.addEventListener("keydown", (e) => {
+    const tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));
+    const currentIndex = tabs.findIndex(t => t.getAttribute("aria-selected") === "true");
 
-  const head = el("div", { className: "panel-head" });
-  head.appendChild(el("div", { className: "rank-badge wide", text: String(rankNum) }));
-  head.appendChild(el("h3", { className: "panel-title", text: m.name }));
-  head.appendChild(el("div", { className: "panel-sub", text: `${m.faculty} • ${m.cluster}` }));
-  panel.appendChild(head);
+    let nextIndex = currentIndex;
+    if (e.key === "ArrowRight") {
+      e.preventDefault();
+      nextIndex = (currentIndex + 1) % tabs.length;
+    } else if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+    } else if (e.key === "Home") {
+      e.preventDefault();
+      nextIndex = 0;
+    } else if (e.key === "End") {
+      e.preventDefault();
+      nextIndex = tabs.length - 1;
+    }
 
-  if (m.description) {
-    panel.appendChild(el("p", { className: "panel-desc", text: m.description }));
-  }
+    if (nextIndex !== currentIndex) {
+      const nextTab = tabs[nextIndex];
+      const majorId = nextTab.getAttribute("data-tab-id");
+      selectTab(majorId, tablist, panels);
+    }
+  });
+}
 
   // Top 3 display qualities (fallback to ensure 3 chips)
   const displayQuals = pickTop3DisplayQualities({
