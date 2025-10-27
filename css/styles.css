@@ -163,6 +163,12 @@ body.quiz-body .option-card span {
   font-size: clamp(14px, 1.9vw, 17px);
 }
 
+/* Allow the quiz page to scroll when content is taller than the viewport */
+.container.quiz-page {
+  overflow: visible;   /* override earlier "overflow:hidden" */
+}
+
+
 /* Compact mode for dense screens (short heights) */
 @media (max-height: 740px) {
   .quiz-container { padding: 14px 18px 8px; }
