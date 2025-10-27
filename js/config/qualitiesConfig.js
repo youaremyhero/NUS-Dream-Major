@@ -264,53 +264,60 @@ export function applyFamilySoftCap(familyScores, rules = DISPLAY_RULES.softCap) 
  * - Enforce diversity across families
  */
 export function pickTop3DisplayQualities({
-  qualityScores = {},             // { "Analytical Thinking": 42, ... }
-  clusterName = "",               // e.g., "Computing & AI"
+  qualityScores = {},
+  clusterName = "",
   families = QUALITY_FAMILIES,
   clusterPriority = CLUSTER_QUALITY_PRIORITY,
   rules = DISPLAY_RULES
 }) {
   const q2fam = buildQualityToFamilyIndex(families);
 
-  // Step 1: create a weighted ranking using cluster display priorities
-  const priorityList = clusterPriority[clusterName] || [];
-  const ranked = Object.entries(qualityScores).map(([q, score]) => {
-    const pIndex = priorityList.indexOf(q);
-    // small boost if the quality is early in the cluster priority
-    const boost = pIndex >= 0 ? (1 + (priorityList.length - pIndex) * 0.02) : 1;
-    return { q, score: score * boost, fam: q2fam[q] || "OTHER" };
-  }).sort((a,b) => b.score - a.score);
+  // If we have at least one positive score, build ranked list
+  const nonZero = Object.entries(qualityScores).filter(([,v]) => Math.abs(v) > 0);
+  if (nonZero.length) {
+    // family soft-cap (optional)
+    // build family totals
+    const famTotals = {};
+    nonZero.forEach(([q, v]) => {
+      const fam = q2fam[q] || "OTHER";
+      famTotals[fam] = (famTotals[fam] || 0) + Math.abs(v);
+    });
+    const capped = applyFamilySoftCap(famTotals, rules.softCap);
 
-  // Step 2: enforce diversity constraints
-  const familyCount = {};
-  const picked = [];
+    // weigh by cluster priorities
+    const priorityList = clusterPriority[clusterName] || [];
+    const ranked = nonZero.map(([q, v]) => {
+      const fam = q2fam[q] || "OTHER";
+      const famAdj = capped[fam] ? (capped[fam] / (famTotals[fam] || 1)) : 1;
+      const pIndex = priorityList.indexOf(q);
+      const boost = pIndex >= 0 ? (1 + (priorityList.length - pIndex) * 0.02) : 1;
+      return { q, fam, score: Math.abs(v) * famAdj * boost };
+    }).sort((a,b) => b.score - a.score);
 
-  for (const item of ranked) {
-    const fam = item.fam;
-    const count = familyCount[fam] || 0;
-
-    // rule: never allow 3 from the same family
-    if (count >= (rules.maxSameFamilyInDisplay || 2)) continue;
-
-    // preferDifferentFamilies: try to diversify at least among first 2 picks
-    if (rules.preferDifferentFamilies && picked.length < 2) {
-      if (picked.some(p => p.fam === fam)) {
-        // If we already have one from this family among first 2,
-        // try to skip to diversify — but if no alternative exists, allow later.
-        const hasAlternative = ranked.some(r =>
-          !picked.includes(r) && (familyCount[r.fam] || 0) < (rules.maxSameFamilyInDisplay || 2) && r.fam !== fam
-        );
-        if (hasAlternative) continue;
+    // pick 3 with family diversity
+    const picked = [];
+    const famCount = {};
+    for (const item of ranked) {
+      const count = famCount[item.fam] || 0;
+      if (count >= (rules.maxSameFamilyInDisplay || 2)) continue;
+      if (rules.preferDifferentFamilies && picked.length < 2) {
+        if (picked.some(p => p.fam === item.fam)) {
+          const hasAlt = ranked.some(r => !picked.includes(r) && (famCount[r.fam] || 0) < (rules.maxSameFamilyInDisplay || 2) && r.fam !== item.fam);
+          if (hasAlt) continue;
+        }
       }
+      picked.push(item);
+      famCount[item.fam] = count + 1;
+      if (picked.length === 3) break;
     }
-
-    picked.push(item);
-    familyCount[fam] = count + 1;
-    if (picked.length === 3) break;
+    while (picked.length < 3 && ranked[picked.length]) picked.push(ranked[picked.length]);
+    return picked.map(p => p.q);
   }
 
-  // Fallback if < 3 found
-  while (picked.length < 3 && ranked[picked.length]) picked.push(ranked[picked.length]);
+  // HARD FALLBACK: no qualityScores -> take the first 3 from cluster priority
+  const fallback = (clusterPriority[clusterName] || []).slice(0,3);
+  if (fallback.length) return fallback;
 
-  return picked.map(p => p.q);
+  // Last resort: 3 generic strengths
+  return ["Problem Solving", "Communication Skills", "Creativity"];
 }
