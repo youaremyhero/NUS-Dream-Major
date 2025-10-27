@@ -43,7 +43,7 @@ function renderQuestion() {
           tabindex="0"
           role="radio"
           aria-checked="${selected ? "true" : "false"}"
-          data-value="${val}"
+          data-val="${val}"
         >
           <input 
             type="radio" 
@@ -81,7 +81,7 @@ function enableInteraction() {
   optionCards.forEach((card, idx) => {
     // Whole-card click
     card.addEventListener("click", () => {
-      const val = Number(card.getAttribute("data-value"));
+      const val = Number(card.getAttribute("data-val"));
       selectOption(val);
     });
 
@@ -90,7 +90,7 @@ function enableInteraction() {
       const keys = ["Enter", " "];
       if (keys.includes(e.key)) {
         e.preventDefault();
-        const val = Number(card.getAttribute("data-value"));
+        const val = Number(card.getAttribute("data-val"));
         selectOption(val);
         return;
       }
@@ -130,7 +130,7 @@ function selectOption(val) {
   // Update selected classes and aria-checked
   const cards = document.querySelectorAll(".likert-option");
   cards.forEach((card) => {
-    const cVal = Number(card.getAttribute("data-value"));
+    const cVal = Number(card.getAttribute("data-val"));
     const isSelected = cVal === val;
     card.classList.toggle("selected", isSelected);
     card.setAttribute("aria-checked", isSelected ? "true" : "false");
