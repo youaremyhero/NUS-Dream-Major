@@ -1,30 +1,24 @@
-/* =============== QUESTIONS LAYOUT (Quiz Page) =============== */
+/* =============== QUESTIONS LAYOUT (Likert redesign) =============== */
 :root {
-  --brand: #2563eb;         /* Blue */
-  --brand-100: #dbeafe;     /* Blue-100 */
-  --text: #1f2937;          /* Gray-800 */
-  --muted: #6b7280;         /* Gray-500 */
+  --brand: #2563eb;           /* Blue brand */
+  --brand-100: #dbeafe;       /* Blue-100 */
+  --text: #1f2937;            /* Gray-800 */
+  --muted: #6b7280;           /* Gray-500 */
   --card: #ffffff;
-  --border: #e5e7eb;        /* Gray-200 */
+  --border: #e5e7eb;          /* Gray-200 */
   --radius: 14px;
+
+  /* Likert palette */
+  --lk1: #ef4444;   /* Strongly disagree - red */
+  --lk2: #f59e0b;   /* Disagree - orange */
+  --lk3: #fbbf24;   /* Neutral - amber */
+  --lk4: #84cc16;   /* Agree - lime */
+  --lk5: #10b981;   /* Strongly agree - emerald */
+
+  --shadow: 0 6px 24px rgba(0,0,0,.06);
 }
 
-  /* Likert colors */
-  --likert-1: #e74c3c;  /* red */
-  --likert-2: #f59e0b;  /* orange */
-  --likert-3: #fbbf24;  /* amber */
-  --likert-4: #84cc16;  /* lime */
-  --likert-5: #10b981;  /* emerald */
-
-  --likert-1-bg: rgba(231, 76, 60, .10);
-  --likert-2-bg: rgba(245, 158, 11, .10);
-  --likert-3-bg: rgba(251, 191, 36, .12);
-  --likert-4-bg: rgba(132, 204, 22, .12);
-  --likert-5-bg: rgba(16, 185, 129, .12);
-}
-
-
-/* Outer quiz container (fixed height; no inner scroll) */
+/* ------------------- Container & centering ------------------- */
 .quiz-container {
   max-width: 920px;
   margin: 0 auto;
@@ -34,163 +28,140 @@
 
   height: calc(100vh - var(--header-h) - var(--footer-h));
   min-height: calc(100vh - var(--header-h) - var(--footer-h));
-  overflow: hidden;
 
-  padding: 16px 20px;
-  padding-bottom: 16px;
-  background: transparent;
+  overflow: hidden; /* no inner scroll on quiz page */
+  padding: 18px 20px 0;
+
+  /* Center the yellow box (card) vertically */
+  justify-content: center;
 }
 
-
-/* ------ Header (progress) ------ */
-.quiz-header {
-  display: flex;
-  align-items: center;
-}
-.progress-bar {
-  width: 100%;
-  height: 10px;
-  background: #f3f4f6;
-  border-radius: 999px;
-  overflow: hidden;
-}
-.progress-bar-fill {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, #34d399, #60a5fa);
-  transition: width 200ms ease;
-}
-
-/* ------ Question text ------ */
+/* Yellow box → the main card that contains question + likert (green area) */
 .quiz-question {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;     /* vertical centering */
-  align-items: center;         /* horizontal centering */
-  text-align: center;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  margin: 0 auto;
+  width: 100%;
+  max-width: 860px;
+
+  /* Inner spacing to frame the "green box" content */
+  padding: clamp(18px, 3vw, 28px);
 }
 
-/* Question text (bigger + more spacing from Likert) */
-.quiz-question .question-header h2 {
-  margin: 0 0 6px;
-  font-size: 18px;
-  color: var(--muted);
-  font-weight: 600;
+/* ------------------- Question text (top of green box) ------------------- */
+.question-header {
+  text-align: center;
+  margin-bottom: clamp(14px, 2.5vw, 18px);
 }
-.quiz-question .question-text {
-  margin: 0 0 24px;           /* ↑ more space before Likert */
-  font-size: 22px;
-  color: var(--text);
+.question-header h2 {
+  margin: 0 0 10px 0;
+  font-size: clamp(16px, 2vw, 18px);
+  color: var(--muted);
   font-weight: 700;
 }
-
-
-/* ------ Options grid ------ */
-.options-list {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-
-  /* Let options area grow but never create inner scrolling */
-  flex: 1 1 auto;
-  min-height: 0;
+.question-header .question-text {
+  margin: 0;
+  font-size: clamp(20px, 2.4vw, 28px);
+  color: var(--text);
+  font-weight: 800;
+  line-height: 1.35;
 }
 
-@media (min-width: 640px) {
-  .options-list {
-    grid-template-columns: 1fr 1fr; /* two columns on wider screens */
-    gap: 12px;
-  }
-}
-
-/* =============================
-   LIKERT SCALE
-   ============================= */
+/* ------------------- Likert scale (green box) ------------------- */
+/* The "green box" feel is created via spacing and a subtle boundary */
 .likert-scale {
-  width: 100%;
-  max-width: 780px;           /* keeps line length and spacing reasonable */
-  margin: 0 auto;
+  margin-top: clamp(18px, 2.6vw, 26px);       /* more distance from question */
+  padding: clamp(14px, 2.2vw, 18px) 10px 8px; /* inner breathing room */
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  background: #fff;
+
   display: grid;
   grid-template-columns: repeat(5, 1fr);
+  gap: clamp(14px, 2.2vw, 22px);
+  align-items: center;
   justify-items: center;
-  align-items: end;
-  gap: clamp(12px, 2vw, 28px);
-  padding-top: 8px;
 }
 
-/* Each option: caption + circle marker */
+/* Each option is stacked: label above, circle below */
 .likert-option {
-  display: flex;
+  display: inline-flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  gap: 10px;
   cursor: pointer;
-  user-select: none;
-  padding: 6px 4px;
   outline: none;
+  user-select: none;
+  position: relative;
+  text-align: center;
+  min-width: 80px;
 }
+
+/* Hide the native radio (still accessible) */
 .likert-option input[type="radio"] {
   position: absolute;
   opacity: 0;
   pointer-events: none;
 }
 
-/* Caption (e.g., Strongly Disagree) */
+/* Likert label (text) */
 .likert-option > span {
   color: var(--muted);
-  font-size: 0.95rem;
-  line-height: 1.2;
+  font-size: clamp(12px, 1.7vw, 14px);
+  font-weight: 600;
+  white-space: nowrap;
 }
 
-/* Circle (unselected): draw with ::after on the text span */
-.likert-option > span::after {
+/* The coloured circle (show using ::after) */
+.likert-option::after {
   content: "";
-  display: block;
-  margin-top: 8px;
-  width: 28px;
-  height: 28px;
+  width: clamp(26px, 2.2vw, 32px);
+  height: clamp(26px, 2.2vw, 32px);
   border-radius: 50%;
-  border: 3px solid var(--border);
-  background: transparent;
-  transition: transform 120ms ease, background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+  border: 3px solid var(--dot-color, #d1d5db);
+  box-sizing: border-box;
+  background: #fff;
+  transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease, background-color .15s ease;
 }
 
-/* Colorize by value (data-val from main.js) */
-.likert-option[data-val="1"] > span::after { border-color: var(--likert-1); }
-.likert-option[data-val="2"] > span::after { border-color: var(--likert-2); }
-.likert-option[data-val="3"] > span::after { border-color: var(--likert-3); }
-.likert-option[data-val="4"] > span::after { border-color: var(--likert-4); }
-.likert-option[data-val="5"] > span::after { border-color: var(--likert-5); }
+/* Colours per value */
+.likert-option[data-val="1"] { --dot-color: var(--lk1); }
+.likert-option[data-val="2"] { --dot-color: var(--lk2); }
+.likert-option[data-val="3"] { --dot-color: var(--lk3); }
+.likert-option[data-val="4"] { --dot-color: var(--lk4); }
+.likert-option[data-val="5"] { --dot-color: var(--lk5); }
 
-/* Hover nudge */
-.likert-option:hover > span::after {
-  transform: scale(1.05);
+/* Hover/focus ring */
+.likert-option:hover::after,
+.likert-option:focus-visible::after {
+  transform: scale(1.06);
+  box-shadow: 0 0 0 5px rgba(37, 99, 235, .12);
 }
 
-/* Checked state */
-.likert-option input:checked + span::after {
-  box-shadow: inset 0 0 0 6px currentColor;
+/* Selected → filled with translucent colour + thicker outline */
+.likert-option.selected::after {
+  background: color-mix(in srgb, var(--dot-color) 18%, white);
+  border-color: var(--dot-color);
+  box-shadow:
+    0 0 0 5px color-mix(in srgb, var(--dot-color) 18%, transparent),
+    inset 0 0 0 6px #fff;
 }
-.likert-option[data-val="1"] input:checked + span::after { color: var(--likert-1); background: var(--likert-1-bg); }
-.likert-option[data-val="2"] input:checked + span::after { color: var(--likert-2); background: var(--likert-2-bg); }
-.likert-option[data-val="3"] input:checked + span::after { color: var(--likert-3); background: var(--likert-3-bg); }
-.likert-option[data-val="4"] input:checked + span::after { color: var(--likert-4); background: var(--likert-4-bg); }
-.likert-option[data-val="5"] input:checked + span::after { color: var(--likert-5); background: var(--likert-5-bg); }
 
-
-/* ------ Footer buttons (sit at bottom of container) ------ */
+/* ------------------- Buttons row (blue box location) ------------------- */
 .quiz-footer {
   display: flex;
   gap: 12px;
   justify-content: flex-end;
-  margin-top: auto;             /* stay at bottom of the container */
-  padding-top: 12px;
-  padding-bottom: 24px;         /* ↑ lifted above page footer */
-  background: transparent;
-  border-top: 0;
+
+  /* Move away from card + away from footer */
+  margin-top: clamp(16px, 2.4vw, 22px);
+  padding: 8px 4px 6px;
 }
 
+/* Buttons themselves (inherit global .btn styles if you have them) */
 .quiz-footer .secondary {
   background: #e5e7eb;
   color: #374151;
@@ -204,7 +175,6 @@
   opacity: .5;
   pointer-events: none;
 }
-
 #continueBtn {
   background: var(--brand);
   color: #fff;
@@ -214,20 +184,20 @@
   font-weight: 700;
   cursor: pointer;
 }
-#continueBtn[disabled] {
-  opacity: .6;
-  cursor: not-allowed;
-}
+#continueBtn[disabled] { opacity: .6; cursor: not-allowed; }
 
-/* ===== COMPACT MODE ===== */
-@media (max-height: 720px), (max-width: 400px) {
+/* ------------------- Compact mode (short screens) ------------------- */
+@media (max-height: 720px), (max-width: 420px) {
   .quiz-container { gap: 10px; padding: 12px 14px; }
+  .quiz-question { padding: 16px; }
 
-  .quiz-question .question-text { font-size: 18px; margin-bottom: 18px; }
+  .question-header h2 { font-size: 15px; margin-bottom: 6px; }
+  .question-header .question-text { font-size: 20px; }
 
-  .likert-scale { gap: 10px; max-width: 680px; }
-
-  .likert-option > span::after { width: 24px; height: 24px; border-width: 3px; }
-
-  .quiz-footer { padding-bottom: 18px; }
+  .likert-scale {
+    gap: 14px;
+    padding: 12px 8px 6px;
+  }
+  .likert-option > span { font-size: 12px; }
+  .quiz-footer { margin-top: 12px; }
 }
