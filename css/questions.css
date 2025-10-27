@@ -9,25 +9,38 @@
   --radius: 14px;
 }
 
+  /* Likert colors */
+  --likert-1: #e74c3c;  /* red */
+  --likert-2: #f59e0b;  /* orange */
+  --likert-3: #fbbf24;  /* amber */
+  --likert-4: #84cc16;  /* lime */
+  --likert-5: #10b981;  /* emerald */
+
+  --likert-1-bg: rgba(231, 76, 60, .10);
+  --likert-2-bg: rgba(245, 158, 11, .10);
+  --likert-3-bg: rgba(251, 191, 36, .12);
+  --likert-4-bg: rgba(132, 204, 22, .12);
+  --likert-5-bg: rgba(16, 185, 129, .12);
+}
+
+
 /* Outer quiz container (fixed height; no inner scroll) */
 .quiz-container {
-  width: 100%;
-  max-width: 1060px; /* aligns with styles.css --content-w */
+  max-width: 920px;
   margin: 0 auto;
-
   display: flex;
   flex-direction: column;
   gap: 16px;
 
-  /* Use dynamic viewport height to avoid iOS URL bar issues */
-  height: calc(100dvh - var(--header-h) - var(--footer-h));
-  min-height: calc(100dvh - var(--header-h) - var(--footer-h));
+  height: calc(100vh - var(--header-h) - var(--footer-h));
+  min-height: calc(100vh - var(--header-h) - var(--footer-h));
+  overflow: hidden;
 
-  overflow: hidden; /* prevents inner scrollbars for questions */
-
-  padding: 18px 20px 12px;
+  padding: 16px 20px;
+  padding-bottom: 16px;
   background: transparent;
 }
+
 
 /* ------ Header (progress) ------ */
 .quiz-header {
@@ -49,19 +62,29 @@
 }
 
 /* ------ Question text ------ */
+.quiz-question {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;     /* vertical centering */
+  align-items: center;         /* horizontal centering */
+  text-align: center;
+}
+
+/* Question text (bigger + more spacing from Likert) */
 .quiz-question .question-header h2 {
   margin: 0 0 6px;
-  font-size: clamp(14px, 1.8vw, 16px);
+  font-size: 18px;
   color: var(--muted);
-  font-weight: 700;
+  font-weight: 600;
 }
 .quiz-question .question-text {
-  margin: 0 0 14px;
-  font-size: clamp(18px, 2.4vw, 22px); /* scales up to use space */
+  margin: 0 0 24px;           /* ↑ more space before Likert */
+  font-size: 22px;
   color: var(--text);
-  font-weight: 800;
-  line-height: 1.35;
+  font-weight: 700;
 }
+
 
 /* ------ Options grid ------ */
 .options-list {
@@ -81,82 +104,89 @@
   }
 }
 
-/* ------ Option card ------ */
-.option-card {
-  position: relative;
+/* =============================
+   LIKERT SCALE
+   ============================= */
+.likert-scale {
+  width: 100%;
+  max-width: 780px;           /* keeps line length and spacing reasonable */
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  justify-items: center;
+  align-items: end;
+  gap: clamp(12px, 2vw, 28px);
+  padding-top: 8px;
+}
+
+/* Each option: caption + circle marker */
+.likert-option {
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
-
-  padding: 14px 16px;
-  background: var(--card);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius);
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
   cursor: pointer;
+  user-select: none;
+  padding: 6px 4px;
   outline: none;
-
-  transition: border-color 120ms ease,
-              box-shadow 120ms ease,
-              background 120ms ease,
-              transform 80ms ease;
 }
-.option-card:hover {
-  border-color: #cbd5e1;
-}
-.option-card:active {
-  transform: translateY(1px);
-}
-.option-card:focus-visible {
-  border-color: var(--brand);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, .15);
-}
-
-/* Hide the native radio, keep it accessible */
-.option-card input[type="radio"] {
+.likert-option input[type="radio"] {
   position: absolute;
   opacity: 0;
   pointer-events: none;
 }
 
-/* Custom marker (small circle) */
-.option-card::before {
+/* Caption (e.g., Strongly Disagree) */
+.likert-option > span {
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.2;
+}
+
+/* Circle (unselected): draw with ::after on the text span */
+.likert-option > span::after {
   content: "";
-  flex: 0 0 auto;
-  width: 18px;
-  height: 18px;
-  margin-top: 2px;
-  border-radius: 999px;
-  border: 2px solid #cbd5e1;
-  background: #fff;
-  box-shadow: inset 0 0 0 3px #fff;
-  transition: border-color 140ms ease, background 140ms ease, box-shadow 140ms ease;
+  display: block;
+  margin-top: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 3px solid var(--border);
+  background: transparent;
+  transition: transform 120ms ease, background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
 }
 
-/* Label text */
-.option-card span {
-  color: var(--text);
-  font-size: clamp(15px, 1.9vw, 17px);
-  line-height: 1.45;
+/* Colorize by value (data-val from main.js) */
+.likert-option[data-val="1"] > span::after { border-color: var(--likert-1); }
+.likert-option[data-val="2"] > span::after { border-color: var(--likert-2); }
+.likert-option[data-val="3"] > span::after { border-color: var(--likert-3); }
+.likert-option[data-val="4"] > span::after { border-color: var(--likert-4); }
+.likert-option[data-val="5"] > span::after { border-color: var(--likert-5); }
+
+/* Hover nudge */
+.likert-option:hover > span::after {
+  transform: scale(1.05);
 }
 
-/* Selected state */
-.option-card.selected {
-  border-color: var(--brand);
-  background: var(--brand-100);
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, .18) inset;
+/* Checked state */
+.likert-option input:checked + span::after {
+  box-shadow: inset 0 0 0 6px currentColor;
 }
-.option-card.selected::before {
-  border-color: var(--brand);
-  background: var(--brand);
-  box-shadow: inset 0 0 0 3px #fff;
-}
+.likert-option[data-val="1"] input:checked + span::after { color: var(--likert-1); background: var(--likert-1-bg); }
+.likert-option[data-val="2"] input:checked + span::after { color: var(--likert-2); background: var(--likert-2-bg); }
+.likert-option[data-val="3"] input:checked + span::after { color: var(--likert-3); background: var(--likert-3-bg); }
+.likert-option[data-val="4"] input:checked + span::after { color: var(--likert-4); background: var(--likert-4-bg); }
+.likert-option[data-val="5"] input:checked + span::after { color: var(--likert-5); background: var(--likert-5-bg); }
+
 
 /* ------ Footer buttons (sit at bottom of container) ------ */
 .quiz-footer {
   display: flex;
   gap: 12px;
   justify-content: flex-end;
-  margin-top: auto;  /* push footer to bottom of fixed-height container */
+  margin-top: auto;             /* stay at bottom of the container */
+  padding-top: 12px;
+  padding-bottom: 24px;         /* ↑ lifted above page footer */
   background: transparent;
   border-top: 0;
 }
@@ -189,45 +219,15 @@
   cursor: not-allowed;
 }
 
-/* ===== COMPACT MODE (dense/short screens) ===== */
-/* Applies when height is short or viewport is small */
+/* ===== COMPACT MODE ===== */
 @media (max-height: 720px), (max-width: 400px) {
-  .quiz-container {
-    gap: 10px;
-    padding: 12px 14px;
-  }
+  .quiz-container { gap: 10px; padding: 12px 14px; }
 
-  .quiz-header { margin-bottom: 6px; }
-  .progress-bar { height: 8px; }
+  .quiz-question .question-text { font-size: 18px; margin-bottom: 18px; }
 
-  .quiz-question .question-header h2 {
-    font-size: 14px;
-    margin-bottom: 4px;
-  }
-  .quiz-question .question-text {
-    font-size: clamp(16px, 2.1vw, 19px);
-    margin-bottom: 10px;
-  }
+  .likert-scale { gap: 10px; max-width: 680px; }
 
-  .options-list { gap: 8px; }
+  .likert-option > span::after { width: 24px; height: 24px; border-width: 3px; }
 
-  .option-card {
-    padding: 12px 12px;
-  }
-  .option-card::before {
-    width: 16px; height: 16px;
-  }
-  .option-card span {
-    font-size: 14.5px;
-  }
-
-  .quiz-footer {
-    gap: 8px;
-  }
-  #continueBtn,
-  .quiz-footer .secondary {
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 14px;
-  }
+  .quiz-footer { padding-bottom: 18px; }
 }
