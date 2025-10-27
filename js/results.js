@@ -17,7 +17,7 @@ import {
   WHY_TEMPLATES_MAJOR,
   DISPLAY_RULES,
   pickTop3DisplayQualities,
-  WHY_DEFAULT,
+  WHY_DEFAULT // NEW: default fallback for "Why this fits"
 } from "./config/qualitiesConfig.js";
 
 import { majorsBatch1, majorsBatch2, majorsBatch3, majorsBatch4, majorsBatch5 } from "./majors.js";
@@ -39,6 +39,24 @@ const byId = ALL_MAJORS.reduce((acc, m) => {
   acc[m.id] = m;
   return acc;
 }, {});
+
+// Iconography (lightweight emojis – replace later with SVGs if you like)
+const CLUSTER_ICONS = {
+  "Business & Management": "📊",
+  "Computing & AI": "💻",
+  "Engineering & Technology": "🛠️",
+  "Design & Architecture": "🎨",
+  "Social Sciences": "🌍",
+  "Humanities & Cultural Studies": "📚",
+  "Sciences & Quantitative": "🔬",
+  "Health & Life Sciences": "🩺",
+  "Law & Legal Studies": "⚖️",
+  "Music & Performing Arts": "🎵"
+};
+
+function clusterIcon(name) {
+  return CLUSTER_ICONS[name] || "🎓";
+}
 
 function $(sel, root = document) {
   return root.querySelector(sel);
@@ -71,9 +89,8 @@ function fireConfettiOnce() {
 }
 
 // -----------------------------------
-// Normalise "Why this fits" templates
+// resolveWhyTemplate: normalize any shape to a final string
 // Accepts string / function(ctx) / array / { text } / { lines:[] }.
-// Returns a final string (no errors).
 // -----------------------------------
 function resolveWhyTemplate(tpl, ctx = {}) {
   if (!tpl) return "";
@@ -96,13 +113,98 @@ function resolveWhyTemplate(tpl, ctx = {}) {
   return String(tpl);
 }
 
+// -----------------------------------
+// Misc helpers
+// -----------------------------------
+function shuffleArray(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function pickPrimaryUrl(res) {
+  if (res?.major?.[0]?.url) return res.major[0].url;
+  if (res?.faculty?.[0]?.url) return res.faculty[0].url;
+  if (res?.general?.[0]?.url) return res.general[0].url;
+  return null;
+}
+
+// Prefer cluster diversity for ties (greedy selection)
+function pickTopMajorsWithDiversity(baseList, n = 3) {
+  // baseList: array of { id, score, percent } (sorted high→low)
+  const selected = [];
+  const pickedClusters = new Set();
+
+  baseList.forEach((entry) => {
+    if (selected.length >= n) return;
+    const m = byId[entry.id];
+    if (!m) return;
+
+    if (selected.length === 0) {
+      selected.push(entry);
+      pickedClusters.add(m.cluster);
+      return;
+    }
+
+    // If same score as last added OR same score as others near this band, prefer a different cluster
+    const last = selected[selected.length - 1];
+    const tie = last && entry.score === last.score;
+    const cluster = m.cluster;
+
+    if (tie) {
+      if (!pickedClusters.has(cluster)) {
+        selected.push(entry);
+        pickedClusters.add(cluster);
+      } else {
+        // only add if we still have space and no alternative shows up
+        // fallback: add anyway if not yet reached n
+        if (selected.length < n) selected.push(entry);
+      }
+    } else {
+      selected.push(entry);
+      pickedClusters.add(cluster);
+    }
+  });
+
+  // Fallback: if still fewer than n, fill from the rest ignoring diversity
+  if (selected.length < n) {
+    for (const e of baseList) {
+      if (selected.find(s => s.id === e.id)) continue;
+      selected.push(e);
+      if (selected.length >= n) break;
+    }
+  }
+
+  return selected.slice(0, n).map(e => e.id);
+}
+
+// If pickTop3DisplayQualities yields <3 (e.g., sparse qualityScores), pad from cluster priority
+function getDisplayQualitiesForCluster(qualityScores, clusterName) {
+  const list = pickTop3DisplayQualities({
+    qualityScores,
+    clusterName,
+    displayRules: DISPLAY_RULES,
+    families: QUALITY_FAMILIES
+  }) || [];
+
+  if (list.length >= 3) return list;
+
+  const priority = CLUSTER_QUALITY_PRIORITY[clusterName] || [];
+  for (const q of priority) {
+    if (!list.includes(q)) list.push(q);
+    if (list.length >= 3) break;
+  }
+  // final fallback
+  while (list.length < 3) list.push("Analytical Thinking");
+  return list.slice(0, 3);
+}
+
 // -----------------------------
 // Public Entry (Legacy Support)
 // -----------------------------
-/**
- * Legacy: If called directly with IDs/qualities, render a minimal page.
- * New default path is auto-init via loadResults() below.
- */
 export function renderResultsPage({ topMajorIds = [], identifiedQualities = [] } = {}) {
   const container = $("#resultsRoot") || mountResultsRoot();
   container.innerHTML = ""; // reset
@@ -136,7 +238,6 @@ export function renderResultsPage({ topMajorIds = [], identifiedQualities = [] }
 
   const majors = topMajorIds.map(id => byId[id]).filter(Boolean);
   container.appendChild(renderTopQualitiesLegacy(identifiedQualities));
-  // ⬇️ Use TABS (not cards)
   container.appendChild(renderTopMajorsTabs(majors.slice(0, 3), {}));
   container.appendChild(renderExploreSimilarSection(majors[0]?.cluster || "", topMajorIds));
   container.appendChild(renderSpecialProgrammesSection(topMajorIds));
@@ -146,14 +247,13 @@ export function renderResultsPage({ topMajorIds = [], identifiedQualities = [] }
 // Auto-init on page load
 // -----------------------------
 (function initFromStorage() {
-  // only auto-init if we are on results.html (presence of #resultsPage)
-  if (!document.getElementById("resultsPage")) return;
+  if (!document.getElementById("resultsPage")) return; // only on results.html
 
   const container = $("#resultsRoot") || mountResultsRoot();
   container.innerHTML = ""; // reset
   fireConfettiOnce();
 
-  const data = loadResults(); // { clusterScores, majorTotals, resultsArray, topMajors, topMajors3, qualityScores, ... }
+  const data = loadResults(); // { resultsArray, topMajors, topMajors3, qualityScores, ... }
   if (!data || !data.resultsArray || !data.resultsArray.length) {
     container.appendChild(
       el("section", {
@@ -167,34 +267,68 @@ export function renderResultsPage({ topMajorIds = [], identifiedQualities = [] }
     return;
   }
 
-  // Prefer topMajors3, else topMajors, else resultsArray
+  // Base list of majors sorted by score (prefer explicit picks if present)
   const baseList =
     (Array.isArray(data.topMajors3) && data.topMajors3.length && data.topMajors3) ||
     (Array.isArray(data.topMajors) && data.topMajors.length && data.topMajors) ||
     data.resultsArray;
 
-  const topMajorsIds = baseList.slice(0, 3).map(x => x.id);
-  const topMajorsMeta = topMajorsIds.map(id => byId[id]).filter(Boolean);
+  // Ties & cluster diversity
+  const pickedIds = pickTopMajorsWithDiversity(baseList, 3);
+  const topMajorsMeta = pickedIds.map(id => byId[id]).filter(Boolean);
+  topMajorsMeta.forEach((m, i) => (m.rank = i + 1));
 
-  // 1) Global Top 3 Qualities (biased to #1 cluster)
+  // Cluster validation (console + optional banner)
   const baseCluster = topMajorsMeta[0]?.cluster || "";
-  const globalTopQualities = pickTop3DisplayQualities({
-    qualityScores: data.qualityScores || {},
-    clusterName: baseCluster,
-    displayRules: DISPLAY_RULES,
-    families: QUALITY_FAMILIES
-  })?.slice(0, 3) || ["Analytical Thinking", "Creativity", "Problem Solving"];
+  clusterValidationReport(baseCluster, topMajorsMeta, data);
+
+  // 1) Global Top 3 Qualities (biased to #1 cluster, safe-pad to 3)
+  const globalTopQualities = getDisplayQualitiesForCluster(
+    data.qualityScores || {},
+    baseCluster
+  );
   container.appendChild(renderTopQualities(globalTopQualities));
 
-  // 2) Top 3 Major Tabs (not cards)
+  // 2) Top 3 Major Tabs (rank-aware)
   container.appendChild(renderTopMajorsTabs(topMajorsMeta, data.qualityScores || {}));
 
-  // 3) Explore Similar Majors (outbound links) — capped 2 per cluster
-  container.appendChild(renderExploreSimilarSection(baseCluster, topMajorsIds));
+  // 3) Explore Similar Majors (randomized clusters/majors, capped to 2 per cluster)
+  container.appendChild(renderExploreSimilarSection(baseCluster, pickedIds));
 
   // 4) Special Programmes
-  container.appendChild(renderSpecialProgrammesSection(topMajorsIds));
+  container.appendChild(renderSpecialProgrammesSection(pickedIds));
 })();
+
+// -----------------------------
+// Cluster Validation (non-intrusive)
+// -----------------------------
+const ENABLE_CLUSTER_DEBUG = true;     // flip off later if you prefer
+const SHOW_CLUSTER_BANNER = false;     // set true if you want a visible banner
+
+function clusterValidationReport(clusterName, topMajors, data) {
+  if (!ENABLE_CLUSTER_DEBUG) return;
+
+  // You can enrich this if you add clusterScores in scoring.js
+  // For now, we report what we do know: topMajors and their clusters
+  /* eslint-disable no-console */
+  console.group("[Results] Cluster Validation");
+  console.info("Base cluster (from #1 major):", clusterName);
+  console.info("Top majors picked (id → cluster):",
+    topMajors.map(m => `${m.id} → ${m.cluster}`));
+  console.info("Available qualityScores keys:", Object.keys(data.qualityScores || {}));
+  console.groupEnd();
+  /* eslint-enable no-console */
+
+  if (SHOW_CLUSTER_BANNER) {
+    const page = $("#resultsRoot") || mountResultsRoot();
+    page.prepend(
+      el("div", {
+        className: "cluster-banner",
+        html: `<strong>Debug:</strong> Base cluster is <em>${clusterName || "Unknown"}</em>.`
+      })
+    );
+  }
+}
 
 // -----------------------------
 // Mounting root
@@ -255,144 +389,99 @@ function renderTopQualitiesLegacy(qualities = []) {
 }
 
 // -----------------------------
-// Tabs: Top 3 Majors
+// Section: Top 3 Majors (Tabs, Rank-aware)
 // -----------------------------
-/**
- * Render Top 3 majors as accessible tabs
- * - Assigns rank 1..n automatically
- * - Uses renderMajorPanel(m, qualityScores) for panel content
- * - Provides keyboard navigation (Left/Right/Home/End)
- */
 function renderTopMajorsTabs(majors = [], qualityScores = {}) {
   const wrap = el("section", { className: "results-section tabs-section" });
   wrap.appendChild(el("h2", { className: "section-title", text: "Your Top Matches" }));
 
-  // Assign rank (1..n) to each major for the badge in renderMajorPanel
-  majors.forEach((m, i) => (m.rank = i + 1));
-
-  // Tabs header + panels container
-  const tablist = el("div", {
-    className: "tabs-header",
-    attrs: { role: "tablist", "aria-label": "Top Major Recommendations" }
-  });
+  const tablist = el("div", { className: "tabs-header", attrs: { role: "tablist", "aria-label": "Top majors" } });
   const panels = el("div", { className: "tabs-panels" });
 
   majors.forEach((m, i) => {
-    const tabId = `tab_${m.id}`;
-    const panelId = `panel_${m.id}`;
+    const id = m.id;
+    const label = `#${i + 1}`; // rank-aware; accessible name below
 
-    // Tab button
     const btn = el("button", {
-      className: `tab-btn ${i === 0 ? "is-active" : ""}`,
-      text: `Recommendation #${i + 1}`,
+      className: "tab-btn",
+      text: label,
       attrs: {
         role: "tab",
-        id: tabId,
-        "data-tab-id": m.id,
-        "aria-controls": panelId,
+        id: `tab_${id}`,
+        "data-tab-id": id,
         "aria-selected": i === 0 ? "true" : "false",
-        tabindex: i === 0 ? "0" : "-1"
+        "aria-controls": `panel_${id}`,
+        "aria-label": `Recommendation #${i + 1}: ${m.name}`
       }
     });
-    btn.addEventListener("click", () => selectTab(m.id, tablist, panels));
+    btn.addEventListener("click", () => selectTab(id, tablist, panels));
     tablist.appendChild(btn);
 
-    // Panel (use your robust renderMajorPanel() from the previous step)
     const panel = renderMajorPanel(m, qualityScores);
-    panel.id = panelId;
+    panel.id = `panel_${id}`;
     panel.setAttribute("role", "tabpanel");
-    panel.setAttribute("aria-labelledby", tabId);
+    panel.setAttribute("aria-labelledby", `tab_${id}`);
     if (i !== 0) panel.classList.add("is-hidden");
-
     panels.appendChild(panel);
   });
-
-  // Wire keyboard navigation (ArrowLeft/Right/Home/End)
-  wireTabsKeyboard(tablist, panels);
 
   wrap.append(tablist, panels);
   return wrap;
 }
 
-/**
- * Toggle active tab & panel
- */
-function selectTab(majorId, tablist, panels) {
-  const buttons = Array.from(tablist.querySelectorAll('[role="tab"]'));
-  const targetBtn = buttons.find(b => b.getAttribute("data-tab-id") === majorId);
-  if (!targetBtn) return;
-
-  // Update tabs
-  buttons.forEach(btn => {
-    const on = btn === targetBtn;
-    btn.classList.toggle("is-active", on);
+function selectTab(tabId, tablist, panels) {
+  $all(".tab-btn", tablist).forEach(btn => {
+    const on = btn.getAttribute("data-tab-id") === tabId;
     btn.setAttribute("aria-selected", on ? "true" : "false");
-    btn.setAttribute("tabindex", on ? "0" : "-1");
+    btn.classList.toggle("active", !!on);
   });
-
-  // Update panels
-  const allPanels = Array.from(panels.children);
-  allPanels.forEach(panel => {
-    const match = panel.id === `panel_${majorId}`;
-    panel.classList.toggle("is-hidden", !match);
-  });
-
-  // Move focus to the active tab (for keyboard users)
-  targetBtn.focus();
-}
-
-/**
- * Keyboard handling for tabs:
- * - ArrowLeft / ArrowRight: move among tabs
- * - Home: first tab
- * - End: last tab
- */
-function wireTabsKeyboard(tablist, panels) {
-  tablist.addEventListener("keydown", (e) => {
-    const tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));
-    const currentIndex = tabs.findIndex(t => t.getAttribute("aria-selected") === "true");
-
-    let nextIndex = currentIndex;
-    if (e.key === "ArrowRight") {
-      e.preventDefault();
-      nextIndex = (currentIndex + 1) % tabs.length;
-    } else if (e.key === "ArrowLeft") {
-      e.preventDefault();
-      nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
-    } else if (e.key === "Home") {
-      e.preventDefault();
-      nextIndex = 0;
-    } else if (e.key === "End") {
-      e.preventDefault();
-      nextIndex = tabs.length - 1;
-    }
-
-    if (nextIndex !== currentIndex) {
-      const nextTab = tabs[nextIndex];
-      const majorId = nextTab.getAttribute("data-tab-id");
-      selectTab(majorId, tablist, panels);
-    }
+  $all(".tab-panel", panels).forEach(p => {
+    p.classList.toggle("is-hidden", p.id !== `panel_${tabId}`);
   });
 }
 
-  // Top 3 display qualities (fallback to ensure 3 chips)
-  const displayQuals = pickTop3DisplayQualities({
-    qualityScores,
-    clusterName: m.cluster,
-    displayRules: DISPLAY_RULES,
-    families: QUALITY_FAMILIES
-  })?.slice(0, 3) || ["Analytical Thinking", "Creativity", "Problem Solving"];
+function renderMajorPanel(m, qualityScores) {
+  const panel = el("div", { className: "tab-panel" });
 
-  if (displayQuals.length) {
+  // Header with wide rank badge and cluster icon
+  const head = el("div", { className: "panel-head" });
+  const badge = el("div", { className: "rank-badge wide", text: String(m.rank || "") });
+  const title = el("h3", { className: "panel-title", text: m.name });
+  const sub = el("div", {
+    className: "panel-sub",
+    html: `${clusterIcon(m.cluster)} <span class="cluster-name">${m.cluster || ""}</span> • <span class="faculty-name">${m.faculty || ""}</span>`
+  });
+  head.append(badge, title, sub);
+  panel.appendChild(head);
+
+  // Description
+  if (m.description) {
+    panel.appendChild(el("p", { className: "panel-desc", text: m.description }));
+  }
+
+  // Top 3 display qualities (with safe padding)
+  const displayQuals = getDisplayQualitiesForCluster(qualityScores, m.cluster);
+  if (displayQuals && displayQuals.length) {
     const qRow = el("div", { className: "topmajor-qualities" });
-    displayQuals.forEach(q => qRow.appendChild(el("span", { className: "quality-chip", text: q })));
+    displayQuals.forEach(q => {
+      const chip = el("span", { className: "quality-chip", text: q });
+      qRow.appendChild(chip);
+    });
     panel.appendChild(qRow);
   }
 
-  // Why this fits — robust handling of strings/functions/arrays/objects
-  const tpl = WHY_TEMPLATES_MAJOR[m.id] ?? WHY_TEMPLATES_CLUSTER[m.cluster] ?? "";
-  const base = resolveWhyTemplate(tpl, { displayQuals, major: m });
+  // Why this fits — major → cluster → default
+  const tpl = WHY_TEMPLATES_MAJOR[m.id] ?? WHY_TEMPLATES_CLUSTER[m.cluster] ?? WHY_DEFAULT;
+  const ctx = {
+    displayQuals,
+    major: m,
+    cluster: m.cluster || "",
+    A: displayQuals[0] || "",
+    B: displayQuals[1] || ""
+  };
+  const base = resolveWhyTemplate(tpl, ctx);
   const whyText = String(base || "").replace("{qualities}", displayQuals.join(", ")).trim();
+
   if (whyText) {
     const whyBox = el("div", { className: "why-fits" });
     whyBox.appendChild(el("h4", { className: "why-title", text: "Why this fits" }));
@@ -411,14 +500,14 @@ function wireTabsKeyboard(tablist, panels) {
 }
 
 // -----------------------------
-// Section: Explore Similar Majors (Outbound Links)
+// Section: Explore Similar Majors (Randomized & capped)
 // -----------------------------
 function renderExploreSimilarSection(baseClusterName = "", topMajorIds = []) {
   const wrap = el("section", { className: "results-section explore-section" });
   wrap.appendChild(el("h2", { className: "section-title", text: "Explore Similar Majors" }));
 
-  const clustersToShow = [baseClusterName, ...(ADJACENT_CLUSTER_MAP[baseClusterName] || [])]
-    .filter(Boolean);
+  const initial = [baseClusterName, ...(ADJACENT_CLUSTER_MAP[baseClusterName] || [])].filter(Boolean);
+  const clustersToShow = shuffleArray(initial); // randomize cluster order
 
   if (!clustersToShow.length) {
     wrap.appendChild(el("p", { className: "muted", text: "No similar clusters found." }));
@@ -428,14 +517,20 @@ function renderExploreSimilarSection(baseClusterName = "", topMajorIds = []) {
   const grid = el("div", { className: "cluster-grid" });
 
   clustersToShow.forEach(cluster => {
-    const majors = ALL_MAJORS.filter(m => m.cluster === cluster && !topMajorIds.includes(m.id));
+    // majors in this cluster, exclude already selected top majors
+    let majors = ALL_MAJORS.filter(m => m.cluster === cluster && !topMajorIds.includes(m.id));
     if (!majors.length) return;
+    majors = shuffleArray(majors).slice(0, 2); // randomize & cap to 2 results
 
     const clusterBlock = el("div", { className: "cluster-block" });
-    clusterBlock.appendChild(el("h3", { className: "cluster-title", text: cluster }));
+    clusterBlock.appendChild(el("h3", {
+      className: "cluster-title",
+      html: `${clusterIcon(cluster)} ${cluster}`
+    }));
 
     const list = el("div", { className: "cluster-list" });
-    majors.slice(0, 2).forEach(m => {       // ⬅️ cap to 2
+
+    majors.forEach(m => {
       const item = el("article", { className: "cluster-card" });
       item.appendChild(el("h4", { className: "cluster-major-title", text: m.name }));
       item.appendChild(el("p", { className: "cluster-major-desc", text: m.description || "" }));
@@ -449,7 +544,6 @@ function renderExploreSimilarSection(baseClusterName = "", topMajorIds = []) {
         attrs: { href: primary, target: "_blank", rel: "noopener noreferrer" }
       });
       item.appendChild(a);
-
       list.appendChild(item);
     });
 
@@ -459,13 +553,6 @@ function renderExploreSimilarSection(baseClusterName = "", topMajorIds = []) {
 
   wrap.appendChild(grid);
   return wrap;
-}
-
-function pickPrimaryUrl(res) {
-  if (res?.major?.[0]?.url) return res.major[0].url;
-  if (res?.faculty?.[0]?.url) return res.faculty[0].url;
-  if (res?.general?.[0]?.url) return res.general[0].url;
-  return null;
 }
 
 // -----------------------------
