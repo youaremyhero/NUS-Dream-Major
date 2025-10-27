@@ -206,6 +206,27 @@ export const DISPLAY_RULES = {
   preferDifferentFamilies: true
 };
 
+// Optional: readable default “environment” phrasing per cluster
+export const WHY_DEFAULT_ENV_BY_CLUSTER = {
+  "Business & Management": "solving real business problems with evidence-based decisions",
+  "Computing & AI": "building reliable systems and iterating practical solutions",
+  "Engineering & Technology": "structured problem-solving and hands-on implementation",
+  "Design & Architecture": "conceptualising and refining user-centred solutions",
+  "Social Sciences": "understanding people and interpreting evidence",
+  "Humanities & Cultural Studies": "interpreting ideas, contexts, and perspectives",
+  "Sciences & Quantitative": "methodical inquiry and data-driven reasoning",
+  "Health & Life Sciences": "ethical decision-making and patient-centered practice",
+  "Law & Legal Studies": "structured reasoning and persuasive advocacy",
+  "Music & Performing Arts": "disciplined practice and collaborative expression"
+};
+
+// Universal fallback: string factory (works even if a major/cluster template is missing)
+export const WHY_DEFAULT = ({ A = "Analytical Thinking", B = "Problem Solving", cluster = "" } = {}) => {
+  const env = WHY_DEFAULT_ENV_BY_CLUSTER[cluster] || "applying your strengths to real-world challenges";
+  return `You combine ${A} and ${B}, which fits well with ${cluster || "this programme"} — where ${env} helps you create impact.`;
+};
+
+
 /** Build a reverse lookup: quality -> family */
 export function buildQualityToFamilyIndex(families = QUALITY_FAMILIES) {
   const map = {};
