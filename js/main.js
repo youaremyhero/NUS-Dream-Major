@@ -366,6 +366,8 @@ function selectOption(val) {
   const continueBtn = document.getElementById("continueBtn");
   if (continueBtn) continueBtn.disabled = false;
 
+  updateProgress();
+
   // Optional: persist progress (uncomment if you want)
   /*
   try {
@@ -417,5 +419,9 @@ function updateButtons() {
 function updateProgress() {
   const fill = document.getElementById("progressFill");
   if (!fill) return;
-  fill.style.width = ((current + 1) / TOTAL_QUESTIONS) * 100 + "%";
+  const answered = answers.filter(answer => answer != null).length;
+  const progress = (answered / TOTAL_QUESTIONS) * 100;
+  fill.style.width = `${progress}%`;
+  fill.setAttribute("aria-valuenow", String(Math.round(progress)));
+  fill.setAttribute("data-answered", String(answered));
 }

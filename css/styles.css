@@ -26,6 +26,7 @@ html, body {
 
   --brand: #2563eb;       /* blue */
   --brand-100: #dbeafe;   /* blue-100 */
+  --brand-700: #1d4ed8;   /* blue-700 for active states */
   --text: #1f2937;        /* gray-800 */
   --muted: #6b7280;       /* gray-500 */
   --card: #ffffff;
