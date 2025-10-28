@@ -33,7 +33,7 @@
   <!-- Minimal inline module entry for the results page -->
 <script type="module">
   import { loadResults } from "./js/scoring.js";
-  import { renderResultsPage, prepareResultsForPdf } from "./js/results.js";
+  import { prepareResultsForPdf } from "./js/results.js";
   import { downloadResultsPdf } from "./js/pdfExport.js";
 
   // 1) Bootstrap rendering
@@ -44,14 +44,6 @@
       window.location.href = "./index.html";
       return;
     }
-
-    const topIds = stored.topMajors.map(m => m.id);
-    const qualities = stored.identifiedQualities || []; // optional
-
-    renderResultsPage({
-      topMajorIds: topIds,
-      identifiedQualities: qualities
-    });
 
     // 2) Wire the PDF button
     const btn = document.getElementById("downloadPdfBtn");
