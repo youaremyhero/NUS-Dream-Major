@@ -12,7 +12,7 @@
 <body class="results-body">
   <!-- Fixed header -->
   <header id="appHeader" class="site-header" role="banner">
-    <div class="brand">NUS Dream Major Quiz</div>
+    <div class="brand">Discover Your Dream Major in NUS</div>
   <nav class="header-actions" aria-label="Results actions">
     <a href="index.html" data-restart class="btn small">Restart Quiz</a>
     <button id="downloadPdfBtn" class="btn small secondary" type="button">Download PDF</button>
@@ -21,7 +21,12 @@
 
   <!-- Results root scaffold. results.js populates #resultsRoot at runtime. -->
   <main id="resultsPage" class="results-page" role="main">
-    <div id="resultsRoot" class="results-root"></div>
+    <div
+      id="resultsRoot"
+      class="results-root"
+      data-results-autoload="true"
+      data-supplementary="false"
+    ></div>
   </main>
 
   <!-- Fixed footer -->
