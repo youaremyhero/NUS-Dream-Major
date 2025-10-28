@@ -1,14 +1,3 @@
-// results.js
-// Dynamically load results.css if not already loaded
-(function loadResultsStyles() {
-  if (!document.querySelector('link[href="css/results.css"]')) {
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = "css/results.css";
-    document.head.appendChild(link);
-  }
-})();
-
 import {
   QUALITY_FAMILIES,
   CLUSTER_QUALITY_PRIORITY,
@@ -22,7 +11,7 @@ import {
 
 import { majorsBatch1, majorsBatch2, majorsBatch3, majorsBatch4, majorsBatch5 } from "./majors.js";
 import { getResourcesForMajor, getSpecialProgrammeRecs } from "./results-helpers.js";
-import { loadResults } from "./scoring.js"; // read saved results
+import { loadResults, applyDiversityBias } from "./scoring.js"; // read saved results
 
 const ENABLE_CLUSTER_DEBUG = true;     // flip off later if you prefer
 const SHOW_CLUSTER_BANNER = false;     // set true if you want a visible banner
@@ -135,53 +124,25 @@ function pickPrimaryUrl(res) {
   return null;
 }
 
-// Prefer cluster diversity for ties (greedy selection)
-function pickTopMajorsWithDiversity(baseList, n = 3) {
-  // baseList: array of { id, score, percent } (sorted high→low)
-  const selected = [];
-  const pickedClusters = new Set();
-
-  baseList.forEach((entry) => {
-    if (selected.length >= n) return;
-    const m = byId[entry.id];
-    if (!m) return;
-
-    if (selected.length === 0) {
-      selected.push(entry);
-      pickedClusters.add(m.cluster);
-      return;
-    }
-
-    // If same score as last added OR same score as others near this band, prefer a different cluster
-    const last = selected[selected.length - 1];
-    const tie = last && entry.score === last.score;
-    const cluster = m.cluster;
-
-    if (tie) {
-      if (!pickedClusters.has(cluster)) {
-        selected.push(entry);
-        pickedClusters.add(cluster);
-      } else {
-        // only add if we still have space and no alternative shows up
-        // fallback: add anyway if not yet reached n
-        if (selected.length < n) selected.push(entry);
+function normalizeResultEntries(list = []) {
+  return list
+    .map(entry => {
+      if (!entry) return null;
+      if (typeof entry === "string") {
+        return { id: entry, score: 0, percent: 0 };
       }
-    } else {
-      selected.push(entry);
-      pickedClusters.add(cluster);
-    }
-  });
-
-  // Fallback: if still fewer than n, fill from the rest ignoring diversity
-  if (selected.length < n) {
-    for (const e of baseList) {
-      if (selected.find(s => s.id === e.id)) continue;
-      selected.push(e);
-      if (selected.length >= n) break;
-    }
-  }
-
-  return selected.slice(0, n).map(e => e.id);
+      if (typeof entry === "object") {
+        const id = entry.id || entry.majorId;
+        if (!id) return null;
+        return {
+          id,
+          score: entry.score ?? 0,
+          percent: entry.percent ?? 0
+        };
+      }
+      return null;
+    })
+    .filter(Boolean);
 }
 
 // If pickTop3DisplayQualities yields <3 (e.g., sparse qualityScores), pad from cluster priority
@@ -206,53 +167,13 @@ function getDisplayQualitiesForCluster(qualityScores, clusterName) {
 }
 
 // -----------------------------
-// Public Entry (Legacy Support)
-// -----------------------------
-export function renderResultsPage({ topMajorIds = [], identifiedQualities = [] } = {}) {
-  const container = $("#resultsRoot") || mountResultsRoot();
-  container.innerHTML = ""; // reset
-
-  try {
-    const desired = new URL("./results.html", window.location.href);
-    desired.search = "";
-    desired.hash = "";
-    const current = new URL(window.location.href);
-    current.search = "";
-    current.hash = "";
-    if (current.href !== desired.href) {
-      history.replaceState({}, "", desired.pathname);
-    }
-  } catch {}
-
-  fireConfettiOnce();
-
-  if (!topMajorIds.length) {
-    container.appendChild(
-      el("section", {
-        className: "results-section",
-        html: `
-          <h2 class="section-title">Your Results</h2>
-          <p class="muted">We couldn’t calculate matches this time. Please return to the quiz and try again.</p>
-        `
-      })
-    );
-    return;
-  }
-
-  const majors = topMajorIds.map(id => byId[id]).filter(Boolean);
-  container.appendChild(renderTopQualitiesLegacy(identifiedQualities));
-  container.appendChild(renderTopMajorsTabs(majors.slice(0, 3), {}));
-  container.appendChild(renderExploreSimilarSection(majors[0]?.cluster || "", topMajorIds));
-  container.appendChild(renderSpecialProgrammesSection(topMajorIds));
-}
-
-// -----------------------------
 // Auto-init on page load
 // -----------------------------
 (function initFromStorage() {
   if (!document.getElementById("resultsPage")) return; // only on results.html
 
-  const container = $("#resultsRoot") || mountResultsRoot();
+  const container = document.getElementById("resultsRoot");
+  if (!container) return;
   container.innerHTML = ""; // reset
   fireConfettiOnce();
 
@@ -271,15 +192,32 @@ export function renderResultsPage({ topMajorIds = [], identifiedQualities = [] }
   }
 
   // Base list of majors sorted by score (prefer explicit picks if present)
-  const baseList =
+  const baseList = normalizeResultEntries(
     (Array.isArray(data.topMajors3) && data.topMajors3.length && data.topMajors3) ||
-    (Array.isArray(data.topMajors) && data.topMajors.length && data.topMajors) ||
-    data.resultsArray;
+      (Array.isArray(data.topMajors) && data.topMajors.length && data.topMajors) ||
+      data.resultsArray
+  );
 
   // Ties & cluster diversity
-  const pickedIds = pickTopMajorsWithDiversity(baseList, 3);
-  const topMajorsMeta = pickedIds.map(id => byId[id]).filter(Boolean);
-  topMajorsMeta.forEach((m, i) => (m.rank = i + 1));
+  const diversified = applyDiversityBias(baseList, 3);
+  const topMajorsMeta = diversified.slice(0, 3)
+    .map(entry => byId[entry.id])
+    .filter(Boolean)
+    .map((m, i) => ({ ...m, rank: i + 1 }));
+  const pickedIds = diversified.slice(0, 3).map(entry => entry.id);
+
+  if (!topMajorsMeta.length) {
+    container.appendChild(
+      el("section", {
+        className: "results-section",
+        html: `
+          <h2 class="section-title">Your Results</h2>
+          <p class="muted">We couldn’t calculate matches this time. Please return to the quiz and try again.</p>
+        `
+      })
+    );
+    return;
+  }
 
   // Cluster validation (console + optional banner)
   const baseCluster = topMajorsMeta[0]?.cluster || "";
@@ -322,28 +260,16 @@ function clusterValidationReport(clusterName, topMajors, data) {
   /* eslint-enable no-console */
 
   if (SHOW_CLUSTER_BANNER) {
-    const page = $("#resultsRoot") || mountResultsRoot();
-    page.prepend(
-      el("div", {
-        className: "cluster-banner",
-        html: `<strong>Debug:</strong> Base cluster is <em>${clusterName || "Unknown"}</em>.`
-      })
-    );
+    const page = document.getElementById("resultsRoot");
+    if (page) {
+      page.prepend(
+        el("div", {
+          className: "cluster-banner",
+          html: `<strong>Debug:</strong> Base cluster is <em>${clusterName || "Unknown"}</em>.`
+        })
+      );
+    }
   }
-}
-
-// -----------------------------
-// Mounting root
-// -----------------------------
-function mountResultsRoot() {
-  let main = $("#resultsPage");
-  if (!main) {
-    main = el("main", { id: "resultsPage", className: "results-page" });
-    document.body.appendChild(main);
-  }
-  const root = el("div", { id: "resultsRoot", className: "results-root" });
-  main.appendChild(root);
-  return root;
 }
 
 // -----------------------------
@@ -383,11 +309,6 @@ function renderTopQualities(qualities = []) {
 
   wrap.appendChild(list);
   return wrap;
-}
-
-// Legacy top-qualities helper
-function renderTopQualitiesLegacy(qualities = []) {
-  return renderTopQualities(qualities.slice(0, 3));
 }
 
 // -----------------------------

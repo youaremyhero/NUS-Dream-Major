@@ -188,7 +188,7 @@ export function calculateResults(answers) {
    4) Diversity-bias on ties (clusters)
    Prefers spreading clusters in top picks.
 ------------------------------------------------------- */
-function applyDiversityBias(sortedList, pickN = 9999) {
+export function applyDiversityBias(sortedList, pickN = 9999) {
   const countsByCluster = {};
   const result = [];
 

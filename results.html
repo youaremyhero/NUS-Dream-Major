@@ -4,8 +4,9 @@
   <meta charset="utf-8" />
   <title>Your NUS Dream Major Results</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- Global styles (layout / header / footer). Results-specific CSS is injected by results.js -->
+  <!-- Global styles (layout / header / footer). -->
   <link rel="stylesheet" href="./css/styles.css" />
+  <link rel="stylesheet" href="./css/results.css" />
 </head>
 
 <body class="results-body">
@@ -18,11 +19,9 @@
   </nav>
   </header>
 
-  <!-- Results root scaffold. results.js will mount #resultsRoot inside here -->
+  <!-- Results root scaffold. results.js populates #resultsRoot at runtime. -->
   <main id="resultsPage" class="results-page" role="main">
-    <!-- results.js will inject:
-      <div id="resultsRoot" class="results-root"> ... </div>
-    -->
+    <div id="resultsRoot" class="results-root"></div>
   </main>
 
   <!-- Fixed footer -->
