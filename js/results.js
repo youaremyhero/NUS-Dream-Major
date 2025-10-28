@@ -283,20 +283,26 @@ function getDisplayQualitiesForCluster(qualityScores, clusterName) {
   clusterValidationReport(baseCluster, topMajorsMeta, data);
 
   // 1) Global Top 3 Qualities (biased to #1 cluster, safe-pad to 3)
-  const globalTopQualities = getDisplayQualitiesForCluster(
-    data.qualityScores || {},
-    baseCluster
+  const qualityScores = data.qualityScores || {};
+  const globalTopQualities = getDisplayQualitiesForCluster(qualityScores, baseCluster);
+  const specialRecs = getSpecialProgrammeRecs(pickedIds);
+
+  container.appendChild(
+    renderResultsHero({
+      topMajors: topMajorsMeta,
+      topQualities: globalTopQualities,
+      qualityScores,
+      baseCluster,
+      pickedIds,
+      specialRecs
+    })
   );
-  container.appendChild(renderTopQualities(globalTopQualities));
 
-  // 2) Top 3 Major Tabs (rank-aware)
-  container.appendChild(renderTopMajorsTabs(topMajorsMeta, data.qualityScores || {}));
-
-  // 3) Explore Similar Majors (randomized clusters/majors, capped to 2 per cluster)
-  container.appendChild(renderExploreSimilarSection(baseCluster, pickedIds));
-
-  // 4) Special Programmes
-  container.appendChild(renderSpecialProgrammesSection(pickedIds));
+  container.appendChild(renderAboutSection(topMajorsMeta, globalTopQualities, baseCluster));
+  container.appendChild(renderExploreNewSection(topMajorsMeta));
+  container.appendChild(
+    renderWhyJoinSection(topMajorsMeta, globalTopQualities, baseCluster, specialRecs.length)
+  );
 })();
 
 // -----------------------------
@@ -335,7 +341,7 @@ function clusterValidationReport(clusterName, topMajors, data) {
 // Section: Top Qualities (GLOBAL)
 // -----------------------------
 function renderTopQualities(qualities = []) {
-  const wrap = el("section", { className: "results-section qualities-section" });
+  const wrap = el("section", { className: "results-section results-subsection qualities-section" });
   wrap.appendChild(el("h2", { className: "section-title", text: "Your Top Qualities" }));
 
   const desc = {
@@ -374,7 +380,7 @@ function renderTopQualities(qualities = []) {
 // Section: Top 3 Majors (Tabs, Rank-aware)
 // -----------------------------
 function renderTopMajorsTabs(majors = [], qualityScores = {}) {
-  const wrap = el("section", { className: "results-section tabs-section" });
+  const wrap = el("section", { className: "results-section results-subsection tabs-section" });
   wrap.appendChild(el("h2", { className: "section-title", text: "Your Top Matches" }));
 
   const tablist = el("div", { className: "tabs-header", attrs: { role: "tablist", "aria-label": "Top majors" } });
@@ -485,7 +491,7 @@ function renderMajorPanel(m, qualityScores) {
 // Section: Explore Similar Majors (Randomized & capped)
 // -----------------------------
 function renderExploreSimilarSection(baseClusterName = "", topMajorIds = []) {
-  const wrap = el("section", { className: "results-section explore-section" });
+  const wrap = el("section", { className: "results-section results-subsection explore-section" });
   wrap.appendChild(el("h2", { className: "section-title", text: "Explore Similar Majors" }));
 
   const initial = [baseClusterName, ...(ADJACENT_CLUSTER_MAP[baseClusterName] || [])].filter(Boolean);
@@ -540,11 +546,11 @@ function renderExploreSimilarSection(baseClusterName = "", topMajorIds = []) {
 // -----------------------------
 // Section: Special Programmes
 // -----------------------------
-function renderSpecialProgrammesSection(topIds = []) {
-  const wrap = el("section", { className: "results-section specialprogs-section" });
+function renderSpecialProgrammesSection(topIds = [], precomputed) {
+  const wrap = el("section", { className: "results-section results-subsection specialprogs-section" });
   wrap.appendChild(el("h2", { className: "section-title", text: "Recommended Special Programmes" }));
 
-  const recs = getSpecialProgrammeRecs(topIds);
+  const recs = Array.isArray(precomputed) ? precomputed : getSpecialProgrammeRecs(topIds);
   if (!recs.length) {
     wrap.appendChild(
       el("p", {
@@ -603,4 +609,272 @@ function renderLinksBlock(title, links = []) {
 // -----------------------------
 export function prepareResultsForPdf() {
   return $("#resultsRoot");
+}
+
+// -----------------------------
+// High-level Sections
+// -----------------------------
+
+function renderResultsHero({
+  topMajors = [],
+  topQualities = [],
+  qualityScores = {},
+  baseCluster = "",
+  pickedIds = [],
+  specialRecs = []
+} = {}) {
+  const section = el("section", { id: "results", className: "page-section results-hero" });
+
+  const header = el("div", { className: "results-hero__header" });
+  header.appendChild(
+    el("h1", {
+      className: "results-hero__title",
+      text: "Your personalised NUS major matches"
+    })
+  );
+
+  header.appendChild(
+    el("p", {
+      className: "results-hero__lead",
+      text:
+        "Based on your quiz responses, here’s how your strengths align with our programmes."
+    })
+  );
+
+  if (topMajors[0]) {
+    header.appendChild(
+      el("div", {
+        className: "results-hero__highlight",
+        html: `Top match: <strong>${topMajors[0].name}</strong> • ${
+          topMajors[0].cluster || ""
+        }`
+      })
+    );
+  }
+
+  if (topMajors.length) {
+    const list = el("ul", { className: "results-hero__matches" });
+    topMajors.forEach(m => {
+      const item = el("li");
+      item.appendChild(el("span", { className: "results-hero__rank", text: `#${m.rank || ""}` }));
+      item.appendChild(el("strong", { text: m.name }));
+      if (m.faculty) {
+        item.appendChild(
+          el("span", { className: "results-hero__meta", text: m.faculty })
+        );
+      }
+      list.appendChild(item);
+    });
+    header.appendChild(list);
+  }
+
+  const content = el("div", { className: "results-hero__content" });
+  content.appendChild(renderTopQualities(topQualities));
+  content.appendChild(renderTopMajorsTabs(topMajors, qualityScores));
+  content.appendChild(renderExploreSimilarSection(baseCluster, pickedIds));
+  content.appendChild(renderSpecialProgrammesSection(pickedIds, specialRecs));
+
+  section.append(header, content);
+  return section;
+}
+
+function renderAboutSection(topMajors = [], qualities = [], baseCluster = "") {
+  const section = el("section", { id: "about", className: "page-section about-section" });
+  section.appendChild(
+    el("h2", { className: "page-section__title", text: "How we matched you" })
+  );
+
+  const qualityText = qualities.filter(Boolean).join(", ");
+  const leadParts = [];
+  if (qualityText) {
+    leadParts.push(`Your responses highlighted strengths in ${qualityText}.`);
+  }
+  if (baseCluster) {
+    leadParts.push(`These qualities align strongly with ${baseCluster} pathways.`);
+  }
+
+  if (leadParts.length) {
+    section.appendChild(
+      el("p", {
+        className: "page-section__lead",
+        text: leadParts.join(" ")
+      })
+    );
+  }
+
+  if (topMajors.length) {
+    const list = el("ul", { className: "about-section__list" });
+    topMajors.forEach(m => {
+      const item = el("li");
+      item.appendChild(el("strong", { text: `#${m.rank || ""} ${m.name}` }));
+      item.appendChild(
+        el("span", {
+          text: [m.cluster, m.faculty].filter(Boolean).join(" • ")
+        })
+      );
+      list.appendChild(item);
+    });
+    section.appendChild(list);
+  }
+
+  return section;
+}
+
+function renderExploreNewSection(topMajors = []) {
+  const section = el("section", {
+    id: "exploreNew",
+    className: "page-section explore-new-section"
+  });
+  section.appendChild(
+    el("h2", { className: "page-section__title", text: "Explore new possibilities" })
+  );
+
+  section.appendChild(
+    el("p", {
+      className: "page-section__lead",
+      text:
+        "Follow these links to dig deeper into admissions details, faculties and programmes you can act on today."
+    })
+  );
+
+  const resourcesByUrl = new Map();
+  topMajors.forEach(m => {
+    const bundle = getResourcesForMajor(m.id, m);
+    if (m.rank === 1 && Array.isArray(bundle.general)) {
+      bundle.general.forEach(res => {
+        if (res?.url && !resourcesByUrl.has(res.url)) {
+          resourcesByUrl.set(res.url, { ...res });
+        }
+      });
+    }
+
+    const facultyLink = bundle.faculty?.[0];
+    if (facultyLink?.url && !resourcesByUrl.has(facultyLink.url)) {
+      resourcesByUrl.set(facultyLink.url, {
+        ...facultyLink,
+        meta: m.faculty
+      });
+    }
+
+    const majorLink = bundle.major?.[0];
+    if (majorLink?.url && !resourcesByUrl.has(majorLink.url)) {
+      resourcesByUrl.set(majorLink.url, {
+        ...majorLink,
+        meta: m.name
+      });
+    }
+  });
+
+  if (!resourcesByUrl.size) {
+    section.appendChild(
+      el("p", {
+        className: "muted",
+        text: "Resources will appear here once we have programme links to share."
+      })
+    );
+    return section;
+  }
+
+  const grid = el("div", { className: "links-grid" });
+  resourcesByUrl.forEach(res => {
+    const card = el("a", {
+      className: "resource-card",
+      attrs: {
+        href: res.url,
+        target: "_blank",
+        rel: "noopener noreferrer"
+      }
+    });
+
+    const body = el("div", { className: "resource-card__body" });
+    body.appendChild(el("strong", { text: res.label }));
+    if (res.meta) {
+      body.appendChild(
+        el("span", { className: "resource-card__meta", text: res.meta })
+      );
+    }
+
+    card.append(body, el("span", { attrs: { "aria-hidden": "true" }, text: "→" }));
+    grid.appendChild(card);
+  });
+
+  section.appendChild(grid);
+  return section;
+}
+
+function renderWhyJoinSection(
+  topMajors = [],
+  qualities = [],
+  baseCluster = "",
+  specialProgrammeCount = 0
+) {
+  const section = el("section", {
+    id: "whyJoin",
+    className: "page-section why-join-section"
+  });
+
+  section.appendChild(
+    el("h2", { className: "page-section__title", text: "Why join NUS?" })
+  );
+
+  const primaryQuality = qualities[0] || "your strengths";
+  const secondaryQuality = qualities[1];
+  const clusterText = baseCluster ? `${baseCluster} disciplines` : "our programmes";
+  const qualityPhrase = [primaryQuality, secondaryQuality]
+    .filter(Boolean)
+    .map(text => (typeof text === "string" ? text.toLowerCase() : String(text)))
+    .join(" and ");
+
+  const primaryLower =
+    typeof primaryQuality === "string" ? primaryQuality.toLowerCase() : String(primaryQuality);
+  const secondaryLower =
+    typeof secondaryQuality === "string"
+      ? secondaryQuality.toLowerCase()
+      : secondaryQuality
+      ? String(secondaryQuality)
+      : "";
+
+  section.appendChild(
+    el("p", {
+      className: "page-section__lead",
+      text: `NUS offers pathways where ${qualityPhrase || "your strengths"} shine across ${clusterText}.`
+    })
+  );
+
+  const topMatch = topMajors[0];
+  const reasons = [
+    {
+      title: topMatch ? `Thrive in ${topMatch.name}` : "Grow in your top matches",
+      desc: topMatch
+        ? `Work with mentors from ${topMatch.faculty || "NUS"} and tackle projects that reward ${primaryLower}${
+            secondaryQuality ? ` and ${secondaryLower}` : ""
+          }.`
+        : "Dive deeper into your recommended programmes with mentorship that builds on your strengths."
+    },
+    {
+      title: "Design an interdisciplinary path",
+      desc:
+        specialProgrammeCount > 0
+          ? `You received ${specialProgrammeCount} special programme recommendation${
+              specialProgrammeCount === 1 ? "" : "s"
+            }. Use them to mix majors, minors or double degrees that fit your goals.`
+          : "Explore double majors, minors and experiential programmes to tailor your academic journey."
+    },
+    {
+      title: "Build experience beyond the classroom",
+      desc:
+        "Tap into global exposure, internships and student life communities to apply your strengths in real-world settings."
+    }
+  ];
+
+  const grid = el("div", { className: "why-join-grid" });
+  reasons.forEach(reason => {
+    const card = el("article", { className: "why-card" });
+    card.appendChild(el("h3", { text: reason.title }));
+    card.appendChild(el("p", { text: reason.desc }));
+    grid.appendChild(card);
+  });
+
+  section.appendChild(grid);
+  return section;
 }
