@@ -245,9 +245,21 @@ function mergeAdd(a = {}, b = {}) {
 /* -------------------------------------------------------
    5) Persistence
 ------------------------------------------------------- */
-export function saveResults(data) {
+export function saveResults(data, options = {}) {
   localStorage.setItem("quizResults", JSON.stringify(data));
-  window.location.href = "./results.html";
+
+  try {
+    window.dispatchEvent(
+      new CustomEvent("quizResultsSaved", { detail: data })
+    );
+  } catch (err) {
+    console.warn("[scoring] Unable to dispatch results event", err);
+  }
+
+  const shouldRedirect = options.redirect ?? true;
+  if (shouldRedirect) {
+    window.location.href = "./results.html";
+  }
 }
 
 export function loadResults() {

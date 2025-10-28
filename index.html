@@ -8,34 +8,120 @@
   <!-- Shared global + quiz-specific styles -->
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/questions.css" />
+  <link rel="stylesheet" href="css/results.css" />
 </head>
 
 <body class="quiz-body">
   <!-- Fixed Header -->
-  <header class="site-header">
-    <h1>NUS Major-Matching Quiz</h1>
+  <header class="site-header" role="banner">
+    <div class="brand">Discover Your Dream Major in NUS</div>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="#quizSection">Quiz</a>
+      <a href="#aboutSection">About</a>
+      <a href="#whyJoinSection">Why Join NUS</a>
+      <a href="#programmesSection">Explore Programmes</a>
+      <a href="#exploreSection">Explore Possibilities</a>
+    </nav>
+    <div class="header-actions">
+      <a href="#quizSection" class="btn small secondary" data-restart>Restart Quiz</a>
+    </div>
   </header>
 
-  <div class="quiz-progress-wrap">
-  <div class="progress-bar">
-    <div class="progress-bar-fill" id="progressFill"></div>
-  </div>
-</div>
+  <main class="landing-main">
+    <section id="quizSection" class="landing-section landing-section--quiz">
+      <div class="landing-quiz-card" role="region" aria-label="NUS Dream Major quiz">
+        <div class="landing-section__inner landing-section__inner--quiz">
+          <h2>Discover your NUS dream major</h2>
+          <p>Answer a short series of questions to reveal programmes that highlight your strengths, interests and aspirations.</p>
+        </div>
+        <div class="quiz-progress-wrap">
+          <div class="progress-bar">
+            <div class="progress-bar-fill" id="progressFill"></div>
+          </div>
+        </div>
+        <div class="container quiz-page">
+          <div id="quizWrapper" class="quiz-container">
+            <div class="quiz-question" id="quizContainer" role="region" aria-live="polite"></div>
+            <div id="resultsMount" class="results-root" data-supplementary="false" hidden></div>
+            <div class="quiz-footer">
+              <button id="btnBack" type="button" class="btn secondary">Back</button>
+              <button id="continueBtn" type="button" class="btn primary" disabled>Continue</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
+    <section id="aboutSection" class="landing-section landing-section--static">
+      <div class="landing-section__inner">
+        <h2>About this experience</h2>
+        <p>
+          The quiz personalises NUS programme suggestions by connecting your motivations with the pathways our students pursue. It only takes a few minutes and you can retake it anytime your goals evolve.
+        </p>
+        <ul class="landing-list">
+          <li>Questions focus on what energises you—no prior knowledge of majors required.</li>
+          <li>Responses translate into recommended disciplines and strengths to explore further.</li>
+          <li>Results stay on this page so you can revisit highlights or try again with new perspectives.</li>
+        </ul>
+      </div>
+    </section>
 
-<!-- Main Quiz Container -->
-<main class="container quiz-page">
-  <div id="quizWrapper" class="quiz-container">
-    <!-- Dynamic Question Block (yellow card) -->
-    <div class="quiz-question" id="quizContainer" role="region" aria-live="polite"></div>
+    <section id="whyJoinSection" class="landing-section landing-section--static landing-section--highlight">
+      <div class="landing-section__inner">
+        <h2>Why join NUS?</h2>
+        <div class="landing-cards">
+          <article class="landing-card">
+            <h3>World-class academics</h3>
+            <p>Study with leading faculty, global researchers and industry collaborators who bring cutting-edge insights into every classroom.</p>
+          </article>
+          <article class="landing-card">
+            <h3>Customisable pathways</h3>
+            <p>Mix majors, minors and special programmes to tailor an interdisciplinary path that reflects your ambitions.</p>
+          </article>
+          <article class="landing-card">
+            <h3>Future-ready experiences</h3>
+            <p>Access internships, innovation challenges, overseas opportunities and vibrant campus communities that build confidence beyond lectures.</p>
+          </article>
+        </div>
+      </div>
+    </section>
 
-    <!-- Buttons row -->
-    <div class="quiz-footer">
-      <button id="btnBack" type="button" class="btn secondary">Back</button>
-      <button id="continueBtn" type="button" class="btn primary" disabled>Continue</button>
-    </div>
-  </div>
-</main>
+    <section
+      id="programmesSection"
+      class="landing-section landing-section--static landing-section--programmes"
+      data-programmes-section
+    >
+      <div class="landing-section__inner">
+        <h2>Explore new programmes</h2>
+        <p>
+          Discover innovative pathways designed to connect disciplines, entrepreneurship and global experiences so you can
+          customise your NUS journey.
+        </p>
+        <div class="landing-cards landing-programmes" data-programmes-list></div>
+      </div>
+    </section>
+
+    <section id="exploreSection" class="landing-section landing-section--static">
+      <div class="landing-section__inner">
+        <h2>Explore new possibilities</h2>
+        <p>After the quiz, keep the momentum going with conversations, events and resources that help you plan your next steps at NUS.</p>
+        <div class="landing-cards">
+          <article class="landing-card">
+            <h3>Chat with advisors</h3>
+            <p>Book a consultation with faculty or admissions counsellors to clarify entry requirements and academic expectations.</p>
+          </article>
+          <article class="landing-card">
+            <h3>Experience campus life</h3>
+            <p>Join open houses, student club events and webinars to see how learning, living and leadership connect on campus.</p>
+          </article>
+          <article class="landing-card">
+            <h3>Plan your application</h3>
+            <p>Use our admissions checklists and financing guides to map deadlines, scholarships and supporting documents.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
 
   <!-- Fixed Footer -->
   <footer class="site-footer">

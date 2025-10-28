@@ -6,6 +6,8 @@
 /* Reset & Base */
 * { box-sizing: border-box; }
 
+html { scroll-behavior: smooth; }
+
 html, body {
   height: 100%;
   margin: 0;
@@ -18,7 +20,7 @@ html, body {
 
 /* Layout Variables */
 :root {
-  --header-h: 64px;
+  --header-h: 56px;
   --footer-h: 44px;
   --content-w: 1060px;
 
@@ -45,33 +47,105 @@ body.results-body {
 }
 
 /* Header */
+
 .site-header {
   position: fixed;
   top: 0; left: 0; right: 0;
-  height: var(--header-h);
-  background: #fff;
+  min-height: var(--header-h);
+  background: rgba(255, 255, 255, 0.98);
   border-bottom: 1px solid var(--border);
-  box-shadow: var(--shadow);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 0 16px;
+  padding: 10px 16px;
+  flex-wrap: wrap;
+  row-gap: 10px;
   z-index: 100;
+  transition: box-shadow 0.2s ease;
+}
+
+.site-header.is-scrolled {
+  box-shadow: 0 18px 36px -24px rgba(37, 99, 235, 0.55);
 }
 
 .site-header .brand,
 .site-header h1 {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   color: var(--brand);
   margin: 0;
   font-weight: 700;
+  line-height: 1.25;
+  flex: 1 1 220px;
 }
 
 .header-actions {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.site-nav a {
+  text-decoration: none;
+  color: var(--muted);
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.site-nav a:hover {
+  background: var(--brand-100);
+  color: var(--brand-700);
+}
+
+.site-nav a.is-active {
+  background: var(--brand-100);
+  border-color: rgba(37, 99, 235, 0.25);
+  color: var(--brand-700);
+}
+
+.site-nav a:focus-visible {
+  outline: 2px solid var(--brand-700);
+  outline-offset: 3px;
+  background: var(--brand-100);
+  color: var(--brand-700);
+}
+
+@media (max-width: 720px) {
+  .site-header {
+    justify-content: flex-start;
+    align-items: stretch;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .site-header .brand {
+    flex-basis: auto;
+  }
+
+  .site-nav {
+    justify-content: flex-start;
+  }
+
+  .header-actions {
+    order: 3;
+    padding-bottom: 4px;
+  }
+
+  .landing-section--static .landing-section__inner {
+    padding: 28px 20px;
+  }
 }
 
 /* Footer (fixed for quiz page; will be reset to static in results.css) */
@@ -109,6 +183,152 @@ body.results-body {
   align-items: flex-start;      /* let inner stack naturally */
 }
 
+.landing-main {
+  margin-top: var(--header-h);
+  padding-bottom: calc(var(--footer-h) + 40px);
+}
+
+.landing-section {
+  padding: clamp(60px, 12vw, 96px) 0;
+  scroll-margin-top: calc(var(--header-h) + 20px);
+}
+
+.landing-section--quiz {
+  padding-top: clamp(48px, 10vw, 72px);
+  padding-bottom: clamp(48px, 10vw, 72px);
+  background: linear-gradient(180deg, #e0ecff 0%, #f3f4ff 100%);
+  position: relative;
+  z-index: 2;
+}
+
+.landing-section__inner {
+  width: 100%;
+  max-width: var(--content-w);
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.landing-quiz-card {
+  width: min(100%, var(--content-w));
+  margin: 0 auto;
+  background: var(--card);
+  border-radius: calc(var(--radius) + 6px);
+  box-shadow: 0 30px 70px -40px rgba(15, 23, 42, 0.35);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  padding: clamp(28px, 6vw, 42px) clamp(20px, 4vw, 38px);
+  display: grid;
+  gap: 24px;
+}
+
+.landing-section__inner--quiz {
+  padding: 0;
+  gap: 12px;
+}
+
+.landing-section--static {
+  background: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%);
+  position: relative;
+}
+
+.landing-section--static + .landing-section--static {
+  border-top: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+.landing-section--static .landing-section__inner {
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: calc(var(--radius) + 6px);
+  padding: clamp(32px, 6vw, 52px) clamp(24px, 6vw, 48px);
+  box-shadow: 0 32px 72px -48px rgba(30, 64, 175, 0.35);
+  gap: clamp(22px, 4vw, 32px);
+}
+
+.landing-section--static .landing-cards {
+  gap: clamp(18px, 4vw, 26px);
+}
+
+.landing-section__inner h2 {
+  margin: 0;
+  font-size: clamp(28px, 3vw, 36px);
+  font-weight: 800;
+  color: var(--text);
+}
+
+.landing-section__inner p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 1.05rem;
+  max-width: 70ch;
+}
+
+.landing-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 12px;
+  max-width: 60ch;
+}
+
+.landing-list li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  color: var(--text);
+}
+
+.landing-list li::before {
+  content: "•";
+  color: var(--brand-700);
+  font-size: 1.4rem;
+  line-height: 1;
+  transform: translateY(-2px);
+}
+
+.landing-cards {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.landing-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.06);
+}
+
+.landing-card h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.15rem;
+  color: var(--text);
+}
+
+.landing-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.landing-section--highlight {
+  background: linear-gradient(180deg, #f8fbff 0%, #eef2ff 100%);
+}
+
+.landing-section--quiz .container {
+  margin: 0;
+  min-height: auto;
+  height: auto;
+  padding: 0;
+}
+
+.landing-section--quiz .quiz-progress-wrap {
+  margin: 0;
+}
+
 /* Inner quiz wrapper
    Remove fixed heights and add bottom padding so content never hides under the fixed footer.
 */
@@ -118,9 +338,12 @@ body.results-body {
   height: auto;                 /* was calc(100dvh - ... ) */
   min-height: 0;                /* allow the card to set its own height */
   overflow: visible;            /* no inner scroll */
-  background: transparent;
-  padding: 18px 24px 12px;
-  padding-bottom: calc(var(--footer-h) + 120px);  /* reserve space for buttons above footer */
+  background: #fff;
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  border-radius: calc(var(--radius) + 2px);
+  padding: clamp(18px, 3vw, 24px);
+  padding-bottom: calc(var(--footer-h) + 72px);
+  box-shadow: 0 20px 40px -28px rgba(30, 64, 175, 0.35);
 }
 
 /* Progress bar (shared) */
@@ -130,6 +353,7 @@ body.results-body {
   background: #f3f4f6;
   border-radius: 999px;
   overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.4);
 }
 .progress-bar-fill {
   height: 100%;
@@ -165,6 +389,36 @@ button:focus-visible, .btn:focus-visible {
 .btn.small { padding: 8px 12px; font-size: 0.9rem; border-radius: 10px; }
 .btn.secondary { background: #e5e7eb; color: #374151; }
 
+.landing-programmes {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.landing-programmes .landing-programme-card {
+  display: grid;
+  gap: 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: clamp(20px, 3vw, 26px);
+  box-shadow: 0 22px 44px -38px rgba(15, 23, 42, 0.4);
+}
+
+.landing-programme-card h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--text);
+}
+
+.landing-programme-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.landing-programme-card a {
+  justify-self: start;
+}
+
 /* ---- Quiz page text size tweaks (to maximize space) ---- */
 body.quiz-body .quiz-question .question-text {
   font-size: clamp(18px, 2.2vw, 22px);
@@ -179,7 +433,7 @@ body.quiz-body .option-card span {
 @media (max-height: 740px) {
   :root { --header-h: 56px; }
   .site-header { height: 56px; }
-  .quiz-container { padding: 14px 18px calc(var(--footer-h) + 100px); }
+  .quiz-container { padding: 14px 18px calc(var(--footer-h) + 80px); }
 }
 
 /* Slightly wider screens: allow larger max width */

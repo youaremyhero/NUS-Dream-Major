@@ -38,6 +38,11 @@
   transition: width .20s ease;
 }
 
+.landing-section--quiz .quiz-progress-wrap {
+  margin: 24px auto 24px;
+  padding: 0 20px;
+}
+
 /* ===== Main container (no fixed height; page can scroll) ===== */
 .quiz-container{
   max-width: var(--card-max);
@@ -49,6 +54,26 @@
   padding: 10px 20px 0;
   /* reserve a safe space so buttons never hide behind footer */
   padding-bottom: calc(var(--footer-h) + 120px);
+}
+
+.quiz-container--results {
+  padding-bottom: 40px;
+}
+
+.quiz-container--results .quiz-footer {
+  display: none;
+}
+
+.quiz-progress-wrap.is-hidden {
+  display: none !important;
+}
+
+#resultsMount[hidden] {
+  display: none !important;
+}
+
+#resultsMount {
+  margin-top: 16px;
 }
 
 /* ===== Question card ===== */
