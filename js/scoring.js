@@ -181,7 +181,7 @@ export function calculateResults(answers) {
     qualityScoresHints,
     qualityScoresFromMajors
   };
-}
+});
 
 /* -------------------------------------------------------
    4) Diversity-bias on ties (clusters)
