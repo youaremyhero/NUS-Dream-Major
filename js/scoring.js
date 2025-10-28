@@ -100,13 +100,14 @@ export function calculateResults(answers) {
       majorTotals[id] = (majorTotals[id] || 0) + signed * (w || 0) * W_HINT;
     });
 
-   // Direct qualities (optional, positive-only to avoid penalising)
-   (q.qualitiesHints || []).forEach(({ quality, w }) => {
-     const pos = Math.max(0, toSigned(val)); // ignore negative side for qualities
-     qualityScoresHints[quality] =
-       (qualityScoresHints[quality] || 0) + pos * (w || 0) * W_QUAL_HINT;
-   });
-     
+    // Direct qualities (optional, positive-only to avoid penalising)
+    (q.qualitiesHints || []).forEach(({ quality, w }) => {
+      const pos = Math.max(0, toSigned(val)); // ignore negative side for qualities
+      qualityScoresHints[quality] =
+        (qualityScoresHints[quality] || 0) + pos * (w || 0) * W_QUAL_HINT;
+    });
+  });
+
   // Pass 2: spill cluster scores into majors that belong to that cluster
   ALL_MAJORS.forEach((m) => {
     const clusterId = LABEL_TO_CLUSTER_ID[m.cluster];
@@ -155,18 +156,18 @@ export function calculateResults(answers) {
   const topMajors = arranged.slice(0, 5);
   const topMajors3 = arranged.slice(0, 3);
 
-   // Pass 4: push major totals into qualities (via majors metadata)
-   // (Use rawScore clamped to 0, divided by number of qualities, then * IDF)
-   const qualityScoresFromMajors = {};
-   Object.entries(majorTotals).forEach(([mid, rawScore]) => {
-     const m = MAJOR_BY_ID[mid];
-     if (!m?.qualities || !m.qualities.length) return;
-     const base = Math.max(0, rawScore) / m.qualities.length;
-     m.qualities.forEach(q => {
-       const idf = QUALITY_IDF[q] != null ? QUALITY_IDF[q] : 1;
-       qualityScoresFromMajors[q] = (qualityScoresFromMajors[q] || 0) + base * idf;
-     });
-   });
+  // Pass 4: push major totals into qualities (via majors metadata)
+  // (Use rawScore clamped to 0, divided by number of qualities, then * IDF)
+  const qualityScoresFromMajors = {};
+  Object.entries(majorTotals).forEach(([mid, rawScore]) => {
+    const m = MAJOR_BY_ID[mid];
+    if (!m?.qualities || !m.qualities.length) return;
+    const base = Math.max(0, rawScore) / m.qualities.length;
+    m.qualities.forEach(q => {
+      const idf = QUALITY_IDF[q] != null ? QUALITY_IDF[q] : 1;
+      qualityScoresFromMajors[q] = (qualityScoresFromMajors[q] || 0) + base * idf;
+    });
+  });
 
   // Final qualities = hints (+) from-majors
   const qualityScores = mergeAdd(qualityScoresHints, qualityScoresFromMajors);
@@ -181,7 +182,7 @@ export function calculateResults(answers) {
     qualityScoresHints,
     qualityScoresFromMajors
   };
-});
+}
 
 /* -------------------------------------------------------
    4) Diversity-bias on ties (clusters)
