@@ -32,6 +32,65 @@ const byId = ALL_MAJORS.reduce((acc, m) => {
   return acc;
 }, {});
 
+function legacyClusterCountFor(id, counts) {
+  const cluster = byId[id]?.cluster;
+  return cluster ? (counts[cluster] || 0) : 0;
+}
+
+function legacyDiversityFallback(list = [], pickN = 9999) {
+  if (!Array.isArray(list) || !list.length) return [];
+
+  const countsByCluster = {};
+  const result = [];
+  let group = [];
+  let currentScoreKey = null;
+
+  const flushGroup = () => {
+    if (!group.length) return;
+    const reweighted = group.slice().sort((a, b) => {
+      const ca = legacyClusterCountFor(a.id, countsByCluster);
+      const cb = legacyClusterCountFor(b.id, countsByCluster);
+      if (ca === cb) {
+        const idA = a?.id || "";
+        const idB = b?.id || "";
+        return idA.localeCompare(idB);
+      }
+      return ca - cb;
+    });
+
+    reweighted.forEach((item) => {
+      if (result.length >= pickN) return;
+      result.push(item);
+      const cluster = byId[item.id]?.cluster;
+      if (cluster) {
+        countsByCluster[cluster] = (countsByCluster[cluster] || 0) + 1;
+      }
+    });
+
+    group = [];
+  };
+
+  list.forEach((item) => {
+    if (!item || !item.id) return;
+    const key = String(item.score ?? "");
+    if (currentScoreKey === null) {
+      currentScoreKey = key;
+    }
+
+    if (key === currentScoreKey) {
+      group.push(item);
+    } else {
+      flushGroup();
+      currentScoreKey = key;
+      group = [item];
+    }
+  });
+
+  flushGroup();
+
+  return result.slice(0, pickN);
+}
+
 // Iconography (lightweight emojis – replace later with SVGs if you like)
 const CLUSTER_ICONS = {
   "Business & Management": "📊",
