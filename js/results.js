@@ -11,20 +11,7 @@ import {
 
 import { majorsBatch1, majorsBatch2, majorsBatch3, majorsBatch4, majorsBatch5 } from "./majors.js";
 import { getResourcesForMajor, getSpecialProgrammeRecs } from "./results-helpers.js";
-import * as scoringModule from "./scoring.js"; // read saved results
-
-const loadResults =
-  typeof scoringModule.loadResults === "function"
-    ? scoringModule.loadResults
-    : () => {
-        console.warn("[Results] scoring.loadResults missing; falling back to empty state.");
-        return null;
-      };
-
-const applyDiversityBias =
-  typeof scoringModule.applyDiversityBias === "function"
-    ? scoringModule.applyDiversityBias
-    : legacyDiversityFallback;
+import { loadResults, applyDiversityBias } from "./scoring.js"; // read saved results
 
 const ENABLE_CLUSTER_DEBUG = true;     // flip off later if you prefer
 const SHOW_CLUSTER_BANNER = false;     // set true if you want a visible banner
