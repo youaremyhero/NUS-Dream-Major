@@ -183,12 +183,12 @@ body.results-body .site-footer {
   display: grid;
   gap: 20px;
   align-items: start;
-  grid-template-columns: minmax(180px, 220px) minmax(0, 1fr) minmax(240px, 280px);
+  grid-template-columns: minmax(180px, 210px) minmax(0, 1.45fr) minmax(180px, 220px);
 }
 
 @media (max-width: 1100px) {
   .topmajors-grid {
-    grid-template-columns: minmax(160px, 190px) minmax(0, 1fr) minmax(220px, 260px);
+    grid-template-columns: minmax(150px, 180px) minmax(0, 1.3fr) minmax(170px, 210px);
   }
 }
 
@@ -285,8 +285,8 @@ body.results-body .site-footer {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transform: translateY(16px);
-  transition: opacity .25s ease, transform .25s ease, visibility 0s linear .25s;
+  transform: none;
+  transition: none;
   background: var(--card);
   border: none;
   border-radius: var(--radius);
@@ -301,10 +301,8 @@ body.results-body .site-footer {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
-  transform: translateY(0);
   position: relative;
   inset: auto;
-  transition-delay: 0s;
 }
 
 .topmajor-panel__header {
