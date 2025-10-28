@@ -1,6 +1,6 @@
 // js/main.js
 import { QUESTIONS_LIKERT, LIKERT } from "./config/questionsLikert.js";
-import { calculateResults, saveResults } from "./scoring.js";
+import { calculateResults, saveResults, loadResults } from "./scoring.js";
 import { renderResultsView } from "./results.js";
 import { EXPLORE_PROGRAMMES } from "./content/exploreProgrammes.js";
 
@@ -59,7 +59,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   // Restore results if they exist (e.g., after refresh)
   try {
-    const cached = JSON.parse(localStorage.getItem("quizResults"));
+    const cached = loadResults();
     if (cached && cached.resultsArray && cached.resultsArray.length) {
       showResultsInline(cached);
     }
@@ -187,6 +187,13 @@ function renderProgrammeHighlights(section, mount) {
       card.id = `programme-${programme.id}`;
     }
 
+    if (programme.badge) {
+      const badge = document.createElement("span");
+      badge.className = "landing-programme-card__badge";
+      badge.textContent = programme.badge;
+      card.appendChild(badge);
+    }
+
     const title = document.createElement("h3");
     title.textContent = programme.title;
     card.appendChild(title);
@@ -214,6 +221,28 @@ function setupNavigationInteractions() {
   if (!navLinks.length) return;
 
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const scrollBehavior = prefersReducedMotion ? "auto" : "smooth";
+
+  const scrollSectionIntoView = (section) => {
+    if (!section) return;
+
+    const anchor =
+      section.querySelector(".landing-section__inner") ||
+      section.querySelector(".landing-quiz-card") ||
+      section;
+
+    const rect = anchor.getBoundingClientRect();
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+    const header = document.querySelector(".site-header");
+    const headerHeight = header ? header.getBoundingClientRect().height : 0;
+    const anchorHeight = Math.min(rect.height, viewportHeight * 0.85);
+    const centerOffset = Math.max((viewportHeight - anchorHeight) / 2, 0);
+    const rawTop = rect.top + window.scrollY - centerOffset - headerHeight / 2;
+    const maxScroll = Math.max(document.documentElement.scrollHeight - viewportHeight, 0);
+    const targetTop = Math.min(Math.max(rawTop, 0), maxScroll);
+
+    window.scrollTo({ top: targetTop, behavior: scrollBehavior });
+  };
 
   const sectionMap = navLinks
     .map(link => {
@@ -237,10 +266,7 @@ function setupNavigationInteractions() {
       const target = document.querySelector(hash);
       if (!target) return;
       evt.preventDefault();
-      target.scrollIntoView({
-        behavior: prefersReducedMotion ? "auto" : "smooth",
-        block: "start"
-      });
+      scrollSectionIntoView(target);
       setActive(link);
     });
   });

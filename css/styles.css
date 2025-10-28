@@ -13,7 +13,7 @@ html, body {
   margin: 0;
   padding: 0;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f9fafb;
+  background-color: #f5f7fb;
   color: #1f2937; /* gray-800 */
   line-height: 1.6;
 }
@@ -33,6 +33,11 @@ html, body {
   --border: #e5e7eb;      /* gray-200 */
   --radius: 12px;
   --shadow: 0 2px 10px rgba(0,0,0,0.05);
+
+  --surface-quiz: #f3f5ff;
+  --surface-a: #f8faff;
+  --surface-b: #edf2ff;
+  --surface-highlight: #e7ecff;
 }
 
 /* Page-scoped body behaviour
@@ -53,8 +58,9 @@ body.results-body {
   position: fixed;
   top: 0; left: 0; right: 0;
   min-height: var(--header-h);
-  background: rgba(255, 255, 255, 0.98);
-  border-bottom: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.92);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.35);
+  backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -67,7 +73,7 @@ body.results-body {
 }
 
 .site-header.is-scrolled {
-  box-shadow: 0 18px 36px -24px rgba(37, 99, 235, 0.55);
+  box-shadow: none;
 }
 
 .site-header .brand,
@@ -190,14 +196,19 @@ body.results-body {
 }
 
 .landing-section {
-  padding: clamp(60px, 12vw, 96px) 0;
+  padding: clamp(56px, 11vw, 92px) 0;
   scroll-margin-top: calc(var(--header-h) + 20px);
+  background: var(--surface-a);
+}
+
+.landing-main .landing-section:nth-of-type(even) {
+  background: var(--surface-b);
 }
 
 .landing-section--quiz {
   padding-top: clamp(48px, 10vw, 72px);
   padding-bottom: clamp(48px, 10vw, 72px);
-  background: linear-gradient(180deg, #e0ecff 0%, #f3f4ff 100%);
+  background: var(--surface-quiz);
   position: relative;
   z-index: 2;
 }
@@ -217,8 +228,8 @@ body.results-body {
   margin: 0 auto;
   background: var(--card);
   border-radius: calc(var(--radius) + 6px);
-  box-shadow: 0 30px 70px -40px rgba(15, 23, 42, 0.35);
-  border: 1px solid rgba(148, 163, 184, 0.35);
+  box-shadow: 0 24px 72px -48px rgba(30, 64, 175, 0.35);
+  border: 1px solid rgba(148, 163, 184, 0.25);
   padding: clamp(28px, 6vw, 42px) clamp(20px, 4vw, 38px);
   display: grid;
   gap: 24px;
@@ -230,20 +241,19 @@ body.results-body {
 }
 
 .landing-section--static {
-  background: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%);
   position: relative;
 }
 
 .landing-section--static + .landing-section--static {
-  border-top: 1px solid rgba(148, 163, 184, 0.35);
+  border-top: 1px solid rgba(148, 163, 184, 0.22);
 }
 
 .landing-section--static .landing-section__inner {
-  background: rgba(255, 255, 255, 0.96);
-  border-radius: calc(var(--radius) + 6px);
-  padding: clamp(32px, 6vw, 52px) clamp(24px, 6vw, 48px);
-  box-shadow: 0 32px 72px -48px rgba(30, 64, 175, 0.35);
-  gap: clamp(22px, 4vw, 32px);
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: calc(var(--radius) + 4px);
+  padding: clamp(32px, 6vw, 48px) clamp(24px, 6vw, 44px);
+  box-shadow: 0 18px 44px -36px rgba(15, 23, 42, 0.24);
+  gap: clamp(22px, 4vw, 30px);
 }
 
 .landing-section--static .landing-cards {
@@ -296,10 +306,10 @@ body.results-body {
 
 .landing-card {
   background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: calc(var(--radius) + 2px);
   padding: 24px;
-  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 16px 36px -34px rgba(15, 23, 42, 0.22);
 }
 
 .landing-card h3 {
@@ -316,7 +326,7 @@ body.results-body {
 }
 
 .landing-section--highlight {
-  background: linear-gradient(180deg, #f8fbff 0%, #eef2ff 100%);
+  background: var(--surface-highlight);
 }
 
 .landing-section--quiz .container {
@@ -340,11 +350,11 @@ body.results-body {
   min-height: 0;                /* allow the card to set its own height */
   overflow: visible;            /* no inner scroll */
   background: #fff;
-  border: 1px solid rgba(148, 163, 184, 0.45);
-  border-radius: calc(var(--radius) + 2px);
-  padding: clamp(18px, 3vw, 24px);
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  border-radius: calc(var(--radius) + 4px);
+  padding: clamp(20px, 3vw, 26px);
   padding-bottom: calc(var(--footer-h) + 72px);
-  box-shadow: 0 20px 40px -28px rgba(30, 64, 175, 0.35);
+  box-shadow: 0 24px 58px -44px rgba(30, 64, 175, 0.32);
 }
 
 /* Progress bar (shared) */
@@ -390,18 +400,45 @@ button:focus-visible, .btn:focus-visible {
 .btn.small { padding: 8px 12px; font-size: 0.9rem; border-radius: 10px; }
 .btn.secondary { background: #e5e7eb; color: #374151; }
 
+.landing-section--programmes {
+  padding: clamp(44px, 9vw, 72px) 0;
+}
+
+.landing-section--programmes .landing-section__inner {
+  gap: clamp(18px, 4vw, 26px);
+  align-items: flex-start;
+}
+
+.landing-section--programmes .landing-section__inner > p {
+  max-width: 56ch;
+}
+
 .landing-programmes {
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  display: grid;
+  gap: clamp(16px, 3vw, 22px);
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
 
 .landing-programmes .landing-programme-card {
   display: grid;
   gap: 12px;
   background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: clamp(20px, 3vw, 26px);
-  box-shadow: 0 22px 44px -38px rgba(15, 23, 42, 0.4);
+  border: 1px solid rgba(37, 99, 235, 0.14);
+  box-shadow: 0 14px 32px -28px rgba(37, 99, 235, 0.32);
+  padding: clamp(18px, 3vw, 24px);
+}
+
+.landing-programme-card__badge {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.12);
+  color: var(--brand-700);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
 .landing-programme-card h3 {

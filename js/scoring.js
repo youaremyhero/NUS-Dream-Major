@@ -246,11 +246,25 @@ function mergeAdd(a = {}, b = {}) {
    5) Persistence
 ------------------------------------------------------- */
 export function saveResults(data, options = {}) {
-  localStorage.setItem("quizResults", JSON.stringify(data));
+  const source = data && typeof data === "object" ? data : {};
+  const payload = {
+    ...source,
+    metadata: {
+      ...(source.metadata || {}),
+      generatedAt: new Date().toISOString(),
+      source: "quiz"
+    }
+  };
+
+  try {
+    localStorage.setItem("quizResults", JSON.stringify(payload));
+  } catch (err) {
+    console.warn("[scoring] Unable to persist quiz results", err);
+  }
 
   try {
     window.dispatchEvent(
-      new CustomEvent("quizResultsSaved", { detail: data })
+      new CustomEvent("quizResultsSaved", { detail: payload })
     );
   } catch (err) {
     console.warn("[scoring] Unable to dispatch results event", err);
@@ -262,7 +276,31 @@ export function saveResults(data, options = {}) {
   }
 }
 
-export function loadResults() {
+export function loadResults(options = {}) {
+  const { allowLegacy = false } = options || {};
   const data = localStorage.getItem("quizResults");
-  return data ? JSON.parse(data) : null;
+  if (!data) return null;
+
+  try {
+    const parsed = JSON.parse(data);
+    const metadata = parsed?.metadata;
+    const isValid =
+      metadata &&
+      metadata.source === "quiz" &&
+      typeof metadata.generatedAt === "string" &&
+      metadata.generatedAt.length > 0;
+
+    if (!isValid) {
+      if (!allowLegacy) {
+        localStorage.removeItem("quizResults");
+      }
+      return allowLegacy ? parsed : null;
+    }
+
+    return parsed;
+  } catch (err) {
+    console.warn("[scoring] Unable to parse stored results", err);
+    localStorage.removeItem("quizResults");
+    return null;
+  }
 }
