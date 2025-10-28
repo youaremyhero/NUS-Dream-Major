@@ -326,7 +326,7 @@ function onNext() {
   } else {
     // Final: compute results and save
     const result = calculateResults(answers);
-    saveResults(result);
+    saveResults(result, { redirect: false });
   }
 }
 

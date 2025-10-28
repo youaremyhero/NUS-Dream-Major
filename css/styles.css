@@ -228,8 +228,8 @@ body.results-body {
   margin: 0 auto;
   background: var(--card);
   border-radius: calc(var(--radius) + 6px);
-  box-shadow: 0 24px 72px -48px rgba(30, 64, 175, 0.35);
-  border: 1px solid rgba(148, 163, 184, 0.25);
+  box-shadow: none;
+  border: none;
   padding: clamp(28px, 6vw, 42px) clamp(20px, 4vw, 38px);
   display: grid;
   gap: 24px;
@@ -238,6 +238,18 @@ body.results-body {
 .landing-section__inner--quiz {
   padding: 0;
   gap: 12px;
+  max-width: none;
+  width: 100%;
+  margin: 0;
+}
+
+.landing-quiz-header {
+  display: grid;
+  gap: 12px;
+}
+
+.landing-quiz-header p {
+  max-width: 62ch;
 }
 
 .landing-section--static {
@@ -350,11 +362,10 @@ body.results-body {
   min-height: 0;                /* allow the card to set its own height */
   overflow: visible;            /* no inner scroll */
   background: #fff;
-  border: 1px solid rgba(148, 163, 184, 0.28);
   border-radius: calc(var(--radius) + 4px);
   padding: clamp(20px, 3vw, 26px);
-  padding-bottom: calc(var(--footer-h) + 72px);
-  box-shadow: 0 24px 58px -44px rgba(30, 64, 175, 0.32);
+  padding-bottom: calc(var(--footer-h) + 32px);
+  box-shadow: none;
 }
 
 /* Progress bar (shared) */

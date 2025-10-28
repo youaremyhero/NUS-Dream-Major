@@ -55,11 +55,11 @@
   gap: 18px;
   padding: 10px 20px 0;
   /* reserve a safe space so buttons never hide behind footer */
-  padding-bottom: calc(var(--footer-h) + 40px);
+  padding-bottom: calc(var(--footer-h) + 24px);
 }
 
 .quiz-container--results {
-  padding-bottom: 40px;
+  padding-bottom: 24px;
 }
 
 .quiz-container--results .quiz-footer {
@@ -197,7 +197,7 @@
 /* 481–640px : 3 columns × 2 rows */
 @media (max-width: 640px){
   .quiz-container{
-    padding: 10px 14px calc(var(--footer-h) + 120px);
+    padding: 10px 14px calc(var(--footer-h) + 96px);
   }
   .likert-scale{
     grid-template-columns: repeat(3, minmax(78px, 1fr));
