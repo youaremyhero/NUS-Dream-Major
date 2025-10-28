@@ -13,10 +13,16 @@
   <!-- Fixed header -->
   <header id="appHeader" class="site-header" role="banner">
     <div class="brand">Discover Your Dream Major in NUS</div>
-  <nav class="header-actions" aria-label="Results actions">
-    <a href="index.html" data-restart class="btn small">Restart Quiz</a>
-    <button id="downloadPdfBtn" class="btn small secondary" type="button">Download PDF</button>
-  </nav>
+    <nav class="site-nav" aria-label="Results navigation">
+      <a href="#results">Top Matches</a>
+      <a href="#exploreProgrammes">Programmes</a>
+      <a href="#exploreNew">Possibilities</a>
+      <a href="#whyJoin">Why NUS</a>
+    </nav>
+    <div class="header-actions">
+      <a href="index.html" data-restart class="btn small">Restart Quiz</a>
+      <button id="downloadPdfBtn" class="btn small secondary" type="button">Download PDF</button>
+    </div>
   </header>
 
   <!-- Results root scaffold. results.js populates #resultsRoot at runtime. -->
@@ -39,6 +45,7 @@
   import * as scoringModule from "./js/scoring.js";
   import { prepareResultsForPdf } from "./js/results.js";
   import { downloadResultsPdf } from "./js/pdfExport.js";
+  import { setupNavigationInteractions, elevateHeaderOnScroll } from "./js/navigation.js";
 
   const loadResults =
     typeof scoringModule.loadResults === "function"
@@ -57,6 +64,8 @@
       return;
     }
 
+    elevateHeaderOnScroll();
+
     // 2) Wire the PDF button
     const btn = document.getElementById("downloadPdfBtn");
     if (btn) {
@@ -71,6 +80,8 @@
       const { default: confetti } = await import("https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.module.mjs");
       confetti({ particleCount: 100, spread: 70, origin: { y: 0.2 } });
     }
+
+    requestAnimationFrame(() => setupNavigationInteractions());
   });
 
     // Make the Restart link robust for both user pages and project pages

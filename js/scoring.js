@@ -262,15 +262,19 @@ export function saveResults(data, options = {}) {
     console.warn("[scoring] Unable to persist quiz results", err);
   }
 
-  try {
-    window.dispatchEvent(
-      new CustomEvent("quizResultsSaved", { detail: payload })
-    );
-  } catch (err) {
-    console.warn("[scoring] Unable to dispatch results event", err);
+  const shouldRedirect = options.redirect ?? true;
+  const shouldEmitEvent = options.emitEvent ?? !shouldRedirect;
+
+  if (shouldEmitEvent) {
+    try {
+      window.dispatchEvent(
+        new CustomEvent("quizResultsSaved", { detail: payload })
+      );
+    } catch (err) {
+      console.warn("[scoring] Unable to dispatch results event", err);
+    }
   }
 
-  const shouldRedirect = options.redirect ?? true;
   if (shouldRedirect) {
     window.location.href = "./results.html";
   }
