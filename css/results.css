@@ -717,14 +717,14 @@ body.results-body .site-footer {
 /* ---------- Results hero ---------- */
 
 .results-hero {
-  background: linear-gradient(180deg, #e0ecff 0%, #f3f4ff 100%);
+  background: transparent;
 }
 
 .results-hero__card {
   background: #fff;
   border: none;
   border-radius: calc(var(--radius) + 8px);
-  box-shadow: 0 30px 60px -44px rgba(15, 23, 42, 0.22);
+  box-shadow: none;
   padding: clamp(28px, 6vw, 42px);
   display: grid;
   gap: clamp(32px, 6vw, 48px);
