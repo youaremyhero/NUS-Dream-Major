@@ -31,9 +31,17 @@
 
   <!-- Minimal inline module entry for the results page -->
 <script type="module">
-  import { loadResults } from "./js/scoring.js";
+  import * as scoringModule from "./js/scoring.js";
   import { prepareResultsForPdf } from "./js/results.js";
   import { downloadResultsPdf } from "./js/pdfExport.js";
+
+  const loadResults =
+    typeof scoringModule.loadResults === "function"
+      ? scoringModule.loadResults
+      : () => {
+          console.warn("[Results] scoring.loadResults missing; redirecting to quiz.");
+          return null;
+        };
 
   // 1) Bootstrap rendering
   window.addEventListener("DOMContentLoaded", async () => {
