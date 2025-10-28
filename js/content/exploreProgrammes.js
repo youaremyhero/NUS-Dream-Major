@@ -1,34 +1,29 @@
 export const EXPLORE_PROGRAMMES = [
   {
-    id: "interdisciplinary",
-    title: "Interdisciplinary Programmes",
+    id: "bcomp-ai",
+    title: "Bachelor of Computing in Artificial Intelligence",
     description:
-      "Blend computing, business, design and the sciences through curated curricula that encourage flexible pathways and double specialisations.",
-    ctaLabel: "View interdisciplinary options",
-    url: "https://www.nus.edu.sg/oam/undergraduate-programmes/interdisciplinary" 
+      "Build intelligent systems with deep learning, human-centred AI design and industry capstones mentored by the School of Computing.",
+    ctaLabel: "Explore BComp AI",
+    url: "https://www.comp.nus.edu.sg/programmes/ug/bcompai/",
+    badge: "New"
   },
   {
-    id: "innovation",
-    title: "Innovation & Entrepreneurship",
+    id: "infrastructure-management",
+    title: "Bachelor of Engineering in Infrastructure and Project Management",
     description:
-      "Launch ideas with mentorship, seed funding and makerspaces through NUS Enterprise, the NUS Overseas Colleges and deep-tech incubators.",
-    ctaLabel: "Explore entrepreneurial tracks",
-    url: "https://enterprise.nus.edu.sg/education-programmes/"
+      "Shape resilient cities through integrated engineering, digital construction studios and internships with leading infrastructure partners.",
+    ctaLabel: "Discover I&PM",
+    url: "https://cde.nus.edu.sg/dep/programmes/b-eng-infrastructure-and-project-management/",
+    badge: "Spotlight"
   },
   {
-    id: "global",
-    title: "Global Learning",
+    id: "ppe",
+    title: "Bachelor of Social Sciences (Honours) in Philosophy, Politics and Economics",
     description:
-      "Earn credits overseas, complete global research attachments and take part in short-term intensives that expand your worldview.",
-    ctaLabel: "Discover global opportunities",
-    url: "https://www.nus.edu.sg/gro/study-abroad/"
-  },
-  {
-    id: "residential",
-    title: "Residential Colleges",
-    description:
-      "Experience immersive living-learning communities that combine academic seminars with leadership development and vibrant campus culture.",
-    ctaLabel: "Find a residential college",
-    url: "https://nus.edu.sg/reshall/"
+      "Tackle global challenges with an interdisciplinary curriculum that spans public policy design, ethics, political economy and overseas immersions.",
+    ctaLabel: "Learn about PPE",
+    url: "https://fass.nus.edu.sg/ecs/undergraduate/bsocsc-ppe/",
+    badge: "Interdisciplinary"
   }
 ];
