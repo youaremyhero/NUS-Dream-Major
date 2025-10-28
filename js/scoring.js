@@ -18,6 +18,30 @@ const MAJOR_BY_ID = ALL_MAJORS.reduce((acc, m) => {
   return acc;
 }, {});
 
+/* -------------------------------------------------------
+   IDF-like dampening for ubiquitous qualities
+   - Compute how many majors tag each quality (doc frequency)
+   - Create an IDF weight: rarer qualities get >1, very common ones <1
+------------------------------------------------------- */
+const QUALITY_DOC_FREQ = {};
+ALL_MAJORS.forEach(m => {
+  (m.qualities || []).forEach(q => {
+    QUALITY_DOC_FREQ[q] = (QUALITY_DOC_FREQ[q] || 0) + 1;
+  });
+});
+const QUALITY_IDF = {};
+(() => {
+  const dfEntries = Object.entries(QUALITY_DOC_FREQ);
+  if (!dfEntries.length) return;
+  // Smooth log variant: idf = 1 / (1 + log(df))
+  // You can tune this curve to be stronger or softer.
+  dfEntries.forEach(([q, df]) => {
+    const idf = 1 / (1 + Math.log(df)); // df >= 1
+    QUALITY_IDF[q] = idf; // common qualities → ~0.5..0.7 / rare → ~0.9..1
+  });
+})();
+
+
 // Bridge between Likert cluster IDs and majors.js cluster labels
 const CLUSTER_ID_TO_LABEL = {
   BIZ_MGMT: "Business & Management",
@@ -49,7 +73,7 @@ const toSigned = (val) => LIKERT_TO_SIGNED[val] ?? 0;
 // Weights: you can tune these if needed
 const W_CLUSTER = 1.0;   // how strongly cluster scores influence majors
 const W_HINT = 1.0;      // how strongly majorsHints push specific majors
-const W_QUAL_HINT = 1.0; // how strongly qualitiesHints add to qualities directly
+const W_QUAL_HINT = 1.25; // how strongly qualitiesHints add to qualities directly
 
 /* -------------------------------------------------------
    3) Main scoring pipeline
@@ -76,12 +100,13 @@ export function calculateResults(answers) {
       majorTotals[id] = (majorTotals[id] || 0) + signed * (w || 0) * W_HINT;
     });
 
-    // Direct qualities (optional)
-    (q.qualitiesHints || []).forEach(({ quality, w }) => {
-      qualityScoresHints[quality] = (qualityScoresHints[quality] || 0) + signed * (w || 0) * W_QUAL_HINT;
-    });
-  });
-
+   // Direct qualities (optional, positive-only to avoid penalising)
+   (q.qualitiesHints || []).forEach(({ quality, w }) => {
+     const pos = Math.max(0, toSigned(val)); // ignore negative side for qualities
+     qualityScoresHints[quality] =
+       (qualityScoresHints[quality] || 0) + pos * (w || 0) * W_QUAL_HINT;
+   });
+     
   // Pass 2: spill cluster scores into majors that belong to that cluster
   ALL_MAJORS.forEach((m) => {
     const clusterId = LABEL_TO_CLUSTER_ID[m.cluster];
@@ -130,17 +155,18 @@ export function calculateResults(answers) {
   const topMajors = arranged.slice(0, 5);
   const topMajors3 = arranged.slice(0, 3);
 
-  // Pass 4: push major totals into qualities (via majors metadata)
-  // (Use unshifted totals for relative contribution, but clamp negatives to 0)
-  const qualityScoresFromMajors = {};
-  Object.entries(majorTotals).forEach(([mid, rawScore]) => {
-    const m = MAJOR_BY_ID[mid];
-    if (!m?.qualities || !m.qualities.length) return;
-    const contrib = Math.max(0, rawScore) / m.qualities.length;
-    m.qualities.forEach(q => {
-      qualityScoresFromMajors[q] = (qualityScoresFromMajors[q] || 0) + contrib;
-    });
-  });
+   // Pass 4: push major totals into qualities (via majors metadata)
+   // (Use rawScore clamped to 0, divided by number of qualities, then * IDF)
+   const qualityScoresFromMajors = {};
+   Object.entries(majorTotals).forEach(([mid, rawScore]) => {
+     const m = MAJOR_BY_ID[mid];
+     if (!m?.qualities || !m.qualities.length) return;
+     const base = Math.max(0, rawScore) / m.qualities.length;
+     m.qualities.forEach(q => {
+       const idf = QUALITY_IDF[q] != null ? QUALITY_IDF[q] : 1;
+       qualityScoresFromMajors[q] = (qualityScoresFromMajors[q] || 0) + base * idf;
+     });
+   });
 
   // Final qualities = hints (+) from-majors
   const qualityScores = mergeAdd(qualityScoresHints, qualityScoresFromMajors);
