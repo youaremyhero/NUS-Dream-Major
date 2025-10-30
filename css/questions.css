@@ -1,20 +1,9 @@
 /* =============== QUESTIONS LAYOUT (Likert redesign v3) =============== */
 :root {
-  --brand:#2563eb; --brand-100:#dbeafe;
-  --text:#1f2937; --muted:#6b7280;
-  --card:#ffffff; --border:#e5e7eb;
-  --radius:16px; --shadow:0 10px 30px rgba(0,0,0,.06);
-
-  /* Likert palette */
-  --lk1:#ef4444;    /* red */
-  --lk2:#f59e0b;    /* orange */
-  --lk3:#fbbf24;    /* amber */
-  --lk4:#84cc16;    /* lime */
-  --lk5:#10b981;    /* emerald */
-
   --card-max: clamp(760px, 78vw, 1040px);
   --dot-size: 34px;            /* base ring size */
   --dot-inner: 14px;           /* base inner dot */
+  --likert-focus-glow: var(--brand-soft);
 }
 
 /* ===== Progress bar OUTSIDE card ===== */
@@ -29,15 +18,16 @@
 .quiz-progress-wrap .progress-bar{
   width: min(100%, 660px);
   height: 12px;
-  background:#eef2f7;
+  background: var(--progress-track);
   border-radius:999px;
   box-shadow: none;
   overflow:hidden;
+  border: 1px solid var(--border);
 }
 .quiz-progress-wrap .progress-bar-fill{
   height: 100%;
   width: 0%;
-  background: linear-gradient(90deg, #34d399, #60a5fa);
+  background: var(--progress-fill);
   transition: width .20s ease;
 }
 
@@ -80,10 +70,10 @@
 
 /* ===== Question card ===== */
 .quiz-question{
-  background:var(--card);
-  border: 1px solid rgba(148, 163, 184, 0.22);
+  background:var(--surface-card);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  box-shadow: none;
+  box-shadow: var(--shadow-card);
   margin: 0 auto;
   width: 100%;
   padding: clamp(24px, 3.4vw, 34px);
@@ -104,7 +94,8 @@
   margin:0;
   font-size: clamp(22px,2.8vw,30px);
   color: var(--text);
-  font-weight: 800;
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
   line-height:1.35;
 }
 
@@ -112,7 +103,7 @@
 .likert-scale{
   margin-top: clamp(18px, 2.6vw, 24px);
   padding: clamp(14px, 2.2vw, 18px) 10px 2px;
-  background:#fff;             /* no dashed or faint border */
+  background:var(--surface-card);             /* no dashed or faint border */
   border: 0;
 
   display:grid;
@@ -144,8 +135,8 @@
   width: var(--dot-size);
   height: var(--dot-size);
   border-radius: 50%;
-  border: 3px solid var(--dot-color, #d1d5db);
-  background:#fff;
+  border: 3px solid var(--dot-color, var(--border));
+  background:var(--surface-card);
   transition: transform .15s ease, box-shadow .15s, border-color .15s, background-color .15s;
 }
 
@@ -155,17 +146,17 @@
 }
 
 /* Colour map per value */
-.likert-option[data-val="1"]{ --dot-color: var(--lk1); }
-.likert-option[data-val="2"]{ --dot-color: var(--lk2); }
-.likert-option[data-val="3"]{ --dot-color: var(--lk3); }
-.likert-option[data-val="4"]{ --dot-color: var(--lk4); }
-.likert-option[data-val="5"]{ --dot-color: var(--lk5); }
+.likert-option[data-val="1"]{ --dot-color: var(--likert-1); }
+.likert-option[data-val="2"]{ --dot-color: var(--likert-2); }
+.likert-option[data-val="3"]{ --dot-color: var(--likert-3); }
+.likert-option[data-val="4"]{ --dot-color: var(--likert-4); }
+.likert-option[data-val="5"]{ --dot-color: var(--likert-5); }
 
 /* Hover/focus glow */
 .likert-option:hover::after,
 .likert-option:focus-visible::after{
   transform: scale(1.03);
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, .12);
+  box-shadow: 0 0 0 4px var(--likert-focus-glow);
 }
 
 /* Selected: solid fill + strong colour glow */
@@ -182,7 +173,9 @@
   padding: 6px 4px 2px;
 }
 .quiz-footer .secondary{
-  background:#e5e7eb; color:#374151; border:none;
+  background:var(--button-secondary-bg);
+  color:var(--button-secondary-text);
+  border:none;
   padding:10px 16px; border-radius:10px; font-weight:600; cursor:pointer;
 }
 .quiz-footer .secondary.is-disabled{ opacity:.5; pointer-events:none; }

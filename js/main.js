@@ -31,10 +31,12 @@ window.addEventListener("DOMContentLoaded", () => {
   const restartBtn = document.querySelector("[data-restart]");
   const programmesMount = document.querySelector("[data-programmes-list]");
   const programmesSection = document.querySelector("[data-programmes-section]");
+  const themeToggle = document.querySelector("[data-theme-toggle]");
 
   renderProgrammeHighlights(programmesSection, programmesMount);
   setupNavigationInteractions();
   elevateHeaderOnScroll();
+  setupThemeToggle(themeToggle);
 
   if (!continueBtn || !container || !progressFill) {
     console.error("[main.js] Missing required DOM elements");
@@ -116,6 +118,61 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
+function setupThemeToggle(toggleButton) {
+  const root = document.documentElement;
+  const storageKey = "quiz-theme";
+  const prefersDark = typeof window.matchMedia === "function"
+    ? window.matchMedia("(prefers-color-scheme: dark)")
+    : null;
+
+  let storedTheme = null;
+  try {
+    storedTheme = localStorage.getItem(storageKey);
+  } catch {}
+
+  const validStored = storedTheme === "dark" || storedTheme === "light" ? storedTheme : null;
+  let useSystemPreference = !validStored;
+  let currentTheme = validStored || (prefersDark?.matches ? "dark" : "light");
+
+  applyTheme(currentTheme);
+
+  if (prefersDark?.addEventListener) {
+    prefersDark.addEventListener("change", (event) => {
+      if (!useSystemPreference) return;
+      currentTheme = event.matches ? "dark" : "light";
+      applyTheme(currentTheme);
+    });
+  }
+
+  if (toggleButton) {
+    toggleButton.addEventListener("click", () => {
+      const nextTheme = currentTheme === "dark" ? "light" : "dark";
+      currentTheme = nextTheme;
+      useSystemPreference = false;
+      applyTheme(nextTheme);
+      try {
+        localStorage.setItem(storageKey, nextTheme);
+      } catch {}
+    });
+  }
+
+  function applyTheme(theme) {
+    if (theme === "dark") {
+      root.setAttribute("data-theme", "dark");
+      if (toggleButton) {
+        toggleButton.setAttribute("aria-label", "Switch to light mode");
+        toggleButton.innerHTML = "<span aria-hidden=\"true\">☀️</span>";
+      }
+    } else {
+      root.removeAttribute("data-theme");
+      if (toggleButton) {
+        toggleButton.setAttribute("aria-label", "Switch to dark mode");
+        toggleButton.innerHTML = "<span aria-hidden=\"true\">🌙</span>";
+      }
+    }
+  }
+}
 
 function renderQuestion() {
   const q = QUESTIONS_LIKERT[current];
