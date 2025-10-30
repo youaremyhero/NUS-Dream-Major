@@ -357,7 +357,7 @@ body.results-body {
   border-radius: calc(var(--radius) + 6px);
   box-shadow: var(--shadow-card);
   border: 1px solid var(--border);
-  padding: clamp(28px, 6vw, 42px) clamp(20px, 4vw, 38px);
+  padding: clamp(22px, 4.8vw, 34px) clamp(16px, 3.2vw, 30px);
   display: grid;
   gap: 24px;
 }
@@ -373,6 +373,7 @@ body.results-body {
 .landing-quiz-header {
   display: grid;
   gap: 12px;
+  text-align: center;
 }
 
 .landing-quiz-header p {
