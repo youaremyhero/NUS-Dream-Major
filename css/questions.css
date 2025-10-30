@@ -73,7 +73,7 @@
   background:var(--surface-card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  box-shadow: var(--shadow-card);
+  box-shadow: none;
   margin: 0 auto;
   width: 100%;
   padding: clamp(24px, 3.4vw, 34px);
