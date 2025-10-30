@@ -497,7 +497,7 @@ body.results-body {
   border-radius: calc(var(--radius) + 4px);
   padding: clamp(20px, 3vw, 26px);
   padding-bottom: calc(var(--footer-h) + 32px);
-  box-shadow: var(--shadow-card);
+  box-shadow: none;
 }
 
 /* Progress bar (shared) */
