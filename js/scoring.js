@@ -43,14 +43,15 @@ const QUALITY_IDF = {};
 
 
 // Bridge between Likert cluster IDs and majors.js cluster labels
+// NOTE: These keys must mirror the cluster IDs used in questionsLikert.js.
 const CLUSTER_ID_TO_LABEL = {
-  BIZ_MGMT: "Business & Management",
-  COMP_AI: "Computing & AI",
-  ENG_TECH: "Engineering & Technology",
+  BUSINESS_MGMT: "Business & Management",
+  COMPUTING_AI: "Computing & AI",
+  ENGINEERING_TECH: "Engineering & Technology",
   DESIGN_ARCH: "Design & Architecture",
-  SOC_SCI: "Social Sciences",
-  HUMANITIES_CULT: "Humanities & Cultural Studies",
-  SCI_QUANT: "Sciences & Quantitative",
+  SOCIAL_SCI: "Social Sciences",
+  HUMANITIES_CULTURE: "Humanities & Cultural Studies",
+  SCIENCES_QUANT: "Sciences & Quantitative",
   HEALTH_LIFE: "Health & Life Sciences",
   LAW_LEGAL: "Law & Legal Studies",
   MUSIC_PERF: "Music & Performing Arts"
