@@ -377,6 +377,7 @@ body.results-body {
 
 .landing-quiz-header p {
   max-width: 62ch;
+ text-align: center;
 }
 
 .landing-section--static {
