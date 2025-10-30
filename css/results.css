@@ -713,7 +713,7 @@ body.results-body .site-footer {
   background: var(--surface-card);
   border: 1px solid var(--border);
   border-radius: calc(var(--radius) + 8px);
-  box-shadow: var(--shadow-card);
+  box-shadow: none;
   padding: clamp(28px, 6vw, 42px);
   display: grid;
   gap: clamp(32px, 6vw, 48px);
