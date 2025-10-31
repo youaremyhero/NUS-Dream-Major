@@ -71,12 +71,19 @@
 /* ===== Question card ===== */
 .quiz-question{
   background:var(--surface-card);
-  border: 1px solid var(--border);
+  border: 2px solid var(--border-strong);
   border-radius: var(--radius);
   box-shadow: none;
   margin: 0 auto;
   width: 100%;
   padding: clamp(24px, 3.4vw, 34px);
+  min-height: clamp(320px, 48vh, 440px);
+}
+
+@media (max-width: 600px){
+  .quiz-question{
+    min-height: clamp(280px, 60vh, 360px);
+  }
 }
 
 /* ===== Question texts & spacing ===== */
