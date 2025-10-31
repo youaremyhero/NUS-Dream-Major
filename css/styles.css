@@ -398,11 +398,11 @@ body.results-body {
   gap: clamp(22px, 4vw, 30px);
 }
 
-#aboutSection .landing-section__inner {
+#about .landing-section__inner {
   background: var(--surface-card);
 }
 
-#programmesSection .landing-section__inner {
+#explore .landing-section__inner {
   background: var(--surface-card);
 }
 
