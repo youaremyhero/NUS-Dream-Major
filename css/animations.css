@@ -1,0 +1,182 @@
+/* =====================================================
+   animations.css — Template & animation-specific styles
+   Namespaced with the ndm- prefix to avoid collisions
+   ===================================================== */
+
+.ndm-body {
+  background: var(--background);
+  color: var(--text);
+}
+
+.ndm-header {
+  box-shadow: none;
+}
+
+.ndm-header__inner {
+  width: min(100%, calc(var(--content-w) + 48px));
+  margin: 0 auto;
+  padding: 0 clamp(16px, 4vw, 28px);
+  display: flex;
+  align-items: center;
+  gap: clamp(16px, 4vw, 32px);
+  justify-content: space-between;
+}
+
+.ndm-brand a {
+  color: inherit;
+  text-decoration: none;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.ndm-nav {
+  display: flex;
+  gap: clamp(12px, 3vw, 24px);
+  align-items: center;
+}
+
+.ndm-nav a {
+  font-weight: 600;
+  position: relative;
+}
+
+.ndm-nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 100%;
+  height: 2px;
+  background: transparent;
+  transition: background 0.3s ease;
+}
+
+.ndm-nav a.is-active::after,
+.ndm-nav a:focus-visible::after,
+.ndm-nav a:hover::after {
+  background: var(--brand);
+}
+
+.ndm-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ndm {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(48px, 10vw, 96px);
+  margin-top: var(--header-h);
+}
+
+.ndm-section {
+  position: relative;
+  isolation: isolate;
+}
+
+.ndm-hero {
+  display: flex;
+  align-items: center;
+  min-height: clamp(320px, 70vh, 520px);
+  background: linear-gradient(135deg, rgba(81, 157, 217, 0.18), rgba(83, 186, 193, 0.24));
+}
+
+.ndm-container {
+  width: min(100%, calc(var(--content-w) + 120px));
+  margin: 0 auto;
+  padding: clamp(48px, 10vw, 80px) clamp(20px, 6vw, 72px);
+  display: grid;
+  gap: clamp(18px, 3vw, 28px);
+}
+
+.ndm-eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--muted);
+  margin: 0;
+}
+
+.ndm-hero__title {
+  margin: 0;
+  font-size: clamp(2.2rem, 4vw, 3.2rem);
+  font-weight: 800;
+  color: var(--text);
+}
+
+.ndm-hero__lede {
+  margin: 0;
+  font-size: clamp(1rem, 2.4vw, 1.25rem);
+  max-width: 62ch;
+  color: var(--muted);
+}
+
+.ndm-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.ndm-explore {
+  display: grid;
+  gap: clamp(24px, 6vw, 32px);
+}
+
+.ndm-explore__panel {
+  display: grid;
+  gap: clamp(18px, 4vw, 24px);
+  background: var(--surface-card);
+  border-radius: calc(var(--radius) + 4px);
+  padding: clamp(28px, 5vw, 40px);
+  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--border);
+}
+
+.ndm-explore__content {
+  display: grid;
+  gap: 8px;
+}
+
+.ndm-footer {
+  margin-top: clamp(32px, 8vw, 64px);
+}
+
+.ndm [data-ndm-animate] {
+  will-change: transform, opacity;
+}
+
+.ndm-body.ndm-motion-reduced [data-ndm-animate] {
+  will-change: auto;
+}
+
+@media (min-width: 900px) {
+  .ndm-explore {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .ndm-header__inner {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .ndm-nav {
+    order: 3;
+  }
+
+  .ndm-header__actions {
+    order: 2;
+  }
+
+  .ndm-brand {
+    text-align: center;
+    width: 100%;
+  }
+
+  .ndm {
+    gap: clamp(32px, 12vw, 72px);
+  }
+}
