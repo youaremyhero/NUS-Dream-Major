@@ -3,6 +3,7 @@ import { QUESTIONS_LIKERT, LIKERT } from "./config/questionsLikert.js";
 import { calculateResults, saveResults, loadResults } from "./scoring.js";
 import { renderResultsView } from "./results.js";
 import { EXPLORE_PROGRAMMES } from "./content/exploreProgrammes.js";
+import { WHY_NUS } from "./content/whyNUS.js";
 import { setupNavigationInteractions, elevateHeaderOnScroll } from "./navigation.js";
 
 let current = 0;
@@ -29,6 +30,8 @@ window.addEventListener("DOMContentLoaded", () => {
   const quizWrapper = document.getElementById("quizWrapper");
   const progressWrap = document.querySelector(".quiz-progress-wrap");
   const restartBtn = document.querySelector("[data-restart]");
+  const reasonsMount = document.querySelector("[data-reasons-list]");
+  const reasonsSection = document.querySelector("[data-reasons-section]");
   const programmesMount = document.querySelector("[data-programmes-list]");
   const programmesSection = document.querySelector("[data-programmes-section]");
   const themeToggle = document.querySelector("[data-theme-toggle]");
@@ -223,6 +226,55 @@ function renderQuestion() {
   enableInteraction();
   updateButtons();
   focusInitialOption();
+}
+
+function renderWhyNUS(section, mount) {
+  if (!mount || !section) return;
+  mount.innerHTML = "";
+
+  if (!Array.isArray(WHY_NUS) || !WHY_NUS.length) {
+    section.setAttribute("hidden", "true");
+    return;
+  }
+
+  section.removeAttribute("hidden");
+
+  WHY_NUS.forEach(programme => {
+    if (!programme?.title || !programme?.description) return;
+
+    const card = document.createElement("article");
+    card.className = "landing-programme-card";
+    if (programme.id) {
+      card.id = `programme-${programme.id}`;
+    }
+
+    if (programme.badge) {
+      const badge = document.createElement("span");
+      badge.className = "landing-programme-card__badge";
+      badge.textContent = programme.badge;
+      card.appendChild(badge);
+    }
+
+    const title = document.createElement("h3");
+    title.textContent = programme.title;
+    card.appendChild(title);
+
+    const desc = document.createElement("p");
+    desc.textContent = programme.description;
+    card.appendChild(desc);
+
+    if (programme.url) {
+      const link = document.createElement("a");
+      link.className = "btn secondary small";
+      link.href = programme.url;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = programme.ctaLabel || "Learn more";
+      card.appendChild(link);
+    }
+
+    mount.appendChild(card);
+  });
 }
 
 function renderProgrammeHighlights(section, mount) {
