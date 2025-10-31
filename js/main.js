@@ -2,8 +2,9 @@
 import { QUESTIONS_LIKERT, LIKERT } from "./config/questionsLikert.js";
 import { calculateResults, saveResults, loadResults } from "./scoring.js";
 import { renderResultsView } from "./results.js";
-import { EXPLORE_PROGRAMMES } from "./content/exploreProgrammes.js";
 import { WHY_NUS } from "./content/whyNUS.js";
+import { EXPLORE_PROGRAMMES } from "./content/exploreProgrammes.js";
+import { NEXT_STEPS } from "./content/nextSteps.js";
 import { setupNavigationInteractions, elevateHeaderOnScroll } from "./navigation.js";
 
 let current = 0;
