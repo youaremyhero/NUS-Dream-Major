@@ -403,7 +403,7 @@ body.results-body {
 }
 
 #programmesSection .landing-section__inner {
-  background: var(--surface-info);
+  background: var(--surface-card);
 }
 
 .landing-section--static .landing-cards {
