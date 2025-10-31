@@ -35,9 +35,13 @@ window.addEventListener("DOMContentLoaded", () => {
   const reasonsSection = document.querySelector("[data-reasons-section]");
   const programmesMount = document.querySelector("[data-programmes-list]");
   const programmesSection = document.querySelector("[data-programmes-section]");
+  const nextStepsMount = document.querySelector("[data-next-steps-list]");
+  const nextStepsSection = document.querySelector("[data-next-steps-section]");
   const themeToggle = document.querySelector("[data-theme-toggle]");
 
+  renderWhyNusHighlights(reasonsSection, reasonsMount);
   renderProgrammeHighlights(programmesSection, programmesMount);
+  renderNextSteps(nextStepsSection, nextStepsMount);
   setupNavigationInteractions();
   elevateHeaderOnScroll();
   setupThemeToggle(themeToggle);
@@ -229,8 +233,8 @@ function renderQuestion() {
   focusInitialOption();
 }
 
-function renderWhyNUS(section, mount) {
-  if (!mount || !section) return;
+function renderWhyNusHighlights(section, mount) {
+  if (!section || !mount) return;
   mount.innerHTML = "";
 
   if (!Array.isArray(WHY_NUS) || !WHY_NUS.length) {
@@ -240,37 +244,37 @@ function renderWhyNUS(section, mount) {
 
   section.removeAttribute("hidden");
 
-  WHY_NUS.forEach(programme => {
-    if (!programme?.title || !programme?.description) return;
+  WHY_NUS.forEach(reason => {
+    if (!reason?.title || !reason?.description) return;
 
     const card = document.createElement("article");
-    card.className = "landing-programme-card";
-    if (programme.id) {
-      card.id = `programme-${programme.id}`;
+    card.className = "landing-card";
+    if (reason.id) {
+      card.id = `why-nus-${reason.id}`;
     }
 
-    if (programme.badge) {
+    if (reason.badge) {
       const badge = document.createElement("span");
-      badge.className = "landing-programme-card__badge";
-      badge.textContent = programme.badge;
+      badge.className = "landing-card__badge";
+      badge.textContent = reason.badge;
       card.appendChild(badge);
     }
 
     const title = document.createElement("h3");
-    title.textContent = programme.title;
+    title.textContent = reason.title;
     card.appendChild(title);
 
     const desc = document.createElement("p");
-    desc.textContent = programme.description;
+    desc.textContent = reason.description;
     card.appendChild(desc);
 
-    if (programme.url) {
+    if (reason.url) {
       const link = document.createElement("a");
       link.className = "btn secondary small";
-      link.href = programme.url;
+      link.href = reason.url;
       link.target = "_blank";
       link.rel = "noopener noreferrer";
-      link.textContent = programme.ctaLabel || "Learn more";
+      link.textContent = reason.ctaLabel || "Learn more";
       card.appendChild(link);
     }
 
@@ -320,6 +324,48 @@ function renderProgrammeHighlights(section, mount) {
       link.target = "_blank";
       link.rel = "noopener noreferrer";
       link.textContent = programme.ctaLabel || "Learn more";
+      card.appendChild(link);
+    }
+
+    mount.appendChild(card);
+  });
+}
+
+function renderNextSteps(section, mount) {
+  if (!section || !mount) return;
+  mount.innerHTML = "";
+
+  if (!Array.isArray(NEXT_STEPS) || !NEXT_STEPS.length) {
+    section.setAttribute("hidden", "true");
+    return;
+  }
+
+  section.removeAttribute("hidden");
+
+  NEXT_STEPS.forEach(step => {
+    if (!step?.title || !step?.description) return;
+
+    const card = document.createElement("article");
+    card.className = "landing-card";
+    if (step.id) {
+      card.id = `next-step-${step.id}`;
+    }
+
+    const title = document.createElement("h3");
+    title.textContent = step.title;
+    card.appendChild(title);
+
+    const desc = document.createElement("p");
+    desc.textContent = step.description;
+    card.appendChild(desc);
+
+    if (step.url) {
+      const link = document.createElement("a");
+      link.className = "btn secondary small";
+      link.href = step.url;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = step.ctaLabel || "Learn more";
       card.appendChild(link);
     }
 
