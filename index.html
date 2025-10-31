@@ -16,104 +16,26 @@
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/questions.css" />
   <link rel="stylesheet" href="css/results.css" />
-  <link rel="stylesheet" href="css/animations.css" />
 </head>
 
-<body class="quiz-body ndm-body">
+<body class="quiz-body">
   <!-- Fixed Header -->
-  <header class="site-header ndm-header" role="banner">
-    <div class="ndm-header__inner">
-      <div class="brand ndm-brand">
-        <a href="#hero">Discover Your Dream Major in NUS</a>
-      </div>
-      <nav class="site-nav ndm-nav" id="ndmNav" aria-label="Primary">
-        <a href="#about">About</a>
-        <a href="#explore">Explore</a>
-        <a href="#why">Why NUS</a>
-        <a href="#quiz">Quiz</a>
-      </nav>
-      <div class="header-actions ndm-header__actions">
-        <a href="#quiz" class="btn small secondary" data-restart>Restart Quiz</a>
-      </div>
+  <header class="site-header" role="banner">
+    <div class="brand">Discover Your Dream Major in NUS</div>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="#quizSection">Quiz</a>
+      <a href="#aboutSection">About</a>
+      <a href="#whyJoinSection">Why Join NUS</a>
+      <a href="#programmesSection">Explore Programmes</a>
+      <a href="#exploreSection">Explore Possibilities</a>
+    </nav>
+    <div class="header-actions">
+      <a href="#quizSection" class="btn small secondary" data-restart>Restart Quiz</a>
     </div>
   </header>
 
-  <main class="ndm landing-main">
-    <section id="hero" class="ndm-section ndm-hero" data-ndm-animate>
-      <div class="ndm-container">
-        <p class="ndm-eyebrow">Interactive quiz experience</p>
-        <h1 class="ndm-hero__title">Discover the NUS major that best suits you</h1>
-        <p class="ndm-hero__lede">
-          Follow a guided journey that turns your motivations into tailored programme recommendations and resources.
-        </p>
-        <div class="ndm-hero__actions">
-          <a class="btn primary" href="#quiz">Start the quiz</a>
-          <a class="btn secondary" href="#about">Learn more</a>
-        </div>
-      </div>
-    </section>
-
-    <section id="about" class="landing-section landing-section--static ndm-section" data-ndm-animate>
-      <div class="landing-section__inner">
-        <h2>About this experience</h2>
-        <p>
-          The quiz personalises NUS programme suggestions by connecting your motivations with the pathways our students pursue.
-          It only takes a few minutes and you can retake it anytime your goals evolve.
-        </p>
-        <ul class="landing-list">
-          <li>Questions focus on what energises you—no prior knowledge of majors required.</li>
-          <li>Responses translate into recommended disciplines and strengths to explore further.</li>
-          <li>Results stay on this page so you can revisit highlights or try again with new perspectives.</li>
-        </ul>
-      </div>
-    </section>
-
-    <section
-      id="explore"
-      class="landing-section landing-section--static landing-section--programmes ndm-section"
-      data-ndm-animate
-    >
-      <div class="landing-section__inner ndm-explore">
-        <section class="ndm-explore__panel" data-programmes-section>
-          <div class="ndm-explore__content">
-            <h2>Explore new programmes</h2>
-            <p>
-              Spotlight the newest degrees shaping the future of work. These programmes combine rigorous academics with
-              hands-on projects so you can champion emerging industries from day one.
-            </p>
-          </div>
-          <div class="landing-cards landing-programmes" data-programmes-list></div>
-        </section>
-        <section class="ndm-explore__panel" data-next-steps-section>
-          <div class="ndm-explore__content">
-            <h2>Next steps</h2>
-            <p>
-              After the quiz, keep the momentum going with conversations, events and resources that help you plan your next
-              steps at NUS.
-            </p>
-          </div>
-          <div class="landing-cards" data-next-steps-list></div>
-        </section>
-      </div>
-    </section>
-
-    <section
-      id="why"
-      class="landing-section landing-section--static landing-section--highlight ndm-section"
-      data-reasons-section
-      data-ndm-animate
-    >
-      <div class="landing-section__inner">
-        <h2>Why join NUS</h2>
-        <p>
-          Discover an education shaped by renowned faculty, flexible pathways and real-world experiences that prepare you to
-          thrive anywhere.
-        </p>
-        <div class="landing-cards" data-reasons-list></div>
-      </div>
-    </section>
-
-    <section id="quiz" class="landing-section landing-section--quiz ndm-section" data-ndm-animate>
+  <main class="landing-main">
+    <section id="quizSection" class="landing-section landing-section--quiz">
       <div class="landing-quiz-card" role="region" aria-label="NUS Dream Major quiz">
         <header class="landing-section__inner landing-section__inner--quiz landing-quiz-header">
           <h2>Discover the NUS Major that Best Suits You</h2>
@@ -136,10 +58,69 @@
         </div>
       </div>
     </section>
+
+    <section id="aboutSection" class="landing-section landing-section--static">
+      <div class="landing-section__inner">
+        <h2>About this experience</h2>
+        <p>
+          The quiz personalises NUS programme suggestions by connecting your motivations with the pathways our students pursue. It only takes a few minutes and you can retake it anytime your goals evolve.
+        </p>
+        <ul class="landing-list">
+          <li>Questions focus on what energises you—no prior knowledge of majors required.</li>
+          <li>Responses translate into recommended disciplines and strengths to explore further.</li>
+          <li>Results stay on this page so you can revisit highlights or try again with new perspectives.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section
+      id="whyJoinSection"
+      class="landing-section landing-section--static landing-section--highlight"
+      data-reasons-section
+    >
+      <div class="landing-section__inner">
+        <h2>Why join NUS</h2>
+        <p>
+          Discover an education shaped by renowned faculty, flexible pathways and real-world experiences that prepare you to
+          thrive anywhere.
+        </p>
+        <div class="landing-cards" data-reasons-list></div>
+      </div>
+    </section>
+
+    <section
+      id="programmesSection"
+      class="landing-section landing-section--static landing-section--programmes"
+      data-programmes-section
+    >
+      <div class="landing-section__inner">
+        <h2>Explore new programmes</h2>
+        <p>
+          Spotlight the newest degrees shaping the future of work. These programmes combine rigorous academics with
+          hands-on projects so you can champion emerging industries from day one.
+        </p>
+        <div class="landing-cards landing-programmes" data-programmes-list></div>
+      </div>
+    </section>
+
+    <section
+      id="exploreSection"
+      class="landing-section landing-section--static"
+      data-next-steps-section
+    >
+      <div class="landing-section__inner">
+        <h2>Next steps</h2>
+        <p>
+          After the quiz, keep the momentum going with conversations, events and resources that help you plan your next steps
+          at NUS.
+        </p>
+        <div class="landing-cards" data-next-steps-list></div>
+      </div>
+    </section>
   </main>
 
   <!-- Fixed Footer -->
-  <footer class="site-footer ndm-footer">
+  <footer class="site-footer">
     <p>© Prysillia</p>
     <button
       type="button"
@@ -153,18 +134,5 @@
 
   <!-- JavaScript Modules -->
   <script type="module" src="js/main.js"></script>
-  <script
-    defer
-    src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
-    integrity=""
-    crossorigin="anonymous"
-  ></script>
-  <script
-    defer
-    src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"
-    integrity=""
-    crossorigin="anonymous"
-  ></script>
-  <script defer src="js/animations.js"></script>
 </body>
 </html>
