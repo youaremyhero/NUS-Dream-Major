@@ -88,8 +88,9 @@ window.addEventListener("DOMContentLoaded", () => {
     document.body.classList.remove("quiz-showing-results");
 
     if (quizContainer) {
+      // Keep the quiz DOM intact so question rendering continues to work
+      // (resetting innerHTML removes #quizContent and breaks rendering)
       quizContainer.removeAttribute("hidden");
-      quizContainer.innerHTML = "";
     }
     if (mount) {
       mount.setAttribute("hidden", "true");
