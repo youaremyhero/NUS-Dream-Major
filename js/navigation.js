@@ -17,7 +17,8 @@ export function syncHeaderOffsetVariable() {
 
 export function setupNavigationInteractions() {
   const navLinks = Array.from(document.querySelectorAll('.site-nav a[href^="#"]'));
-  if (!navLinks.length) return;
+  const navSelect = document.querySelector('.site-nav-select select');
+  if (!navLinks.length && !navSelect) return;
 
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const scrollBehavior = prefersReducedMotion ? "auto" : "smooth";
@@ -52,9 +53,15 @@ export function setupNavigationInteractions() {
     })
     .filter(Boolean);
 
+  const findLinkByHash = hash => navLinks.find(link => link.getAttribute("href") === hash);
+
   const setActive = activeLink => {
     navLinks.forEach(link => {
-      link.classList.toggle("is-active", link === activeLink);
+      const isActive = link === activeLink;
+      link.classList.toggle("is-active", isActive);
+      if (isActive && navSelect) {
+        navSelect.value = link.getAttribute("href") || "";
+      }
     });
   };
 
@@ -69,6 +76,21 @@ export function setupNavigationInteractions() {
       setActive(link);
     });
   });
+
+  if (navSelect) {
+    navSelect.addEventListener("change", evt => {
+      const hash = evt.target?.value;
+      if (!hash || !hash.startsWith("#")) return;
+      const target = document.querySelector(hash);
+      if (!target) return;
+      evt.preventDefault();
+      scrollSectionIntoView(target);
+      const matchingLink = findLinkByHash(hash);
+      if (matchingLink) {
+        setActive(matchingLink);
+      }
+    });
+  }
 
   if (sectionMap.length) {
     const observer = new IntersectionObserver(
