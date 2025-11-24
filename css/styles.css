@@ -239,6 +239,15 @@ body.results-body {
 
   .site-nav {
     justify-content: flex-start;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    gap: 10px;
+    padding-bottom: 2px;
+  }
+
+  .site-nav a {
+    flex: 0 0 auto;
+    white-space: nowrap;
   }
 
   .header-actions {
@@ -374,6 +383,7 @@ body.results-body {
   display: grid;
   gap: 12px;
   text-align: center;
+  justify-items: center;
 }
 
 .landing-quiz-header p {
