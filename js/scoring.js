@@ -142,12 +142,18 @@ export function calculateResults(answers) {
   );
   const shiftedEntries = Object.entries(shiftedTotals);
 
-  // Percent scaling guard
-  const maxShifted = Math.max(...shiftedEntries.map(([, s]) => s), 1);
+  // Percent scaling guard (handle all-zero or invalid totals safely)
+  const maxShiftedRaw = Math.max(...shiftedEntries.map(([, s]) => s));
+  const maxShifted = Number.isFinite(maxShiftedRaw) && maxShiftedRaw > 0 ? maxShiftedRaw : 1;
 
   // Initial sort by score desc, then by id for stable ordering
   let sorted = shiftedEntries
-    .map(([id, score]) => ({ id, score, percent: Math.round((score / maxShifted) * 100) }))
+    .map(([id, score]) => {
+      const percent = Number.isFinite(score) && maxShifted > 0
+        ? Math.round((score / maxShifted) * 100)
+        : 0;
+      return { id, score, percent };
+    })
     .sort((a, b) => (b.score === a.score ? a.id.localeCompare(b.id) : b.score - a.score));
 
   // Pass 3: diversity-biased tie handling for final pick list
