@@ -65,6 +65,42 @@ export function setupNavigationInteractions() {
     });
   };
 
+  const updateLinkProgress = () => {
+    if (!sectionMap.length) return;
+
+    const viewportMid = window.scrollY + (window.innerHeight || document.documentElement.clientHeight || 0) / 2;
+    let bestLink = navLinks[0];
+    let bestProgress = -1;
+
+    sectionMap.forEach(({ link, target }) => {
+      const rect = target.getBoundingClientRect();
+      const top = rect.top + window.scrollY;
+      const height = Math.max(rect.height, 1);
+      const end = top + height;
+
+      let progress = 0;
+      if (viewportMid <= top) {
+        progress = 0;
+      } else if (viewportMid >= end) {
+        progress = 1;
+      } else {
+        progress = (viewportMid - top) / height;
+      }
+
+      const clamped = Math.min(Math.max(progress, 0), 1);
+      link.style.setProperty("--nav-progress", `${(clamped * 100).toFixed(2)}%`);
+
+      if (clamped > bestProgress) {
+        bestProgress = clamped;
+        bestLink = link;
+      }
+    });
+
+    if (bestLink) {
+      setActive(bestLink);
+    }
+  };
+
   let navIsOpen = false;
 
   const setNavOpen = (isOpen) => {
@@ -98,31 +134,27 @@ export function setupNavigationInteractions() {
       if (!target) return;
       evt.preventDefault();
       scrollSectionIntoView(target);
+      link.style.setProperty("--nav-progress", "100%");
       setActive(link);
       if (navIsOpen) setNavOpen(false);
     });
   });
 
   if (sectionMap.length) {
-    const observer = new IntersectionObserver(
-      entries => {
-        entries
-          .filter(entry => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)
-          .forEach(entry => {
-            const item = sectionMap.find(({ target }) => target === entry.target);
-            if (item) {
-              setActive(item.link);
-            }
-          });
-      },
-      {
-        rootMargin: "-55% 0px -40% 0px",
-        threshold: [0.25, 0.5, 0.75]
-      }
-    );
+    let ticking = false;
 
-    sectionMap.forEach(({ target }) => observer.observe(target));
+    const requestUpdate = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(() => {
+        updateLinkProgress();
+        ticking = false;
+      });
+    };
+
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate, { passive: true });
+    requestUpdate();
   }
 
   window.addEventListener("keyup", evt => {
