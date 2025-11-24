@@ -5,7 +5,7 @@ import { renderResultsView } from "./results.js";
 import { WHY_NUS } from "./content/whyNUS.js";
 import { EXPLORE_PROGRAMMES } from "./content/exploreProgrammes.js";
 import { NEXT_STEPS } from "./content/nextSteps.js";
-import { setupNavigationInteractions, elevateHeaderOnScroll } from "./navigation.js";
+import { setupNavigationInteractions, elevateHeaderOnScroll, syncHeaderOffsetVariable } from "./navigation.js";
 
 let current = 0;
 const TOTAL_QUESTIONS = QUESTIONS_LIKERT.length;
@@ -42,6 +42,7 @@ window.addEventListener("DOMContentLoaded", () => {
   renderWhyNusHighlights(reasonsSection, reasonsMount);
   renderProgrammeHighlights(programmesSection, programmesMount);
   renderNextSteps(nextStepsSection, nextStepsMount);
+  syncHeaderOffsetVariable();
   setupNavigationInteractions();
   elevateHeaderOnScroll();
   setupThemeToggle(themeToggle);

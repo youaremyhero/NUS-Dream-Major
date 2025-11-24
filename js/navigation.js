@@ -1,3 +1,20 @@
+export function syncHeaderOffsetVariable() {
+  const header = document.querySelector(".site-header");
+  if (!header) return;
+
+  const root = document.documentElement;
+  const updateHeight = () => {
+    const nextHeight = header.getBoundingClientRect().height || 0;
+    root.style.setProperty("--header-h", `${nextHeight}px`);
+  };
+
+  updateHeight();
+
+  const resizeObserver = new ResizeObserver(updateHeight);
+  resizeObserver.observe(header);
+  window.addEventListener("resize", updateHeight, { passive: true });
+}
+
 export function setupNavigationInteractions() {
   const navLinks = Array.from(document.querySelectorAll('.site-nav a[href^="#"]'));
   if (!navLinks.length) return;
