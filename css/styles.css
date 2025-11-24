@@ -14,7 +14,7 @@ html, body {
   padding: 0;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background-color: var(--background);
-  color: #e6e1e5;
+  color: var(--text);
   line-height: 1.6;
 }
 
@@ -199,7 +199,7 @@ body.results-body {
 .site-header .brand,
 .site-header h1 {
   font-size: clamp(1rem, 2vw + 0.2rem, 1.05rem);
-  color: #EF7C00;
+  color: var(--brand);
   margin: 0;
   font-weight: 700;
   line-height: 1.25;
@@ -233,13 +233,17 @@ body.results-body {
 
 .site-nav a {
   text-decoration: none;
-  color: #fff;
+  color: #000000;
   font-weight: 700;
   padding: 2px 10px;
   border-radius: 8px;
   border: none;
   --nav-progress: 0%;
-  background: linear-gradient(90deg, #3a4a6b var(--nav-progress, 0%), rgba(0,0,0,0.04) var(--nav-progress, 0%));
+  background: linear-gradient(
+    90deg,
+    var(--nav-fill) var(--nav-progress, 0%),
+    var(--nav-surface) var(--nav-progress, 0%)
+  );
   transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
   position: relative;
   box-shadow: 0 10px 24px -22px rgba(22, 27, 64, 0.55);
@@ -457,17 +461,17 @@ body.nav-open {
 .landing-section {
   padding: clamp(56px, 11vw, 92px) 0;
   scroll-margin-top: calc(var(--header-h) + 20px);
-  background: #161b40;
+  background: var(--surface-a);
 }
 
 .landing-main .landing-section:nth-of-type(even) {
-  background: #161b40;
+  background: var(--surface-b);
 }
 
 .landing-section--quiz {
   padding-top: clamp(32px, 8vw, 56px);
   padding-bottom: clamp(32px, 8vw, 56px);
-  background: #161b40;
+  background: var(--surface-quiz);
   position: relative;
   z-index: 2;
 }
@@ -536,7 +540,7 @@ body.nav-open {
 }
 
 #programmesSection .landing-section__inner {
-  background: #000000;
+  background: var(--surface-card);
 }
 
 .landing-section--static .landing-cards {
@@ -614,7 +618,7 @@ body.nav-open {
 .landing-card a { justify-self: start; }
 
 .landing-section--highlight {
-  background: #161b40;
+  background: var(--surface-highlight);
 }
 
 .landing-section--quiz .container {
