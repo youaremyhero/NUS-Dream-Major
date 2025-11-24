@@ -563,16 +563,19 @@ body.nav-open {
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
 
-.landing-card {
+.landing-card,
+.landing-programme-card {
+  display: grid;
+  gap: 12px;
   background: var(--surface-card);
-  border: 2px solid var(--border-strong);
+  border: 1px solid var(--border);
   border-radius: calc(var(--radius) + 2px);
-  padding: 24px;
+  padding: clamp(18px, 3vw, 24px);
   box-shadow: var(--shadow-card);
 }
 
 .landing-card h3 {
-  margin: 0 0 10px 0;
+  margin: 0;
   font-size: 1.15rem;
   color: var(--text);
 }
@@ -583,6 +586,8 @@ body.nav-open {
   font-size: 0.98rem;
   line-height: 1.6;
 }
+
+.landing-card a { justify-self: start; }
 
 .landing-section--highlight {
   background: var(--surface-highlight);
@@ -687,12 +692,6 @@ button:focus-visible, .btn:focus-visible {
 }
 
 .landing-programmes .landing-programme-card {
-  display: grid;
-  gap: 12px;
-  background: var(--surface-card);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-card);
-  padding: clamp(18px, 3vw, 24px);
 }
 
 .landing-programme-card__badge,
