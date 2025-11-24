@@ -334,15 +334,17 @@ body.results-body {
     border-bottom: 1px solid var(--border);
     box-shadow: 0 18px 40px -28px rgba(22, 27, 64, 0.35);
     gap: 12px;
+    align-items: center;
     z-index: 150;
   }
 
   .site-header.nav-open .site-nav a {
-    width: 100%;
-    background: var(--surface-b);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 12px 12px;
+    width: auto;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 10px 0;
+    text-align: center;
   }
 
   .header-actions {
