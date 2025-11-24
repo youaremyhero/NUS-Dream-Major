@@ -13,7 +13,7 @@
   <!-- Fixed header -->
   <header id="appHeader" class="site-header" role="banner">
     <div class="brand">Discover Your Dream Major in NUS</div>
-    <nav class="site-nav" aria-label="Results navigation">
+    <nav id="siteNav" class="site-nav" aria-label="Results navigation">
       <a href="#results">Top Matches</a>
       <a href="#exploreProgrammes">Programmes</a>
       <a href="#exploreNew">Possibilities</a>
@@ -22,6 +22,17 @@
     <div class="header-actions">
       <a href="index.html" data-restart class="btn small">Restart Quiz</a>
       <button id="downloadPdfBtn" class="btn small secondary" type="button">Download PDF</button>
+      <button
+        type="button"
+        class="nav-toggle"
+        data-nav-toggle
+        aria-expanded="false"
+        aria-controls="siteNav"
+        aria-label="Open navigation menu"
+      >
+        <span aria-hidden="true" class="nav-toggle__icon"></span>
+        <span class="sr-only">Toggle navigation</span>
+      </button>
     </div>
   </header>
 

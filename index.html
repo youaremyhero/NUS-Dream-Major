@@ -22,25 +22,26 @@
   <!-- Fixed Header -->
   <header class="site-header" role="banner">
     <div class="brand">Dream Major</div>
-    <nav class="site-nav" aria-label="Primary">
+    <nav id="siteNav" class="site-nav" aria-label="Primary">
       <a href="#quizSection">Quiz</a>
       <a href="#aboutSection">About</a>
       <a href="#whyJoinSection">Why Join NUS</a>
       <a href="#programmesSection">Explore Programmes</a>
       <a href="#exploreSection">Explore Possibilities</a>
     </nav>
-    <div class="site-nav-select">
-      <label class="sr-only" for="navSelect">Navigate sections</label>
-      <select id="navSelect" aria-label="Navigate sections">
-        <option value="#quizSection">Quiz</option>
-        <option value="#aboutSection">About</option>
-        <option value="#whyJoinSection">Why Join NUS</option>
-        <option value="#programmesSection">Explore Programmes</option>
-        <option value="#exploreSection">Explore Possibilities</option>
-      </select>
-    </div>
     <div class="header-actions">
       <a href="#quizSection" class="btn small secondary" data-restart>Restart Quiz</a>
+      <button
+        type="button"
+        class="nav-toggle"
+        data-nav-toggle
+        aria-expanded="false"
+        aria-controls="siteNav"
+        aria-label="Open navigation menu"
+      >
+        <span aria-hidden="true" class="nav-toggle__icon"></span>
+        <span class="sr-only">Toggle navigation</span>
+      </button>
     </div>
   </header>
 

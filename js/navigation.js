@@ -17,8 +17,11 @@ export function syncHeaderOffsetVariable() {
 
 export function setupNavigationInteractions() {
   const navLinks = Array.from(document.querySelectorAll('.site-nav a[href^="#"]'));
-  const navSelect = document.querySelector('.site-nav-select select');
-  if (!navLinks.length && !navSelect) return;
+  if (!navLinks.length) return;
+
+  const navToggle = document.querySelector('[data-nav-toggle]');
+  const header = document.querySelector('.site-header');
+  const body = document.body;
 
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const scrollBehavior = prefersReducedMotion ? "auto" : "smooth";
@@ -59,11 +62,33 @@ export function setupNavigationInteractions() {
     navLinks.forEach(link => {
       const isActive = link === activeLink;
       link.classList.toggle("is-active", isActive);
-      if (isActive && navSelect) {
-        navSelect.value = link.getAttribute("href") || "";
-      }
     });
   };
+
+  let navIsOpen = false;
+
+  const setNavOpen = (isOpen) => {
+    navIsOpen = isOpen;
+    header?.classList.toggle("nav-open", isOpen);
+    body?.classList.toggle("nav-open", isOpen);
+    if (navToggle) {
+      navToggle.setAttribute("aria-expanded", String(isOpen));
+      navToggle.setAttribute("aria-label", isOpen ? "Close navigation menu" : "Open navigation menu");
+    }
+  };
+
+  if (navToggle) {
+    navToggle.addEventListener("click", () => setNavOpen(!navIsOpen));
+  }
+
+  const mobileMedia = window.matchMedia("(max-width: 720px)");
+  if (mobileMedia?.addEventListener) {
+    mobileMedia.addEventListener("change", event => {
+      if (!event.matches && navIsOpen) {
+        setNavOpen(false);
+      }
+    });
+  }
 
   navLinks.forEach(link => {
     link.addEventListener("click", evt => {
@@ -74,23 +99,9 @@ export function setupNavigationInteractions() {
       evt.preventDefault();
       scrollSectionIntoView(target);
       setActive(link);
+      if (navIsOpen) setNavOpen(false);
     });
   });
-
-  if (navSelect) {
-    navSelect.addEventListener("change", evt => {
-      const hash = evt.target?.value;
-      if (!hash || !hash.startsWith("#")) return;
-      const target = document.querySelector(hash);
-      if (!target) return;
-      evt.preventDefault();
-      scrollSectionIntoView(target);
-      const matchingLink = findLinkByHash(hash);
-      if (matchingLink) {
-        setActive(matchingLink);
-      }
-    });
-  }
 
   if (sectionMap.length) {
     const observer = new IntersectionObserver(
@@ -113,6 +124,10 @@ export function setupNavigationInteractions() {
 
     sectionMap.forEach(({ target }) => observer.observe(target));
   }
+
+  window.addEventListener("keyup", evt => {
+    if (evt.key === "Escape" && navIsOpen) setNavOpen(false);
+  });
 
   setActive(navLinks[0]);
 }
