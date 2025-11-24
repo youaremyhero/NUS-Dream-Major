@@ -441,8 +441,8 @@ body.nav-open {
 }
 
 .landing-section--quiz {
-  padding-top: clamp(48px, 10vw, 72px);
-  padding-bottom: clamp(48px, 10vw, 72px);
+  padding-top: clamp(32px, 8vw, 56px);
+  padding-bottom: clamp(32px, 8vw, 56px);
   background: var(--surface-quiz);
   position: relative;
   z-index: 2;
@@ -596,7 +596,7 @@ body.nav-open {
 }
 
 .landing-section--quiz .quiz-progress-wrap {
-  margin: 0;
+  margin: 0 auto 18px;
 }
 
 /* Inner quiz wrapper

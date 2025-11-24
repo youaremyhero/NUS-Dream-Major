@@ -6,17 +6,18 @@
   --likert-focus-glow: var(--brand-soft);
 }
 
-/* ===== Progress bar OUTSIDE card ===== */
+/* ===== Progress bar inline within question card ===== */
 .quiz-progress-wrap{
   display:flex;
-  justify-content:center;
+  justify-content:flex-start;
   align-items:center;
-  width: min(100%, var(--card-max));
-  margin: calc(var(--header-h) + 10px) auto 12px;
+  width: min(100%, 62ch);
+  margin: 0 auto 18px;
   padding: 0;
 }
 .quiz-progress-wrap .progress-bar{
-  width: min(100%, 660px);
+  width: 100%;
+  max-width: none;
   height: 12px;
   background: var(--progress-track);
   border-radius:999px;
@@ -29,10 +30,6 @@
   width: 0%;
   background: var(--progress-fill);
   transition: width .20s ease;
-}
-
-.landing-section--quiz .quiz-progress-wrap {
-  margin: 20px auto 16px;
 }
 
 /* ===== Main container (no fixed height; page can scroll) ===== */

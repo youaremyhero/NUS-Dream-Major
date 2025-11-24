@@ -52,14 +52,16 @@
           <h2>Discover Your Dream Major in NUS</h2>
           <p>Answer a short series of questions to reveal programmes that highlight your strengths, interests and aspirations.</p>
         </header>
-        <div class="quiz-progress-wrap">
-          <div class="progress-bar">
-            <div class="progress-bar-fill" id="progressFill"></div>
-          </div>
-        </div>
         <div class="container quiz-page">
           <div id="quizWrapper" class="quiz-container">
-            <div class="quiz-question" id="quizContainer" role="region" aria-live="polite"></div>
+            <div class="quiz-question" id="quizContainer" role="region" aria-live="polite">
+              <div class="quiz-progress-wrap">
+                <div class="progress-bar">
+                  <div class="progress-bar-fill" id="progressFill"></div>
+                </div>
+              </div>
+              <div id="quizContent"></div>
+            </div>
             <div id="resultsMount" class="results-root" data-supplementary="false" hidden></div>
             <div class="quiz-footer">
               <button id="btnBack" type="button" class="btn secondary">Back</button>
