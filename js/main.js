@@ -26,6 +26,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const continueBtn = document.getElementById("continueBtn");
   const backBtn = document.getElementById("btnBack");
   const container = document.getElementById("quizContainer");
+  const questionContent = document.getElementById("quizContent");
   const progressFill = document.getElementById("progressFill");
   const resultsMount = document.getElementById("resultsMount");
   const quizWrapper = document.getElementById("quizWrapper");
@@ -47,7 +48,7 @@ window.addEventListener("DOMContentLoaded", () => {
   elevateHeaderOnScroll();
   setupThemeToggle(themeToggle);
 
-  if (!continueBtn || !container || !progressFill) {
+  if (!continueBtn || !container || !progressFill || !questionContent) {
     console.error("[main.js] Missing required DOM elements");
     return;
   }
@@ -185,8 +186,8 @@ function setupThemeToggle(toggleButton) {
 
 function renderQuestion() {
   const q = QUESTIONS_LIKERT[current];
-  const container = document.getElementById("quizContainer");
-  if (!q || !container) return;
+  const questionContent = document.getElementById("quizContent");
+  if (!q || !questionContent) return;
 
   const likertValues = Object.keys(LIKERT.labels)
     .map(Number)
@@ -218,7 +219,7 @@ function renderQuestion() {
     })
     .join("");
 
-  container.innerHTML = `
+  questionContent.innerHTML = `
     <div class="question-header">
       <h2 id="qTitle">Question ${current + 1} of ${TOTAL_QUESTIONS}</h2>
       <p class="question-text" id="qText">${q.text}</p>
