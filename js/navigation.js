@@ -68,7 +68,9 @@ export function setupNavigationInteractions() {
   const updateLinkProgress = () => {
     if (!sectionMap.length) return;
 
-    const viewportMid = window.scrollY + (window.innerHeight || document.documentElement.clientHeight || 0) / 2;
+    const viewportTop = window.scrollY;
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+    const viewportBottom = viewportTop + viewportHeight;
     let bestLink = navLinks[0];
     let bestProgress = -1;
 
@@ -79,12 +81,13 @@ export function setupNavigationInteractions() {
       const end = top + height;
 
       let progress = 0;
-      if (viewportMid <= top) {
+      if (viewportBottom <= top) {
         progress = 0;
-      } else if (viewportMid >= end) {
+      } else if (viewportTop >= end) {
         progress = 1;
       } else {
-        progress = (viewportMid - top) / height;
+        const visibleProgress = viewportBottom - top;
+        progress = visibleProgress / height;
       }
 
       const clamped = Math.min(Math.max(progress, 0), 1);
