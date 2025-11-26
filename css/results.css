@@ -18,9 +18,11 @@
 
 /* ---------- Page behavior & layout ---------- */
 
+/* Allow full-page scroll on results */
 body.results-body {
   overflow: auto;
-  background: var(--surface-a);
+  /* Light mode: use gradient; dark mode: falls back to surface-a */
+  background: var(--bg-results-page, var(--surface-a));
 }
 
 /* Header: sticky by default on results */
@@ -75,7 +77,7 @@ body.results-body .site-footer {
 .page-section__title {
   margin: 0 0 12px 0;
   font-size: clamp(26px, 3vw, 34px);
-  color: var(--results-accent-secondary); /* gold */
+  color: var(--results-accent-secondary);
   font-weight: 800;
 }
 
@@ -185,7 +187,7 @@ body.results-body .btn.btn-moreinfo {
 }
 .quality-name {
   font-weight: 800;
-  color: var(--results-accent-primary); /* blue/teal */
+  color: var(--results-accent-primary);
   margin-bottom: 4px;
 }
 .quality-desc {
@@ -200,7 +202,7 @@ body.results-body .btn.btn-moreinfo {
 
 .topmajors-grid {
   display: grid;
-  gap: 24px;  /* slightly more breathing room */
+  gap: 24px;
   align-items: start;
   grid-template-columns: minmax(180px, 210px) minmax(0, 1.45fr) minmax(180px, 220px);
 }
@@ -257,7 +259,7 @@ body.results-body .btn.btn-moreinfo {
 .rank-tab__number {
   font-size: 1.05rem;
   font-weight: 800;
-  color: var(--results-accent-secondary); /* gold rank numbers */
+  color: var(--results-accent-secondary);
 }
 
 .rank-tab__content {
@@ -358,7 +360,7 @@ body.results-body .btn.btn-moreinfo {
   margin: 0;
   font-size: clamp(1.1rem, 2vw, 1.35rem);
   font-weight: 800;
-  color: var(--results-accent-primary); /* teal/blue */
+  color: var(--results-accent-primary);
 }
 
 .topmajor-panel__meta {
@@ -371,7 +373,7 @@ body.results-body .btn.btn-moreinfo {
 
 .topmajor-panel__cluster {
   font-weight: 700;
-  color: var(--results-accent-secondary); /* gold cluster label */
+  color: var(--results-accent-secondary);
 }
 
 .topmajor-panel__description {
