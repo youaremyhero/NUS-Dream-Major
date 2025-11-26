@@ -32,9 +32,9 @@ html, body {
   --transition-med: 0.2s;
 
   /* Base colours (LIGHT) */
-  --background: #ededed;
+  /* Warm paper-style base */
+  --background: #f7f3ec;
   --text: #161b40;
-  /* Slightly softer muted blue so it doesn’t compete with headings */
   --muted: #4b5875;
 
   /* Accent / brand-style palette (LIGHT) */
@@ -52,14 +52,23 @@ html, body {
   /* Surfaces (LIGHT) */
   --card: #ffffff;
   --surface-card: #ffffff;
+  /* Static landing cards use solid white */
   --surface-static-card: var(--surface-card);
-  --surface-a: #f6f6f6;
-  --surface-b: #ffffff;
-  /* Slightly lighter / cooler for clearer separation from card */
+
+  /* Section bands: warm, cohesive */
+  --surface-a: #f7f3ec;  /* default landing band */
+  --surface-b: #fdfaf5;  /* alternate band */
+
+  /* Quiz band tint (used as fallback if gradient not available) */
   --surface-quiz: #e9f3fb;
+
   --surface-highlight: rgba(247, 194, 0, 0.16);
   --surface-info: #e5f1fb;
   --surface-header: rgba(255, 255, 255, 0.92);
+
+  /* Gradient backgrounds for light mode (quiz + results only) */
+  --bg-quiz-results: linear-gradient(135deg, #f4f7fc 0%, #faf6ef 100%);
+  --bg-results-page: linear-gradient(135deg, #f4f7fc 0%, #faf6ef 100%);
 
   /* Navigation (LIGHT) */
   --nav-surface: #ffffff;
@@ -99,7 +108,7 @@ html, body {
   --button-primary-bg-hover: #3f85c1;
   --button-primary-text: #ffffff;
 
-  /* Slightly stronger yellow & black text for better contrast */
+  /* Stronger yellow for readability */
   --button-secondary-bg: rgba(247, 194, 0, 0.36);
   --button-secondary-bg-hover: rgba(247, 194, 0, 0.48);
   --button-secondary-text: #000000;
@@ -113,7 +122,7 @@ html, body {
   --theme-toggle-bg: rgba(81, 157, 217, 0.14);
   --theme-toggle-icon: #161b40;
 
-  /* Likert (same for both themes for now) */
+  /* Likert */
   --likert-1: #ef4444;
   --likert-2: #f59e0b;
   --likert-3: #fbbf24;
@@ -121,9 +130,9 @@ html, body {
   --likert-5: #10b981;
 
   /* Results-specific accents (LIGHT) */
-  --results-accent-primary: var(--brand);        /* main accent: blue */
-  --results-accent-secondary: var(--accent-warm);/* secondary accent: gold */
-  --results-body-text: var(--text);              /* long paragraphs */
+  --results-accent-primary: var(--brand);
+  --results-accent-secondary: var(--accent-warm);
+  --results-body-text: var(--text);
   --results-body-muted: var(--muted);
 
   /* Header title */
@@ -131,8 +140,7 @@ html, body {
 }
 
 /* =====================================================
-   DARK THEME — Midnight Gold for content,
-   nav kept as in original dark setup
+   DARK THEME — unchanged (Midnight Gold)
    ===================================================== */
 :root[data-theme="dark"] {
   /* Base colours (DARK – Midnight Gold) */
@@ -140,7 +148,6 @@ html, body {
   --text: #f9fafb;
   --muted: #cbd5f5;
 
-  /* Gold accent palette used across content */
   --brand: #facc15;
   --brand-strong: #facc15;
   --brand-soft: rgba(250, 204, 21, 0.16);
@@ -148,22 +155,21 @@ html, body {
   --brand-100: rgba(250, 204, 21, 0.14);
   --brand-700: #eab308;
 
-  /* Secondary accent set (teal etc.) */
   --accent-cool: #03dac6;
   --accent-warm: #f7c200;
   --accent-contrast: #cf6679;
 
   /* Surfaces (page + cards) */
   --card: #111827;
-  --surface-card: #111827;          /* cards & panels (results, quiz) */
-  --surface-static-card: #152028;   /* static landing sections */
-  --surface-a: #050816;             /* page background */
-  --surface-b: #0a0f1d;             /* alternate sections */
+  --surface-card: #111827;
+  --surface-static-card: #152028;
+  --surface-a: #050816;
+  --surface-b: #0a0f1d;
   --surface-quiz: #141b20;
   --surface-highlight: #000000;
   --surface-info: #1f2937;
 
-  /* === Navigation (retained from earlier dark setup) === */
+  /* Navigation (dark nav preserved) */
   --nav-surface: #1f1f1f;
   --nav-border: #2c2c2c;
   --nav-border-strong: #3a3a3a;
@@ -197,12 +203,10 @@ html, body {
   --footer-border: rgba(148, 163, 184, 0.4);
 
   /* Buttons (DARK) */
-  /* Primary – quiz continue, main CTAs */
   --button-primary-bg: #173f7f;
   --button-primary-bg-hover: #1d4f9c;
   --button-primary-text: #faf7f3;
 
-  /* Secondary – e.g. “See programme options” */
   --button-secondary-bg: #f59e0b;
   --button-secondary-bg-hover: #fab239;
   --button-secondary-text: #000000;
@@ -216,7 +220,7 @@ html, body {
   --theme-toggle-bg: rgba(250, 204, 21, 0.24);
   --theme-toggle-icon: #fefce8;
 
-  /* Likert colours (same) */
+  /* Likert (unchanged) */
   --likert-1: #ef4444;
   --likert-2: #f59e0b;
   --likert-3: #fbbf24;
@@ -224,9 +228,8 @@ html, body {
   --likert-5: #10b981;
 
   /* Results-specific accents (DARK) */
-  --results-accent-primary: var(--accent-cool);  /* teal */
-  --results-accent-secondary: var(--brand-700);  /* strong gold */
-  /* softer than pure white but still bright for long paragraphs */
+  --results-accent-primary: var(--accent-cool);
+  --results-accent-secondary: var(--brand-700);
   --results-body-text: #e3e7ff;
   --results-body-muted: #cbd5f5;
 }
@@ -234,7 +237,6 @@ html, body {
 /* =====================================================
    Page-scoped body behaviour
    ===================================================== */
-/* QUIZ MUST allow page scroll because the footer is fixed. */
 body.quiz-body {
   overflow-y: auto;
   overflow-x: hidden;
@@ -570,10 +572,11 @@ body.nav-open {
   background: var(--surface-b);
 }
 
+/* QUIZ SECTION: light mode gradient, dark mode uses surface-quiz */
 .landing-section--quiz {
   padding-top: clamp(32px, 8vw, 56px);
   padding-bottom: clamp(32px, 8vw, 56px);
-  background: var(--surface-quiz);
+  background: var(--bg-quiz-results, var(--surface-quiz));
   position: relative;
   z-index: 2;
 }
