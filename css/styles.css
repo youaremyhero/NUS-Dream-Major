@@ -32,7 +32,7 @@ html, body {
   --text: #161b40;
   --muted: #3a4a6b;
 
-  /* Accent / “brand-style” palette (LIGHT) */
+  /* Accent / brand-style palette (LIGHT) */
   --brand: #519dd9;
   --brand-strong: #519dd9;
   --brand-soft: rgba(81, 157, 217, 0.18);
@@ -101,7 +101,7 @@ html, body {
   --badge-bg: var(--brand-soft);
   --badge-text: var(--brand-strong);
 
-  /* Focus & interactive tokens (LIGHT) */
+  /* Focus & toggles (LIGHT) */
   --focus-outline: #519dd9;
   --theme-toggle-bg: rgba(81, 157, 217, 0.14);
   --theme-toggle-icon: #161b40;
@@ -117,41 +117,44 @@ html, body {
   --header-title-color: var(--brand);
 }
 
-/* DARK THEME — all dark styling comes from here */
+/* =====================================================
+   DARK THEME — Midnight Gold for content,
+   nav kept as in original dark setup
+   ===================================================== */
 :root[data-theme="dark"] {
-  /* Base colours (DARK) */
-  --background: #121212;
-  --text: #e6e1e5;
-  --muted: #c6c0cf;
+  /* Base colours (DARK – Midnight Gold) */
+  --background: #050816;
+  --text: #f9fafb;
+  --muted: #cbd5f5;
 
-  /* Accent / “brand-style” palette (DARK), tuned to your colours */
-  --brand: #173f7f;
-  --brand-strong: #1d4f9c;
-  --brand-soft: rgba(23, 63, 127, 0.24);
-  --brand-soft-strong: rgba(23, 63, 127, 0.4);
-  --brand-100: var(--brand-soft);
-  --brand-700: var(--brand-strong);
+  /* Gold accent palette used across content */
+  --brand: #facc15;
+  --brand-strong: #facc15;
+  --brand-soft: rgba(250, 204, 21, 0.16);
+  --brand-soft-strong: rgba(250, 204, 21, 0.32);
+  --brand-100: rgba(250, 204, 21, 0.14);
+  --brand-700: #eab308;
 
+  /* Secondary accent set (kept for occasional use) */
   --accent-cool: #03dac6;
   --accent-warm: #f7c200;
   --accent-contrast: #cf6679;
 
-  /* Surfaces (DARK) */
-  --card: #181818;
-  --surface-card: #1f1b24;
-  --surface-static-card: #152028;   /* used for static landing sections */
-  --surface-a: #121212;
-  --surface-b: #181818;
+  /* Surfaces (page + cards) */
+  --card: #111827;
+  --surface-card: #111827;          /* cards & panels (results, quiz) */
+  --surface-static-card: #152028;   /* static landing sections */
+  --surface-a: #050816;             /* page background */
+  --surface-b: #0a0f1d;             /* alternate sections */
   --surface-quiz: #141b20;
   --surface-highlight: #000000;     /* highlight sections go full black */
-  --surface-info: #242424;
-  --surface-header: rgba(18, 18, 18, 0.92);
+  --surface-info: #1f2937;
 
-  /* Navigation (DARK) – glowing gold on charcoal */
+  /* === Navigation (retained from earlier dark setup) === */
   --nav-surface: #1f1f1f;
   --nav-border: #2c2c2c;
   --nav-border-strong: #3a3a3a;
-  --nav-fill: rgba(247, 194, 0, 0.24);
+  --nav-fill: #2a2a2a;
   --nav-text: #e6e1e5;
 
   --nav-link-color: #f7c200;
@@ -162,29 +165,31 @@ html, body {
   --nav-shadow: 0 10px 24px -22px rgba(0, 0, 0, 0.7);
   --nav-shadow-hover: 0 10px 24px -18px rgba(247, 194, 0, 0.45);
   --nav-shadow-focus: 0 10px 24px -18px rgba(247, 194, 0, 0.55);
+  --surface-header: rgba(18, 18, 18, 0.92);
+  --header-title-color: #f7c200;
 
   /* Borders & shadows (DARK) */
-  --border: rgba(230, 225, 229, 0.16);
-  --border-strong: rgba(230, 225, 229, 0.38);
-  --shadow-soft: 0 18px 44px -36px rgba(0, 0, 0, 0.6);
-  --shadow-card: 0 16px 36px -34px rgba(0, 0, 0, 0.55);
+  --border: #1f2937;
+  --border-strong: #293548;
+  --shadow-soft: 0 18px 44px -36px rgba(0, 0, 0, 0.7);
+  --shadow-card: 0 16px 36px -34px rgba(0, 0, 0, 0.65);
 
   /* Progress (DARK) */
-  --progress-track: rgba(3, 218, 198, 0.24);
-  --progress-fill: linear-gradient(90deg, #03dac6, #bb86fc);
+  --progress-track: rgba(250, 204, 21, 0.22);
+  --progress-fill: linear-gradient(90deg, #facc15, #eab308);
 
   /* Footer (DARK) */
-  --footer-bg: #181818;
-  --footer-text: #e6e1e5;
-  --footer-border: rgba(230, 225, 229, 0.12);
+  --footer-bg: #050816;
+  --footer-text: #f9fafb;
+  --footer-border: rgba(148, 163, 184, 0.4);
 
   /* Buttons (DARK) */
-  /* Primary (quiz continue etc.) */
+  /* Primary – quiz continue, main CTAs */
   --button-primary-bg: #173f7f;
   --button-primary-bg-hover: #1d4f9c;
   --button-primary-text: #faf7f3;
 
-  /* Secondary (e.g. See programme options) */
+  /* Secondary – e.g. “See programme options” */
   --button-secondary-bg: #f59e0b;
   --button-secondary-bg-hover: #fab239;
   --button-secondary-text: #000000;
@@ -193,20 +198,17 @@ html, body {
   --badge-bg: #3a4a6b;
   --badge-text: #faf7f3;
 
-  /* Focus & interactive tokens (DARK) */
-  --focus-outline: #bb86fc;
-  --theme-toggle-bg: rgba(187, 134, 252, 0.24);
-  --theme-toggle-icon: #e6e1e5;
+  /* Focus & toggles (DARK) */
+  --focus-outline: #facc15;
+  --theme-toggle-bg: rgba(250, 204, 21, 0.24);
+  --theme-toggle-icon: #fefce8;
 
-  /* Likert (same) */
+  /* Likert colours (same) */
   --likert-1: #ef4444;
   --likert-2: #f59e0b;
   --likert-3: #fbbf24;
   --likert-4: #84cc16;
   --likert-5: #10b981;
-
-  /* Header title */
-  --header-title-color: #f7c200;
 }
 
 /* =====================================================
@@ -463,7 +465,7 @@ body.nav-open {
 }
 
 /* =====================================================
-   Footer (fixed for quiz page; reset to static in results.css)
+   Footer (fixed for quiz page; reset in results.css)
    ===================================================== */
 .site-footer {
   position: fixed;
@@ -513,7 +515,6 @@ body.nav-open {
 /* =====================================================
    Main Content Container
    ===================================================== */
-/* Remove hard height/overflow so page can extend when needed. */
 .container {
   margin-top: var(--header-h);
   margin-bottom: var(--footer-h);
@@ -611,6 +612,14 @@ body.nav-open {
   padding: clamp(32px, 6vw, 48px) clamp(24px, 6vw, 44px);
   box-shadow: var(--shadow-soft);
   gap: clamp(22px, 4vw, 30px);
+}
+
+#aboutSection .landing-section__inner {
+  background: var(--surface-static-card);
+}
+
+#programmesSection .landing-section__inner {
+  background: var(--surface-static-card);
 }
 
 .landing-section--static .landing-cards {
