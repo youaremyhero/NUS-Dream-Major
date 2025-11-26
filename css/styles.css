@@ -18,16 +18,21 @@ html, body {
   line-height: 1.6;
 }
 
-/* Layout Variables */
+/* =====================================================
+   Layout Variables & Theme Tokens
+   ===================================================== */
 :root {
+  /* Layout */
   --header-h: 56px;
   --footer-h: 44px;
   --content-w: 1060px;
 
+  /* Base colours (LIGHT) */
   --background: #ededed;
   --text: #161b40;
   --muted: #3a4a6b;
 
+  /* Accent / “brand-style” palette (LIGHT) */
   --brand: #519dd9;
   --brand-strong: #519dd9;
   --brand-soft: rgba(81, 157, 217, 0.18);
@@ -39,6 +44,7 @@ html, body {
   --accent-warm: #f7c200;
   --accent-contrast: #db0038;
 
+  /* Surfaces (LIGHT) */
   --card: #ffffff;
   --surface-card: #ffffff;
   --surface-a: #f6f6f6;
@@ -46,59 +52,91 @@ html, body {
   --surface-quiz: #f0f7fb;
   --surface-highlight: rgba(247, 194, 0, 0.16);
   --surface-info: #e5f1fb;
+  --surface-header: rgba(255, 255, 255, 0.92);
 
+  /* Navigation (LIGHT) */
   --nav-surface: #ffffff;
   --nav-border: #e8e6dc;
   --nav-border-strong: #dcd6c6;
   --nav-fill: #fff6c2;
   --nav-text: #1f1f1f;
 
+  /* Nav link tokens (LIGHT) */
+  --nav-link-color: #000000;
+  --nav-link-hover-bg: #ffffff;
+  --nav-link-hover-text: #000000;
+  --nav-link-active-bg: var(--nav-fill);
+  --nav-link-active-text: var(--nav-text);
+  --nav-shadow: 0 10px 24px -22px rgba(22, 27, 64, 0.55);
+  --nav-shadow-hover: 0 10px 24px -18px rgba(22, 27, 64, 0.65);
+  --nav-shadow-focus: 0 10px 24px -18px rgba(22, 27, 64, 0.7);
+
+  /* Borders & shadows (LIGHT) */
   --border: rgba(22, 27, 64, 0.16);
   --border-strong: rgba(22, 27, 64, 0.32);
-
   --radius: 12px;
   --shadow-soft: 0 18px 44px -36px rgba(22, 27, 64, 0.25);
   --shadow-card: 0 16px 36px -34px rgba(22, 27, 64, 0.2);
 
+  /* Progress (LIGHT) */
   --progress-track: rgba(81, 157, 217, 0.2);
   --progress-fill: linear-gradient(90deg, #53bac1, #519dd9);
 
+  /* Footer (LIGHT) */
   --footer-bg: #ffffff;
   --footer-text: #161b40;
   --footer-border: rgba(22, 27, 64, 0.12);
 
+  /* Buttons (LIGHT) */
+  --button-primary-bg: #519dd9;
+  --button-primary-bg-hover: #3f85c1;
+  --button-primary-text: #ffffff;
+
   --button-secondary-bg: rgba(247, 194, 0, 0.28);
+  --button-secondary-bg-hover: rgba(247, 194, 0, 0.4);
   --button-secondary-text: #161b40;
 
-  --focus-outline: #519dd9;
+  /* Badges (LIGHT) */
+  --badge-bg: var(--brand-soft);
+  --badge-text: var(--brand-strong);
 
+  /* Focus & interactive tokens (LIGHT) */
+  --focus-outline: #519dd9;
+  --theme-toggle-bg: rgba(81, 157, 217, 0.14);
+  --theme-toggle-icon: #161b40;
+
+  /* Likert (same for both themes for now) */
   --likert-1: #ef4444;
   --likert-2: #f59e0b;
   --likert-3: #fbbf24;
   --likert-4: #84cc16;
   --likert-5: #10b981;
 
-  --surface-header: rgba(255, 255, 255, 0.92);
-  --theme-toggle-bg: rgba(81, 157, 217, 0.14);
-  --theme-toggle-icon: #161b40;
+  /* Header title */
+  --header-title-color: var(--brand);
 }
 
+/* DARK THEME */
 :root[data-theme="dark"] {
+  /* Base colours (DARK) */
   --background: #121212;
   --text: #e6e1e5;
   --muted: #c6c0cf;
 
-  --brand: #306be5;
-  --brand-strong: #306be5;
-  --brand-soft: #1e2765;
-  --brand-soft-strong: rgba(48, 107, 229, 0.32);
+  /* Accent palette (DARK – hybrid teal/yellow/pink) */
+  --accent-cool: #03dac6;
+  --accent-warm: #f7c200;
+  --accent-contrast: #cf6679;
+
+  /* Brand tokens kept only for compatibility, not relied on */
+  --brand: #03dac6;
+  --brand-strong: #03dac6;
+  --brand-soft: #1e1e1e;
+  --brand-soft-strong: rgba(3, 218, 198, 0.32);
   --brand-100: var(--brand-soft);
   --brand-700: var(--brand-strong);
 
-  --accent-cool: #03dac6;
-  --accent-warm: #d89d04;
-  --accent-contrast: #cf6679;
-
+  /* Surfaces (DARK) */
   --card: #1e1e1e;
   --surface-card: #1f1b24;
   --surface-a: #121212;
@@ -106,47 +144,74 @@ html, body {
   --surface-quiz: #1c1c1c;
   --surface-highlight: rgba(3, 218, 198, 0.18);
   --surface-info: #242424;
+  --surface-header: rgba(18, 18, 18, 0.92);
 
+  /* Navigation (DARK) – glowing gold on charcoal */
   --nav-surface: #1f1f1f;
   --nav-border: #2c2c2c;
   --nav-border-strong: #3a3a3a;
-  --nav-fill: #2a2a2a;
+  --nav-fill: rgba(247, 194, 0, 0.24);
   --nav-text: #e6e1e5;
 
+  --nav-link-color: #f7c200;
+  --nav-link-hover-bg: rgba(247, 194, 0, 0.12);
+  --nav-link-hover-text: #fff4bf;
+  --nav-link-active-bg: rgba(247, 194, 0, 0.24);
+  --nav-link-active-text: #fff9d1;
+  --nav-shadow: 0 10px 24px -22px rgba(0, 0, 0, 0.7);
+  --nav-shadow-hover: 0 10px 24px -18px rgba(247, 194, 0, 0.45);
+  --nav-shadow-focus: 0 10px 24px -18px rgba(247, 194, 0, 0.55);
+
+  /* Borders & shadows (DARK) */
   --border: rgba(230, 225, 229, 0.16);
   --border-strong: rgba(230, 225, 229, 0.38);
-
   --shadow-soft: 0 18px 44px -36px rgba(0, 0, 0, 0.6);
   --shadow-card: 0 16px 36px -34px rgba(0, 0, 0, 0.55);
 
-  --progress-track: rgba(187, 134, 252, 0.32);
+  /* Progress (DARK) */
+  --progress-track: rgba(3, 218, 198, 0.24);
   --progress-fill: linear-gradient(90deg, #03dac6, #bb86fc);
 
+  /* Footer (DARK) */
   --footer-bg: #181818;
   --footer-text: #e6e1e5;
   --footer-border: rgba(230, 225, 229, 0.12);
 
-  --button-secondary-bg: rgba(3, 218, 198, 0.24);
+  /* Buttons (DARK) – accent-based, not brand blue */
+  --button-primary-bg: #03dac6;
+  --button-primary-bg-hover: #00c4b0;
+  --button-primary-text: #121212;
+
+  --button-secondary-bg: rgba(247, 194, 0, 0.22);
+  --button-secondary-bg-hover: rgba(247, 194, 0, 0.34);
   --button-secondary-text: #121212;
 
-  --focus-outline: #bb86fc;
+  /* Badges (DARK) */
+  --badge-bg: rgba(187, 134, 252, 0.22);
+  --badge-text: #e6e1e5;
 
+  /* Focus & interactive tokens (DARK) */
+  --focus-outline: #bb86fc;
+  --theme-toggle-bg: rgba(187, 134, 252, 0.24);
+  --theme-toggle-icon: #e6e1e5;
+
+  /* Likert (same) */
   --likert-1: #ef4444;
   --likert-2: #f59e0b;
   --likert-3: #fbbf24;
   --likert-4: #84cc16;
   --likert-5: #10b981;
 
-  --surface-header: rgba(18, 18, 18, 0.92);
-  --theme-toggle-bg: rgba(187, 134, 252, 0.24);
-  --theme-toggle-icon: #e6e1e5;
+  /* Header title */
+  --header-title-color: #f7c200;
 }
 
-/* Page-scoped body behaviour
-   QUIZ MUST allow page scroll because the footer is fixed.
-*/
+/* =====================================================
+   Page-scoped body behaviour
+   ===================================================== */
+/* QUIZ MUST allow page scroll because the footer is fixed. */
 body.quiz-body {
-  overflow-y: auto;            /* was hidden → caused buttons to be cut off */
+  overflow-y: auto;
   overflow-x: hidden;
   min-height: 100dvh;
 }
@@ -172,7 +237,9 @@ body.results-body {
   border: 0;
 }
 
-/* Header */
+/* =====================================================
+   Header
+   ===================================================== */
 
 .site-header {
   position: fixed;
@@ -199,7 +266,7 @@ body.results-body {
 .site-header .brand,
 .site-header h1 {
   font-size: clamp(1rem, 2vw + 0.2rem, 1.05rem);
-  color: var(--brand);
+  color: var(--header-title-color);
   margin: 0;
   font-weight: 700;
   line-height: 1.25;
@@ -213,7 +280,7 @@ body.results-body {
   margin-left: auto;
 }
 
-
+/* Navigation */
 .site-nav {
   display: flex;
   align-items: center;
@@ -233,7 +300,7 @@ body.results-body {
 
 .site-nav a {
   text-decoration: none;
-  color: #000000;
+  color: var(--nav-link-color);
   font-weight: 700;
   padding: 2px 10px;
   border-radius: 8px;
@@ -244,30 +311,35 @@ body.results-body {
     var(--nav-fill) var(--nav-progress, 0%),
     var(--nav-surface) var(--nav-progress, 0%)
   );
-  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
   position: relative;
-  box-shadow: 0 10px 24px -22px rgba(22, 27, 64, 0.55);
+  box-shadow: var(--nav-shadow);
 }
 
 .site-nav a:hover {
-  background: #ffffff;
-  color: #000000;
-  box-shadow: 0 10px 24px -18px rgba(22, 27, 64, 0.65);
+  background: var(--nav-link-hover-bg);
+  color: var(--nav-link-hover-text);
+  box-shadow: var(--nav-shadow-hover);
 }
 
 .site-nav a.is-active {
-  color: var(--nav-text);
+  background: var(--nav-link-active-bg);
+  color: var(--nav-link-active-text);
   font-weight: 700;
 }
 
 .site-nav a:focus-visible {
   outline: 2px solid var(--focus-outline);
   outline-offset: 3px;
-  background: #ffffff;
-  color: #000000;
-  box-shadow: 0 10px 24px -18px rgba(22, 27, 64, 0.7);
+  background: var(--nav-link-hover-bg);
+  color: var(--nav-link-hover-text);
+  box-shadow: var(--nav-shadow-focus);
 }
 
+/* Nav toggle (mobile) */
 .nav-toggle {
   display: none;
   width: 38px;
@@ -362,7 +434,7 @@ body.results-body {
     padding: 10px 20px 20px;
     background: var(--surface-card);
     border-bottom: 1px solid var(--border);
-    box-shadow: 0 18px 40px -28px rgba(22, 27, 64, 0.35);
+    box-shadow: var(--shadow-soft);
     gap: 12px;
     align-items: center;
     z-index: 150;
@@ -387,7 +459,9 @@ body.nav-open {
   overflow: hidden;
 }
 
-/* Footer (fixed for quiz page; will be reset to static in results.css) */
+/* =====================================================
+   Footer (fixed for quiz page; reset to static in results.css)
+   ===================================================== */
 .site-footer {
   position: fixed;
   bottom: 0; left: 0; right: 0;
@@ -433,24 +507,25 @@ body.nav-open {
   outline-offset: 2px;
 }
 
-/* Main Content Container
-   Remove hard height/overflow so page can extend when needed.
-*/
+/* =====================================================
+   Main Content Container
+   ===================================================== */
+/* Remove hard height/overflow so page can extend when needed. */
 .container {
   margin-top: var(--header-h);
   margin-bottom: var(--footer-h);
   display: flex;
   justify-content: center;
-  align-items: flex-start;      /* start so the card does not center off-screen */
+  align-items: flex-start;
   min-height: calc(100dvh - var(--header-h) - var(--footer-h));
-  height: auto;                 /* was fixed height */
+  height: auto;
   padding: 1rem;
-  overflow: visible;            /* allow content to extend and page to scroll */
+  overflow: visible;
 }
 
 /* QUIZ PAGE LAYOUT */
 .container.quiz-page {
-  align-items: flex-start;      /* let inner stack naturally */
+  align-items: flex-start;
 }
 
 .landing-main {
@@ -632,15 +707,13 @@ body.nav-open {
   margin: 0 auto 18px;
 }
 
-/* Inner quiz wrapper
-   Remove fixed heights and add bottom padding so content never hides under the fixed footer.
-*/
+/* Inner quiz wrapper */
 .quiz-container {
   width: 100%;
   max-width: var(--content-w);
-  height: auto;                 /* was calc(100dvh - ... ) */
-  min-height: 0;                /* allow the card to set its own height */
-  overflow: visible;            /* no inner scroll */
+  height: auto;
+  min-height: 0;
+  overflow: visible;
   background: var(--surface-card);
   border-radius: calc(var(--radius) + 4px);
   padding: clamp(20px, 3vw, 26px);
@@ -664,36 +737,61 @@ body.nav-open {
   transition: width 200ms ease;
 }
 
-/* ---- Buttons ---- */
-button, .btn {
+/* =====================================================
+   Buttons
+   ===================================================== */
+button,
+.btn {
   font-family: inherit;
   border-radius: var(--radius);
   border: none;
   cursor: pointer;
   font-weight: 700;
   padding: 10px 16px;
-  transition: background 0.2s ease, transform 0.1s ease;
+  transition: background 0.2s ease, transform 0.1s ease, filter 0.15s ease;
 }
-button:focus-visible, .btn:focus-visible {
+
+button:focus-visible,
+.btn:focus-visible {
   outline: 3px solid var(--focus-outline);
   outline-offset: 2px;
 }
 
+/* Primary button */
 .btn {
-  background: var(--brand);
-  color: #fff;
+  background: var(--button-primary-bg);
+  color: var(--button-primary-text);
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
-.btn:hover { filter: brightness(0.98); }
-.btn.small { padding: 8px 12px; font-size: 0.9rem; border-radius: 10px; }
+
+.btn:hover {
+  background: var(--button-primary-bg-hover);
+  filter: brightness(0.99);
+}
+
+/* Shared size variants */
+.btn.small {
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  border-radius: 10px;
+}
+
+/* Secondary button */
 .btn.secondary {
   background: var(--button-secondary-bg);
   color: var(--button-secondary-text);
 }
 
+.btn.secondary:hover {
+  background: var(--button-secondary-bg-hover);
+}
+
+/* =====================================================
+   Programmes section & cards
+   ===================================================== */
 .landing-section--programmes {
   padding: clamp(44px, 9vw, 72px) 0;
 }
@@ -719,65 +817,18 @@ button:focus-visible, .btn:focus-visible {
   }
 }
 
-.landing-programmes .landing-programme-card {
-}
-
 .landing-programme-card__badge,
 .landing-card__badge {
   display: inline-flex;
   align-self: flex-start;
   padding: 4px 10px;
   border-radius: 999px;
-  background: var(--brand-soft);
-  color: var(--brand-strong);
+  background: var(--badge-bg);
+  color: var(--badge-text);
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.02em;
   text-transform: uppercase;
-}
-
-/* Dark theme overrides */
-:root[data-theme="dark"] .landing-section--static .landing-section__inner {
-  background: #000000;
-}
-
-:root[data-theme="dark"] .site-nav a {
-  color: #d89d04;
-}
-
-:root[data-theme="dark"] .site-nav a:hover {
-  color: #f59e0b;
-  opacity: 0.6
-  box-shadow: 0 10px 24px -18px rgba(230, 181, 41, 0.45);
-}
-
-:root[data-theme="dark"] .site-nav a:focus-visible {
-  color: #f59e0b;
-  box-shadow: 0 10px 24px -18px rgba(230, 181, 41, 0.55);
-}
-
-:root[data-theme="dark"] .site-nav a.is-active {
-  background: #121212;
-}
-
-:root[data-theme="dark"] .site-header .brand,
-:root[data-theme="dark"] .site-header h1 {
-  color: var(--brand);
-}
-
-:root[data-theme="dark"] .btn.secondary {
-  font-weight: 700;
-  color: #000000;
-  background: #f59e0b;
-}
-
-:root[data-theme="dark"] .btn.secondary:hover {
-  background: #c9820a;
-}
-
-:root[data-theme="dark"] .landing-programme-card__badge,
-:root[data-theme="dark"] .landing-card__badge {
-  background: var(--brand-soft);
 }
 
 .landing-programme-card h3 {
@@ -796,7 +847,9 @@ button:focus-visible, .btn:focus-visible {
   justify-self: start;
 }
 
-/* ---- Quiz page text size tweaks (to maximize space) ---- */
+/* =====================================================
+   Quiz page text size tweaks (to maximize space)
+   ===================================================== */
 body.quiz-body .quiz-question .question-text {
   font-size: clamp(18px, 2.2vw, 22px);
 }
@@ -804,9 +857,7 @@ body.quiz-body .option-card span {
   font-size: clamp(14px, 1.9vw, 17px);
 }
 
-/* Compact mode for dense screens (short heights)
-   Keep footer smaller and top spacing tighter.
-*/
+/* Compact mode for dense screens (short heights) */
 @media (max-height: 740px) {
   :root { --header-h: 56px; }
   .site-header { height: 56px; }
