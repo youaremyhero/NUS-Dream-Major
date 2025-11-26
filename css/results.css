@@ -108,7 +108,8 @@ body.results-body .site-footer {
 
 .muted { color: var(--muted); }
 
-.btn {
+/* Results-specific button styling (scoped so it doesn't affect quiz page) */
+body.results-body .btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -123,14 +124,45 @@ body.results-body .site-footer {
   transition: transform .05s ease, background .2s ease, border-color .2s ease;
 }
 
-.btn:hover { background: var(--brand-soft); }
-.btn:active { transform: translateY(1px); }
+body.results-body .btn:hover {
+  background: var(--brand-soft);
+}
 
-.btn.small { padding: 6px 10px; font-size: .92rem; }
-.btn.secondary { background: var(--button-secondary-bg); color: var(--button-secondary-text); border-color: transparent; }
-.btn.secondary:hover { background: var(--brand-soft-strong); }
+body.results-body .btn:active {
+  transform: translateY(1px);
+}
 
-.link-note { font-size: .9rem; color: var(--muted); margin-top: 8px; }
+body.results-body .btn.small {
+  padding: 6px 10px;
+  font-size: .92rem;
+}
+
+/* Secondary buttons (e.g. See programme options) use theme tokens */
+body.results-body .btn.secondary {
+  background: var(--button-secondary-bg);
+  color: var(--button-secondary-text);
+  border-color: transparent;
+}
+
+body.results-body .btn.secondary:hover {
+  background: var(--button-secondary-bg-hover);
+}
+
+/* More-info success-style button */
+body.results-body .btn.btn-moreinfo {
+  background: var(--success);
+  color: #fff;
+  font-weight: 700;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--success);
+}
+
+.link-note {
+  font-size: .9rem;
+  color: var(--muted);
+  margin-top: 8px;
+}
 
 /* ---------- Qualities grid ---------- */
 
@@ -671,15 +703,6 @@ body.results-body .site-footer {
   line-height: 1.55;
 }
 
-.btn.btn-moreinfo {
-  background: var(--success);
-  color: #fff;
-  font-weight: 700;
-  padding: 8px 12px;
-  border-radius: 10px;
-  border: 1px solid var(--success);
-}
-
 /* ---------- Special Programmes ---------- */
 
 .sp-list { 
@@ -793,7 +816,6 @@ body.results-body .site-footer {
   color: var(--muted);
   font-size: 0.95rem;
 }
-
 
 .results-hero__content {
   display: grid;
@@ -943,7 +965,7 @@ body.results-body .site-footer {
 .topmajor-head {
   display: flex;
   align-items: center;
-  gap: 1rem;              /* prevents overlap between number and title */
+  gap: 1rem;
 }
 
 .topmajor-title { 
