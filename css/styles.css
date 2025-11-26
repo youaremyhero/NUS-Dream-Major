@@ -670,7 +670,7 @@ button, .btn {
   border-radius: var(--radius);
   border: none;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 700;
   padding: 10px 16px;
   transition: background 0.2s ease, transform 0.1s ease;
 }
@@ -769,6 +769,7 @@ button:focus-visible, .btn:focus-visible {
 
 :root[data-theme="dark"] .btn.secondary {
   font-weight: 700;
+  font-colour: #f59e0b;
 }
 
 :root[data-theme="dark"] .btn.secondary:hover {
