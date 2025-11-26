@@ -47,6 +47,7 @@ html, body {
   /* Surfaces (LIGHT) */
   --card: #ffffff;
   --surface-card: #ffffff;
+  --surface-static-card: var(--surface-card);
   --surface-a: #f6f6f6;
   --surface-b: #ffffff;
   --surface-quiz: #f0f7fb;
@@ -116,33 +117,33 @@ html, body {
   --header-title-color: var(--brand);
 }
 
-/* DARK THEME */
+/* DARK THEME — all dark styling comes from here */
 :root[data-theme="dark"] {
   /* Base colours (DARK) */
   --background: #121212;
   --text: #e6e1e5;
   --muted: #c6c0cf;
 
-  /* Accent palette (DARK – hybrid teal/yellow/pink) */
+  /* Accent / “brand-style” palette (DARK), tuned to your colours */
+  --brand: #173f7f;
+  --brand-strong: #1d4f9c;
+  --brand-soft: rgba(23, 63, 127, 0.24);
+  --brand-soft-strong: rgba(23, 63, 127, 0.4);
+  --brand-100: var(--brand-soft);
+  --brand-700: var(--brand-strong);
+
   --accent-cool: #03dac6;
   --accent-warm: #f7c200;
   --accent-contrast: #cf6679;
 
-  /* Brand tokens kept only for compatibility, not relied on */
-  --brand: #03dac6;
-  --brand-strong: #03dac6;
-  --brand-soft: #1e1e1e;
-  --brand-soft-strong: rgba(3, 218, 198, 0.32);
-  --brand-100: var(--brand-soft);
-  --brand-700: var(--brand-strong);
-
   /* Surfaces (DARK) */
-  --card: #1e1e1e;
+  --card: #181818;
   --surface-card: #1f1b24;
+  --surface-static-card: #152028;   /* used for static landing sections */
   --surface-a: #121212;
   --surface-b: #181818;
-  --surface-quiz: #1c1c1c;
-  --surface-highlight: rgba(3, 218, 198, 0.18);
+  --surface-quiz: #141b20;
+  --surface-highlight: #000000;     /* highlight sections go full black */
   --surface-info: #242424;
   --surface-header: rgba(18, 18, 18, 0.92);
 
@@ -177,7 +178,7 @@ html, body {
   --footer-text: #e6e1e5;
   --footer-border: rgba(230, 225, 229, 0.12);
 
-  /* Buttons (DARK) – updated per spec */
+  /* Buttons (DARK) */
   /* Primary (quiz continue etc.) */
   --button-primary-bg: #173f7f;
   --button-primary-bg-hover: #1d4f9c;
@@ -605,19 +606,11 @@ body.nav-open {
 }
 
 .landing-section--static .landing-section__inner {
-  background: var(--surface-card);
+  background: var(--surface-static-card);
   border-radius: calc(var(--radius) + 4px);
   padding: clamp(32px, 6vw, 48px) clamp(24px, 6vw, 44px);
   box-shadow: var(--shadow-soft);
   gap: clamp(22px, 4vw, 30px);
-}
-
-#aboutSection .landing-section__inner {
-  background: var(--surface-card);
-}
-
-#programmesSection .landing-section__inner {
-  background: var(--surface-card);
 }
 
 .landing-section--static .landing-cards {
@@ -869,18 +862,4 @@ body.quiz-body .option-card span {
 /* Slightly wider screens: allow larger max width */
 @media (min-width: 1200px) {
   .quiz-container { max-width: 1120px; }
-}
-
-/* =====================================================
-   Dark theme component overrides
-   ===================================================== */
-
-/* Dark mode: highlight section should be black */
-:root[data-theme="dark"] .landing-section--highlight {
-  background: #000000;
-}
-
-/* Dark mode: all static landing section inners use #152028 */
-:root[data-theme="dark"] .landing-section--static .landing-section__inner {
-  background: #152028;
 }
