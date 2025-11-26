@@ -742,19 +742,16 @@ button:focus-visible, .btn:focus-visible {
 }
 
 :root[data-theme="dark"] .site-nav a {
-  color: #121212;
-  background: #d89d04;
+  color: #d89d04;
 }
 
 :root[data-theme="dark"] .site-nav a:hover {
-  background: #e8b329;
-  color: #121212;
+  color: ##f59e0b;
   box-shadow: 0 10px 24px -18px rgba(230, 181, 41, 0.45);
 }
 
 :root[data-theme="dark"] .site-nav a:focus-visible {
-  background: #e8b329;
-  color: #121212;
+  color: #f59e0b;
   box-shadow: 0 10px 24px -18px rgba(230, 181, 41, 0.55);
 }
 
@@ -769,7 +766,7 @@ button:focus-visible, .btn:focus-visible {
 
 :root[data-theme="dark"] .btn.secondary {
   font-weight: 700;
-  font-colour: #f59e0b;
+  colour: #f59e0b;
 }
 
 :root[data-theme="dark"] .btn.secondary:hover {
