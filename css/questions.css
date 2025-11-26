@@ -107,9 +107,8 @@
 .likert-scale{
   margin-top: clamp(18px, 2.6vw, 24px);
   padding: clamp(14px, 2.2vw, 18px) 10px 2px;
-  background:var(--surface-card);             /* no dashed or faint border */
+  background:var(--surface-card);
   border: 0;
-
   display:grid;
   grid-template-columns: repeat(5, 1fr);
   gap: clamp(18px, 2.4vw, 28px);
@@ -176,18 +175,48 @@
   margin-top: clamp(18px, 2.6vw, 24px);
   padding: 6px 4px 2px;
 }
+
+/* Secondary button in footer uses shared tokens */
 .quiz-footer .secondary{
   background:var(--button-secondary-bg);
   color:var(--button-secondary-text);
   border:none;
-  padding:10px 16px; border-radius:10px; font-weight:600; cursor:pointer;
+  padding:10px 16px;
+  border-radius:10px;
+  font-weight:600;
+  cursor:pointer;
+  transition: background .2s ease, transform .1s ease;
 }
-.quiz-footer .secondary.is-disabled{ opacity:.5; pointer-events:none; }
+
+.quiz-footer .secondary:hover:not(.is-disabled){
+  background: var(--button-secondary-bg-hover);
+}
+
+.quiz-footer .secondary.is-disabled{
+  opacity:.5;
+  pointer-events:none;
+}
+
+/* Continue button uses primary tokens (dark-mode blue comes from styles.css) */
 #continueBtn{
-  background: var(--brand); color:#fff; border:none;
-  padding:10px 16px; border-radius:10px; font-weight:700; cursor:pointer;
+  background: var(--button-primary-bg);
+  color: var(--button-primary-text);
+  border:none;
+  padding:10px 16px;
+  border-radius:10px;
+  font-weight:700;
+  cursor:pointer;
+  transition: background .2s ease, transform .1s ease;
 }
-#continueBtn[disabled]{ opacity:.6; cursor:not-allowed; }
+
+#continueBtn:hover:not([disabled]){
+  background: var(--button-primary-bg-hover);
+}
+
+#continueBtn[disabled]{
+  opacity:.6;
+  cursor:not-allowed;
+}
 
 /* ====== RESPONSIVE BEHAVIOUR (avoid overflow on mobile) ====== */
 
