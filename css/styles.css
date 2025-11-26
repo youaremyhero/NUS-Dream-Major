@@ -88,15 +88,15 @@ html, body {
   --text: #e6e1e5;
   --muted: #c6c0cf;
 
-  --brand: #bb86fc;
-  --brand-strong: #bb86fc;
-  --brand-soft: rgba(187, 134, 252, 0.18);
-  --brand-soft-strong: rgba(3, 218, 198, 0.28);
+  --brand: #306be5;
+  --brand-strong: #306be5;
+  --brand-soft: #1e2765;
+  --brand-soft-strong: rgba(48, 107, 229, 0.32);
   --brand-100: var(--brand-soft);
   --brand-700: var(--brand-strong);
 
   --accent-cool: #03dac6;
-  --accent-warm: #cf6679;
+  --accent-warm: #d89d04;
   --accent-contrast: #cf6679;
 
   --card: #1e1e1e;
@@ -742,21 +742,42 @@ button:focus-visible, .btn:focus-visible {
 }
 
 :root[data-theme="dark"] .site-nav a {
-  color: #d89d04;
+  color: #121212;
+  background: #d89d04;
+}
+
+:root[data-theme="dark"] .site-nav a:hover {
+  background: #e8b329;
+  color: #121212;
+  box-shadow: 0 10px 24px -18px rgba(230, 181, 41, 0.45);
+}
+
+:root[data-theme="dark"] .site-nav a:focus-visible {
+  background: #e8b329;
+  color: #121212;
+  box-shadow: 0 10px 24px -18px rgba(230, 181, 41, 0.55);
+}
+
+:root[data-theme="dark"] .site-nav a.is-active {
+  color: #121212;
 }
 
 :root[data-theme="dark"] .site-header .brand,
 :root[data-theme="dark"] .site-header h1 {
-  color: #306be5;
+  color: var(--brand);
 }
 
 :root[data-theme="dark"] .btn.secondary {
   font-weight: 700;
 }
 
+:root[data-theme="dark"] .btn.secondary:hover {
+  background: #c9820a;
+}
+
 :root[data-theme="dark"] .landing-programme-card__badge,
 :root[data-theme="dark"] .landing-card__badge {
-  background: #1e2765;
+  background: var(--brand-soft);
 }
 
 .landing-programme-card h3 {
