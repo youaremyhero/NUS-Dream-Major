@@ -177,13 +177,15 @@ html, body {
   --footer-text: #e6e1e5;
   --footer-border: rgba(230, 225, 229, 0.12);
 
-  /* Buttons (DARK) – accent-based, per your spec */
-  --button-primary-bg: #03dac6;
-  --button-primary-bg-hover: #00c4b0;
-  --button-primary-text: #121212;
+  /* Buttons (DARK) – updated per spec */
+  /* Primary (quiz continue etc.) */
+  --button-primary-bg: #173f7f;
+  --button-primary-bg-hover: #1d4f9c;
+  --button-primary-text: #faf7f3;
 
+  /* Secondary (e.g. See programme options) */
   --button-secondary-bg: #f59e0b;
-  --button-secondary-bg-hover: #c9820a;
+  --button-secondary-bg-hover: #fab239;
   --button-secondary-text: #000000;
 
   /* Badges (DARK) */
