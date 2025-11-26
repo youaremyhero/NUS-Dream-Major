@@ -177,18 +177,18 @@ html, body {
   --footer-text: #e6e1e5;
   --footer-border: rgba(230, 225, 229, 0.12);
 
-  /* Buttons (DARK) – accent-based, not brand blue */
+  /* Buttons (DARK) – accent-based, per your spec */
   --button-primary-bg: #03dac6;
   --button-primary-bg-hover: #00c4b0;
   --button-primary-text: #121212;
 
-  --button-secondary-bg: rgba(247, 194, 0, 0.22);
-  --button-secondary-bg-hover: rgba(247, 194, 0, 0.34);
-  --button-secondary-text: #121212;
+  --button-secondary-bg: #f59e0b;
+  --button-secondary-bg-hover: #c9820a;
+  --button-secondary-text: #000000;
 
   /* Badges (DARK) */
-  --badge-bg: rgba(187, 134, 252, 0.22);
-  --badge-text: #e6e1e5;
+  --badge-bg: #3a4a6b;
+  --badge-text: #faf7f3;
 
   /* Focus & interactive tokens (DARK) */
   --focus-outline: #bb86fc;
@@ -867,4 +867,18 @@ body.quiz-body .option-card span {
 /* Slightly wider screens: allow larger max width */
 @media (min-width: 1200px) {
   .quiz-container { max-width: 1120px; }
+}
+
+/* =====================================================
+   Dark theme component overrides
+   ===================================================== */
+
+/* Dark mode: highlight section should be black */
+:root[data-theme="dark"] .landing-section--highlight {
+  background: #000000;
+}
+
+/* Dark mode: all static landing section inners use #152028 */
+:root[data-theme="dark"] .landing-section--static .landing-section__inner {
+  background: #152028;
 }
