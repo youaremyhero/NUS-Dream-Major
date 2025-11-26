@@ -27,10 +27,15 @@ html, body {
   --footer-h: 44px;
   --content-w: 1060px;
 
+  /* Timing */
+  --transition-fast: 0.15s;
+  --transition-med: 0.2s;
+
   /* Base colours (LIGHT) */
   --background: #ededed;
   --text: #161b40;
-  --muted: #3a4a6b;
+  /* Slightly softer muted blue so it doesn’t compete with headings */
+  --muted: #4b5875;
 
   /* Accent / brand-style palette (LIGHT) */
   --brand: #519dd9;
@@ -50,7 +55,8 @@ html, body {
   --surface-static-card: var(--surface-card);
   --surface-a: #f6f6f6;
   --surface-b: #ffffff;
-  --surface-quiz: #f0f7fb;
+  /* Slightly lighter / cooler for clearer separation from card */
+  --surface-quiz: #e9f3fb;
   --surface-highlight: rgba(247, 194, 0, 0.16);
   --surface-info: #e5f1fb;
   --surface-header: rgba(255, 255, 255, 0.92);
@@ -73,8 +79,8 @@ html, body {
   --nav-shadow-focus: 0 10px 24px -18px rgba(22, 27, 64, 0.7);
 
   /* Borders & shadows (LIGHT) */
-  --border: rgba(22, 27, 64, 0.16);
-  --border-strong: rgba(22, 27, 64, 0.32);
+  --border: rgba(22, 27, 64, 0.18);
+  --border-strong: rgba(22, 27, 64, 0.34);
   --radius: 12px;
   --shadow-soft: 0 18px 44px -36px rgba(22, 27, 64, 0.25);
   --shadow-card: 0 16px 36px -34px rgba(22, 27, 64, 0.2);
@@ -93,9 +99,10 @@ html, body {
   --button-primary-bg-hover: #3f85c1;
   --button-primary-text: #ffffff;
 
-  --button-secondary-bg: rgba(247, 194, 0, 0.28);
-  --button-secondary-bg-hover: rgba(247, 194, 0, 0.4);
-  --button-secondary-text: #161b40;
+  /* Slightly stronger yellow & black text for better contrast */
+  --button-secondary-bg: rgba(247, 194, 0, 0.36);
+  --button-secondary-bg-hover: rgba(247, 194, 0, 0.48);
+  --button-secondary-text: #000000;
 
   /* Badges (LIGHT) */
   --badge-bg: var(--brand-soft);
@@ -112,6 +119,12 @@ html, body {
   --likert-3: #fbbf24;
   --likert-4: #84cc16;
   --likert-5: #10b981;
+
+  /* Results-specific accents (LIGHT) */
+  --results-accent-primary: var(--brand);        /* main accent: blue */
+  --results-accent-secondary: var(--accent-warm);/* secondary accent: gold */
+  --results-body-text: var(--text);              /* long paragraphs */
+  --results-body-muted: var(--muted);
 
   /* Header title */
   --header-title-color: var(--brand);
@@ -135,7 +148,7 @@ html, body {
   --brand-100: rgba(250, 204, 21, 0.14);
   --brand-700: #eab308;
 
-  /* Secondary accent set (kept for occasional use) */
+  /* Secondary accent set (teal etc.) */
   --accent-cool: #03dac6;
   --accent-warm: #f7c200;
   --accent-contrast: #cf6679;
@@ -147,7 +160,7 @@ html, body {
   --surface-a: #050816;             /* page background */
   --surface-b: #0a0f1d;             /* alternate sections */
   --surface-quiz: #141b20;
-  --surface-highlight: #000000;     /* highlight sections go full black */
+  --surface-highlight: #000000;
   --surface-info: #1f2937;
 
   /* === Navigation (retained from earlier dark setup) === */
@@ -209,6 +222,13 @@ html, body {
   --likert-3: #fbbf24;
   --likert-4: #84cc16;
   --likert-5: #10b981;
+
+  /* Results-specific accents (DARK) */
+  --results-accent-primary: var(--accent-cool);  /* teal */
+  --results-accent-secondary: var(--brand-700);  /* strong gold */
+  /* softer than pure white but still bright for long paragraphs */
+  --results-body-text: #e3e7ff;
+  --results-body-muted: #cbd5f5;
 }
 
 /* =====================================================
@@ -261,7 +281,7 @@ body.results-body {
   flex-wrap: wrap;
   row-gap: 10px;
   z-index: 100;
-  transition: box-shadow 0.2s ease;
+  transition: box-shadow var(--transition-med) ease;
 }
 
 .site-header.is-scrolled {
@@ -317,9 +337,9 @@ body.results-body {
     var(--nav-surface) var(--nav-progress, 0%)
   );
   transition:
-    background 0.2s ease,
-    color 0.2s ease,
-    box-shadow 0.2s ease;
+    background var(--transition-med) ease,
+    color var(--transition-med) ease,
+    box-shadow var(--transition-med) ease;
   position: relative;
   box-shadow: var(--nav-shadow);
 }
@@ -356,7 +376,10 @@ body.results-body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+  transition:
+    transform var(--transition-fast) ease,
+    background var(--transition-med) ease,
+    border-color var(--transition-med) ease;
 }
 
 .nav-toggle:hover {
@@ -379,7 +402,7 @@ body.results-body {
   height: 2px;
   background: currentColor;
   border-radius: 6px;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  transition: transform var(--transition-fast) ease, opacity var(--transition-fast) ease;
 }
 
 .nav-toggle__icon::before,
@@ -500,7 +523,7 @@ body.nav-open {
   background: var(--theme-toggle-bg);
   color: var(--theme-toggle-icon);
   cursor: pointer;
-  transition: transform 0.2s ease, background 0.2s ease;
+  transition: transform var(--transition-fast) ease, background var(--transition-med) ease;
 }
 
 .theme-toggle:hover {
@@ -752,7 +775,11 @@ button,
   cursor: pointer;
   font-weight: 700;
   padding: 10px 16px;
-  transition: background 0.2s ease, transform 0.1s ease, filter 0.15s ease;
+  transition:
+    background var(--transition-med) ease,
+    transform var(--transition-fast) ease,
+    filter var(--transition-med) ease,
+    box-shadow var(--transition-med) ease;
 }
 
 button:focus-visible,
@@ -852,7 +879,7 @@ button:focus-visible,
 }
 
 /* =====================================================
-   Quiz page text size tweaks (to maximize space)
+   Quiz page text size tweaks
    ===================================================== */
 body.quiz-body .quiz-question .question-text {
   font-size: clamp(18px, 2.2vw, 22px);
