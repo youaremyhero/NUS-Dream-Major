@@ -43,7 +43,7 @@ html, body {
   --brand-soft: rgba(81, 157, 217, 0.18);
   --brand-soft-strong: rgba(81, 157, 217, 0.32);
   --brand-100: var(--brand-soft);
-  --brand-700: var(--brand-strong);
+  --brand-700: #163b7c;
 
   --accent-cool: #53bac1;
   --accent-warm: #f7c200;
@@ -52,23 +52,30 @@ html, body {
   /* Surfaces (LIGHT) */
   --card: #ffffff;
   --surface-card: #ffffff;
-  /* Static landing cards use solid white */
+  /* Static landing inner cards use solid white */
   --surface-static-card: var(--surface-card);
 
   /* Section bands: warm, cohesive */
   --surface-a: #f7f3ec;  /* default landing band */
   --surface-b: #fdfaf5;  /* alternate band */
 
-  /* Quiz band tint (used as fallback if gradient not available) */
-  --surface-quiz: #e9f3fb;
+  /* Quiz band tint (fallback) */
+  --surface-quiz: #e3f0ff;
 
   --surface-highlight: rgba(247, 194, 0, 0.16);
   --surface-info: #e5f1fb;
   --surface-header: rgba(255, 255, 255, 0.92);
 
   /* Gradient backgrounds for light mode (quiz + results only) */
-  --bg-quiz-results: linear-gradient(135deg, #f4f7fc 0%, #faf6ef 100%);
-  --bg-results-page: linear-gradient(135deg, #f4f7fc 0%, #faf6ef 100%);
+  /* Stronger, more obvious blue → warm gradient */
+  --bg-quiz-results: linear-gradient(
+    180deg,
+    #cfe2ff 0%,
+    #e8f2ff 30%,
+    #fbeacb 75%,
+    #fdf5e7 100%
+  );
+  --bg-results-page: var(--bg-quiz-results);
 
   /* Navigation (LIGHT) */
   --nav-surface: #ffffff;
@@ -88,8 +95,8 @@ html, body {
   --nav-shadow-focus: 0 10px 24px -18px rgba(22, 27, 64, 0.7);
 
   /* Borders & shadows (LIGHT) */
-  --border: rgba(22, 27, 64, 0.18);
-  --border-strong: rgba(22, 27, 64, 0.34);
+  --border: rgba(22, 27, 64, 0.16);
+  --border-strong: rgba(22, 27, 64, 0.28);
   --radius: 12px;
   --shadow-soft: 0 18px 44px -36px rgba(22, 27, 64, 0.25);
   --shadow-card: 0 16px 36px -34px rgba(22, 27, 64, 0.2);
@@ -129,9 +136,10 @@ html, body {
   --likert-4: #84cc16;
   --likert-5: #10b981;
 
-  /* Results-specific accents (LIGHT) */
-  --results-accent-primary: var(--brand);
-  --results-accent-secondary: var(--accent-warm);
+  /* Results-specific accents (LIGHT)
+     -> Use NUS blue instead of yellow for titles */
+  --results-accent-primary: #163b7c;
+  --results-accent-secondary: #163b7c;
   --results-body-text: var(--text);
   --results-body-muted: var(--muted);
 
@@ -140,7 +148,7 @@ html, body {
 }
 
 /* =====================================================
-   DARK THEME — unchanged (Midnight Gold)
+   DARK THEME — Midnight Gold, with dark sections (no light gradient)
    ===================================================== */
 :root[data-theme="dark"] {
   /* Base colours (DARK – Midnight Gold) */
@@ -168,6 +176,10 @@ html, body {
   --surface-quiz: #141b20;
   --surface-highlight: #000000;
   --surface-info: #1f2937;
+
+  /* For dark mode, DO NOT use light gradient; use dark surfaces instead */
+  --bg-quiz-results: var(--surface-quiz);
+  --bg-results-page: var(--surface-a);
 
   /* Navigation (dark nav preserved) */
   --nav-surface: #1f1f1f;
@@ -572,13 +584,38 @@ body.nav-open {
   background: var(--surface-b);
 }
 
-/* QUIZ SECTION: light mode gradient, dark mode uses surface-quiz */
+/* QUIZ SECTION: light mode gradient, dark mode uses dark surface */
 .landing-section--quiz {
   padding-top: clamp(32px, 8vw, 56px);
   padding-bottom: clamp(32px, 8vw, 56px);
-  background: var(--bg-quiz-results, var(--surface-quiz));
+  background: var(--bg-quiz-results);
   position: relative;
   z-index: 2;
+}
+
+/* Static sections: textured beige band in LIGHT, flat dark in DARK */
+.landing-section--static {
+  /* light-mode textured background inspired by screenshot 2 */
+  background-color: #f2e8d8;
+  background-image:
+    radial-gradient(circle at 0 0, rgba(255, 255, 255, 0.45) 0, transparent 55%),
+    radial-gradient(circle at 100% 0, rgba(255, 255, 255, 0.35) 0, transparent 55%),
+    radial-gradient(circle at 0 100%, rgba(255, 255, 255, 0.3) 0, transparent 55%),
+    radial-gradient(circle at 100% 100%, rgba(255, 255, 255, 0.4) 0, transparent 55%),
+    repeating-linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.18),
+      rgba(255, 255, 255, 0.18) 2px,
+      rgba(255, 255, 255, 0.08) 2px,
+      rgba(255, 255, 255, 0.08) 4px
+    );
+  background-size: auto, auto, auto, auto, 140px 140px;
+}
+
+/* Remove texture in dark mode; use flat dark */
+:root[data-theme="dark"] .landing-section--static {
+  background-color: #050816;
+  background-image: none;
 }
 
 .landing-section__inner {
@@ -622,10 +659,6 @@ body.nav-open {
   max-width: 62ch;
   text-align: center;
   margin: 0 auto;
-}
-
-.landing-section--static {
-  position: relative;
 }
 
 .landing-section--static + .landing-section--static {
@@ -821,6 +854,15 @@ button:focus-visible,
 
 .btn.secondary:hover {
   background: var(--button-secondary-bg-hover);
+}
+
+/* Dark-theme specific tweak for secondary small buttons */
+:root[data-theme="dark"] .btn.secondary.small {
+  background: #f59e0b;
+  color: #000000;
+}
+:root[data-theme="dark"] .btn.secondary.small:hover {
+  background: #c9820a;
 }
 
 /* =====================================================
