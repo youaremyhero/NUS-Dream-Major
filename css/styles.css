@@ -142,6 +142,31 @@ html, body {
   --theme-toggle-icon: #e6e1e5;
 }
 
+:root[data-theme="dark"] .landing-section--static .landing-section__inner {
+  background: #000000;
+}
+
+:root[data-theme="dark"] .site-header .brand,
+:root[data-theme="dark"] .site-header h1 {
+  color: #306be5;
+}
+
+:root[data-theme="dark"] .site-nav a,
+:root[data-theme="dark"] .site-nav a:hover,
+:root[data-theme="dark"] .site-nav a:focus-visible,
+:root[data-theme="dark"] .site-nav a.is-active {
+  color: #d89d04;
+}
+
+:root[data-theme="dark"] .btn.secondary {
+  font-weight: 700;
+}
+
+:root[data-theme="dark"] .landing-programme-card__badge,
+:root[data-theme="dark"] .landing-card__badge {
+  background: #1e2765;
+}
+
 /* Page-scoped body behaviour
    QUIZ MUST allow page scroll because the footer is fixed.
 */
