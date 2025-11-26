@@ -746,7 +746,8 @@ button:focus-visible, .btn:focus-visible {
 }
 
 :root[data-theme="dark"] .site-nav a:hover {
-  color: ##f59e0b;
+  color: #f59e0b;
+  opacity: 0.6
   box-shadow: 0 10px 24px -18px rgba(230, 181, 41, 0.45);
 }
 
@@ -756,7 +757,7 @@ button:focus-visible, .btn:focus-visible {
 }
 
 :root[data-theme="dark"] .site-nav a.is-active {
-  color: #121212;
+  background: #121212;
 }
 
 :root[data-theme="dark"] .site-header .brand,
