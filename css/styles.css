@@ -766,7 +766,7 @@ button:focus-visible, .btn:focus-visible {
 
 :root[data-theme="dark"] .btn.secondary {
   font-weight: 700;
-  colour: #f59e0b;
+  color: #f59e0b;
 }
 
 :root[data-theme="dark"] .btn.secondary:hover {
