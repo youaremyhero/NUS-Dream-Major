@@ -736,6 +736,29 @@ button:focus-visible, .btn:focus-visible {
   text-transform: uppercase;
 }
 
+/* Dark theme overrides */
+:root[data-theme="dark"] .landing-section--static .landing-section__inner {
+  background: #000000;
+}
+
+:root[data-theme="dark"] .site-nav a {
+  color: #d89d04;
+}
+
+:root[data-theme="dark"] .site-header .brand,
+:root[data-theme="dark"] .site-header h1 {
+  color: #306be5;
+}
+
+:root[data-theme="dark"] .btn.secondary {
+  font-weight: 700;
+}
+
+:root[data-theme="dark"] .landing-programme-card__badge,
+:root[data-theme="dark"] .landing-card__badge {
+  background: #1e2765;
+}
+
 .landing-programme-card h3 {
   margin: 0;
   font-size: 1.1rem;
