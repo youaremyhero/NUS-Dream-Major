@@ -21,8 +21,8 @@
 /* Allow full-page scroll on results */
 body.results-body {
   overflow: auto;
-  /* Light mode: use gradient; dark mode: falls back to surface-a */
-  background: var(--bg-results-page, var(--surface-a));
+  /* Light mode: strong gradient; dark mode: dark surface via tokens */
+  background: var(--bg-results-page);
 }
 
 /* Header: sticky by default on results */
@@ -69,21 +69,27 @@ body.results-body .site-footer {
 
 .page-section {
   padding: 48px 0;
+  position: relative;
 }
 @media (min-width: 768px) {
   .page-section { padding: 72px 0; }
 }
 
+/* Light outline between major sections for clearer separation */
+.page-section + .page-section {
+  border-top: 1px solid var(--border-strong);
+}
+
 .page-section__title {
   margin: 0 0 12px 0;
   font-size: clamp(26px, 3vw, 34px);
-  color: var(--results-accent-secondary);
+  color: var(--results-accent-secondary); /* NUS blue in light mode */
   font-weight: 800;
 }
 
 .page-section__lead {
   margin: 0 0 28px 0;
-  color: var(--results-body-muted);
+  color: var(--results-body-text);
   font-size: 1.05rem;
   max-width: 68ch;
 }
@@ -148,6 +154,7 @@ body.results-body .btn.secondary {
   border-color: transparent;
 }
 
+/* In dark mode we already set hover color via tokens */
 body.results-body .btn.secondary:hover {
   background: var(--button-secondary-bg-hover);
 }
@@ -180,7 +187,7 @@ body.results-body .btn.btn-moreinfo {
 
 .quality-card {
   background: var(--surface-card);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius);
   padding: 14px 16px;
   box-shadow: var(--shadow-card);
@@ -312,7 +319,7 @@ body.results-body .btn.btn-moreinfo {
   transform: none;
   transition: opacity var(--transition-med) ease;
   background: var(--surface-card);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius);
   box-shadow: var(--shadow-card);
   padding: 18px 20px;
@@ -536,7 +543,7 @@ body.results-body .btn.btn-moreinfo {
 
 .topmajors-accordion__item {
   background: var(--surface-card);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius);
   box-shadow: var(--shadow-card);
   overflow: hidden;
@@ -710,7 +717,7 @@ body.results-body .btn.btn-moreinfo {
 
 .cluster-card {
   background: var(--surface-card);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius);
   padding: 12px 14px;
   box-shadow: 0 1px 4px rgba(0,0,0,0.03);
@@ -735,7 +742,7 @@ body.results-body .btn.btn-moreinfo {
 }
 .sp-item {
   background: var(--surface-card);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius);
   padding: 12px 14px;
 }
@@ -758,7 +765,7 @@ body.results-body .btn.btn-moreinfo {
 
 .results-hero__card {
   background: var(--surface-card);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-strong); /* clearer outline */
   border-radius: calc(var(--radius) + 8px);
   box-shadow: none;
   padding: clamp(28px, 6vw, 42px);
@@ -779,7 +786,7 @@ body.results-body .btn.btn-moreinfo {
 .results-hero__title {
   margin: 0;
   font-size: clamp(28px, 4vw, 40px);
-  color: var(--results-accent-secondary);
+  color: var(--results-accent-secondary); /* NUS blue in light mode */
 }
 
 .results-hero__lead {
@@ -860,7 +867,7 @@ body.results-body .btn.btn-moreinfo {
 
 .programme-card {
   background: var(--surface-card);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius);
   padding: clamp(20px, 3vw, 28px);
   box-shadow: var(--shadow-card);
@@ -901,7 +908,7 @@ body.results-body .btn.btn-moreinfo {
   justify-content: space-between;
   gap: 12px;
   background: var(--surface-card);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius);
   padding: 18px 20px;
   color: var(--text);
@@ -944,7 +951,7 @@ body.results-body .btn.btn-moreinfo {
 
 .why-card {
   background: var(--surface-card);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius);
   padding: 20px 22px;
   box-shadow: var(--shadow-card);
@@ -980,7 +987,7 @@ body.results-body .btn.btn-moreinfo {
 
 .topmajor-card {
   background: var(--surface-card);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius);
   padding: 14px 16px;
   box-shadow: 0 1px 4px rgba(0,0,0,0.04);
