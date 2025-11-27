@@ -64,15 +64,15 @@ html, body {
 
   --surface-highlight: rgba(247, 194, 0, 0.16);
   --surface-info: #e5f1fb;
-  --surface-header: rgba(255, 255, 255, 0.92);
+  --surface-header: rgba(255, 255, 255, 0.82);
 
   /* Gradient backgrounds for light mode (quiz + results only) */
   /* Stronger, more obvious blue → warm gradient */
   --bg-quiz-results: linear-gradient(
-    180deg,
-    #cfe2ff 0%,
-    #e8f2ff 30%,
-    #fbeacb 75%,
+    135deg,
+    #b9d8ff 0%,
+    #d8e9ff 32%,
+    #f6e2c4 76%,
     #fdf5e7 100%
   );
   --bg-results-page: var(--bg-quiz-results);
@@ -106,9 +106,9 @@ html, body {
   --progress-fill: linear-gradient(90deg, #53bac1, #519dd9);
 
   /* Footer (LIGHT) */
-  --footer-bg: #ffffff;
+  --footer-bg: rgba(255, 255, 255, 0.82);
   --footer-text: #161b40;
-  --footer-border: rgba(22, 27, 64, 0.12);
+  --footer-border: rgba(22, 27, 64, 0.14);
 
   /* Buttons (LIGHT) */
   --button-primary-bg: #519dd9;
@@ -526,6 +526,7 @@ body.nav-open {
   color: var(--footer-text);
   z-index: 90;
   padding: 0 16px;
+  backdrop-filter: blur(10px);
 }
 
 .site-footer p {
@@ -697,6 +698,10 @@ body.nav-open {
   background-color: #f1ece3;
 }
 
+:root:not([data-theme="dark"]) .landing-section--programmes::before {
+  background-image: none;
+}
+
 :root:not([data-theme="dark"]) .landing-section--next {
   background-color: #f6f3ec;
 }
@@ -848,7 +853,7 @@ body.nav-open {
 .metric-card {
   position: relative;
   display: grid;
-  gap: 10px;
+  gap: 14px;
   padding: clamp(20px, 3.8vw, 26px);
   border: 1px solid var(--border-strong);
   border-radius: calc(var(--radius) + 6px);
@@ -864,6 +869,8 @@ body.nav-open {
     background var(--transition-med) ease,
     border-color var(--transition-med) ease;
   transition-delay: var(--stagger, 0ms);
+  text-align: center;
+  justify-items: center;
 }
 
 .metric-card.is-visible {
@@ -876,6 +883,22 @@ body.nav-open {
   box-shadow: 0 18px 48px -28px rgba(22, 27, 64, 0.36);
   background: color-mix(in srgb, var(--surface-card) 90%, rgba(0, 0, 0, 0.02));
   border-color: color-mix(in srgb, var(--border-strong) 85%, rgba(0, 0, 0, 0.12));
+}
+
+:root[data-theme="dark"] .landing-section--why {
+  background: #070d1b;
+}
+
+:root[data-theme="dark"] .metric-card {
+  background: #111827;
+  border-color: rgba(250, 204, 21, 0.16);
+  box-shadow: 0 18px 44px -32px rgba(0, 0, 0, 0.65);
+}
+
+:root[data-theme="dark"] .metric-card:hover {
+  background: #152036;
+  border-color: rgba(250, 204, 21, 0.28);
+  box-shadow: 0 18px 48px -28px rgba(0, 0, 0, 0.75);
 }
 
 @media (min-width: 900px) {
@@ -896,20 +919,23 @@ body.nav-open {
 }
 
 .metric-card__icon {
-  width: 60px;
-  height: 60px;
+  width: 76px;
+  height: 76px;
   color: var(--brand-700);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.6rem;
+  font-size: 2.1rem;
   font-weight: 800;
+  margin: 2px auto 4px;
 }
 
 .metric-card__stat {
   margin: 0;
   font-weight: 800;
   color: var(--text);
+  justify-self: center;
+  font-size: 1.05rem;
 }
 
 .metric-card__title {
@@ -1468,14 +1494,16 @@ button:focus-visible,
 .landing-card__badge {
   display: inline-flex;
   align-self: flex-start;
-  padding: 4px 10px;
+  padding: 5px 12px;
   border-radius: 999px;
-  background: var(--badge-bg);
+  background: color-mix(in srgb, var(--badge-bg) 85%, transparent);
   color: var(--badge-text);
-  font-size: 0.75rem;
+  font-size: 0.82rem;
   font-weight: 700;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  line-height: 1.1;
+  border: 1px solid color-mix(in srgb, var(--badge-text) 16%, transparent);
 }
 
 .landing-programme-card h3 {
