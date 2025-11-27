@@ -5,7 +5,7 @@ export const WHY_NUS = [
     description:
       "Study with leading faculty, global researchers and industry collaborators who bring cutting-edge insights into every classroom.",
     url: "https://www.nus.edu.sg/oam/home",
-    ctaLabel: "Explore NUS academics",
+    ctaLabel: "Explore NUS academics →",
     badge: "Reputation",
     icon: "🎓",
     stat: "#8 QS World University Rankings"
@@ -16,7 +16,7 @@ export const WHY_NUS = [
     description:
       "Mix majors, minors and special programmes to tailor an interdisciplinary path that reflects your ambitions.",
     url: "https://www.nus.edu.sg/oam/undergraduate-programmes",
-    ctaLabel: "See programme options",
+    ctaLabel: "See programme options →",
     badge: "Education",
     icon: "🧭",
     stat: "70+ Majors & specialisations"
@@ -27,7 +27,7 @@ export const WHY_NUS = [
     description:
       "Access internships, innovation challenges, overseas opportunities and vibrant campus communities that build confidence beyond lectures.",
     url: "https://www.nus.edu.sg/gro",
-    ctaLabel: "Discover global exposure",
+    ctaLabel: "Discover global exposure →",
     badge: "Exposure",
     icon: "🌏",
     stat: "300+ Global partners"
