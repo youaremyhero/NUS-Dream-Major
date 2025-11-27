@@ -23,6 +23,7 @@ body.results-body {
   overflow: auto;
   /* Light mode: strong gradient; dark mode: dark surface via tokens */
   background: var(--bg-results-page);
+  background-attachment: fixed;
 }
 
 /* Header: sticky by default on results */

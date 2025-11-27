@@ -281,7 +281,7 @@ function renderWhyNusHighlights(section, mount) {
             observer.unobserve(entry.target);
           }
         });
-      }, { threshold: 0.35 });
+      }, { threshold: 0.2, rootMargin: "0px 0px -10% 0px" });
 
   WHY_NUS.forEach((reason, index) => {
     if (!reason?.title || !reason?.description) return;
@@ -305,14 +305,9 @@ function renderWhyNusHighlights(section, mount) {
       card.appendChild(stat);
     }
 
-    const title = document.createElement(reason.url ? "a" : "span");
+    const title = document.createElement("span");
     title.className = "metric-card__title";
     title.textContent = reason.title;
-    if (reason.url) {
-      title.href = reason.url;
-      title.target = "_blank";
-      title.rel = "noopener noreferrer";
-    }
     card.appendChild(title);
 
     const desc = document.createElement("p");
@@ -320,9 +315,12 @@ function renderWhyNusHighlights(section, mount) {
     desc.textContent = reason.description;
     card.appendChild(desc);
 
-    if (reason.url) {
-      const cta = document.createElement("span");
+    if (reason.url || reason.ctaUrl) {
+      const cta = document.createElement("a");
       cta.className = "metric-card__cta";
+      cta.href = reason.ctaUrl || reason.url;
+      cta.target = "_blank";
+      cta.rel = "noopener noreferrer";
       cta.textContent = reason.ctaLabel || "Learn more";
       card.appendChild(cta);
     }
@@ -343,6 +341,7 @@ function renderProgrammeHighlights(section, mount) {
   mount.innerHTML = "";
 
   const spotlight = section.querySelector("[data-programme-feature]");
+  const programmesRootUrl = "https://www.nus.edu.sg/oam/undergraduate-programmes";
 
   if (!Array.isArray(EXPLORE_PROGRAMMES) || !EXPLORE_PROGRAMMES.length) {
     section.setAttribute("hidden", "true");
@@ -352,30 +351,30 @@ function renderProgrammeHighlights(section, mount) {
   section.removeAttribute("hidden");
 
   const programmes = EXPLORE_PROGRAMMES.slice();
-  const featured = programmes.find(item => item.highlighted) || programmes[0];
-  const programmesRootUrl = "https://www.nus.edu.sg/oam/undergraduate-programmes";
+  const spotlightContent = {
+    title: "Explore new programmes",
+    description: "See how NUS is launching interdisciplinary pathways that blend technology, design, sustainability and the humanities.",
+    bullets: [
+      "Combine academic rigour with experiential learning",
+      "Discover flexible pathways across faculties",
+      "Match emerging industries with your strengths"
+    ]
+  };
 
-  if (spotlight && featured) {
+  if (spotlight) {
     spotlight.innerHTML = "";
-
-    if (featured.badge) {
-      const badge = document.createElement("span");
-      badge.className = "spotlight-badge";
-      badge.textContent = featured.badge;
-      spotlight.appendChild(badge);
-    }
 
     const featureTitle = document.createElement("h3");
     featureTitle.className = "spotlight-title";
-    featureTitle.textContent = featured.title;
+    featureTitle.textContent = spotlightContent.title;
     spotlight.appendChild(featureTitle);
 
     const featureDesc = document.createElement("p");
     featureDesc.className = "spotlight-desc";
-    featureDesc.textContent = featured.description;
+    featureDesc.textContent = spotlightContent.description;
     spotlight.appendChild(featureDesc);
 
-    const bullets = Array.isArray(featured.bullets) ? featured.bullets : [];
+    const bullets = Array.isArray(spotlightContent.bullets) ? spotlightContent.bullets : [];
     if (bullets.length) {
       const list = document.createElement("ul");
       list.className = "spotlight-list";
@@ -389,22 +388,33 @@ function renderProgrammeHighlights(section, mount) {
 
     const link = document.createElement("a");
     link.className = "spotlight-link";
-    link.href = programmesRootUrl || featured.url;
+    link.href = programmesRootUrl;
     link.target = "_blank";
     link.rel = "noopener noreferrer";
     link.textContent = "See all NUS programmes →";
     spotlight.appendChild(link);
   }
 
-  const tiles = (programmes.filter(p => p !== featured).length
-    ? programmes.filter(p => p !== featured)
-    : programmes).slice(0, 4);
+  const tiles = programmes.slice(0, 4);
 
-  tiles.forEach(programme => {
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const tileObserver = prefersReducedMotion
+    ? null
+    : new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            tileObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.2, rootMargin: "0px 0px -10% 0px" });
+
+  tiles.forEach((programme, idx) => {
     if (!programme?.title || !programme?.description) return;
 
     const card = document.createElement("article");
     card.className = "programme-tile";
+    card.style.setProperty("--tile-delay", `${idx * 130}ms`);
     if (programme.id) {
       card.id = `programme-${programme.id}`;
     }
@@ -432,6 +442,12 @@ function renderProgrammeHighlights(section, mount) {
       link.rel = "noopener noreferrer";
       link.textContent = programme.ctaLabel || "Learn more";
       card.appendChild(link);
+    }
+
+    if (tileObserver) {
+      tileObserver.observe(card);
+    } else {
+      card.classList.add("is-visible");
     }
 
     mount.appendChild(card);
