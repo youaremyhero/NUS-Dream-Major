@@ -172,7 +172,7 @@ export function elevateHeaderOnScroll() {
   if (!header) return;
 
   const toggle = () => {
-    header.classList.toggle("is-scrolled", window.scrollY > 8);
+    header.classList.toggle("is-scrolled", window.scrollY > 10);
   };
 
   toggle();
