@@ -253,11 +253,33 @@ body.quiz-body {
   overflow-y: auto;
   overflow-x: hidden;
   min-height: 100dvh;
+  /* Let the gradient sit at the page level so it appears behind the fixed header */
   background: var(--bg-quiz-results);
   background-attachment: fixed;
 }
 body.results-body {
   overflow: auto;
+}
+
+/* Ensure the gradient starts at the very top of the viewport (behind the fixed header) */
+body.quiz-body,
+body.results-body {
+  position: relative;
+}
+
+body.quiz-body::before,
+body.results-body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: var(--bg-quiz-results);
+  background-attachment: fixed;
+  z-index: -1;
+  pointer-events: none;
+}
+
+body.results-body::before {
+  background: var(--bg-results-page);
 }
 
 .poppins-medium {
@@ -594,11 +616,11 @@ body.nav-open {
   background: var(--surface-b);
 }
 
-/* QUIZ SECTION: light mode gradient, dark mode uses dark surface */
+/* QUIZ SECTION: allow body gradient to show through (keeps dark mode surface via tokens) */
 .landing-section--quiz {
   padding-top: clamp(32px, 8vw, 56px);
   padding-bottom: clamp(32px, 8vw, 56px);
-  background: var(--bg-quiz-results);
+  background: transparent;
   position: relative;
   z-index: 2;
 }
