@@ -7,6 +7,29 @@ import { EXPLORE_PROGRAMMES } from "./content/exploreProgrammes.js";
 import { NEXT_STEPS } from "./content/nextSteps.js";
 import { setupNavigationInteractions, elevateHeaderOnScroll, syncHeaderOffsetVariable } from "./navigation.js";
 
+const NEXT_STEPS_CHECKLIST = [
+  {
+    title: "Review your top clusters",
+    description: "Note the themes in your matches and shortlist programmes you want to explore."
+  },
+  {
+    title: "Bookmark key deadlines",
+    description: "Add application windows and scholarship cut-offs to your calendar."
+  },
+  {
+    title: "Talk to seniors or advisors",
+    description: "Get first-hand perspectives on classes, internships and campus life."
+  },
+  {
+    title: "Plan campus visits",
+    description: "Join open houses or lab tours to experience facilities and student communities."
+  },
+  {
+    title: "Compare pathways",
+    description: "Check double degrees, minors or special programmes that complement your interests."
+  }
+];
+
 let current = 0;
 const TOTAL_QUESTIONS = QUESTIONS_LIKERT.length;
 let answers = new Array(TOTAL_QUESTIONS).fill(null);
@@ -238,6 +261,7 @@ function renderQuestion() {
 
 function renderWhyNusHighlights(section, mount) {
   if (!section || !mount) return;
+
   mount.innerHTML = "";
 
   if (!Array.isArray(WHY_NUS) || !WHY_NUS.length) {
@@ -247,38 +271,66 @@ function renderWhyNusHighlights(section, mount) {
 
   section.removeAttribute("hidden");
 
-  WHY_NUS.forEach(reason => {
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const observer = prefersReducedMotion
+    ? null
+    : new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.35 });
+
+  WHY_NUS.forEach((reason, index) => {
     if (!reason?.title || !reason?.description) return;
 
     const card = document.createElement("article");
-    card.className = "landing-card";
+    card.className = "metric-card";
+    card.style.setProperty("--stagger", `${index * 120}ms`);
     if (reason.id) {
       card.id = `why-nus-${reason.id}`;
     }
 
-    if (reason.badge) {
-      const badge = document.createElement("span");
-      badge.className = "landing-card__badge";
-      badge.textContent = reason.badge;
-      card.appendChild(badge);
+    const iconWrap = document.createElement("div");
+    iconWrap.className = "metric-card__icon";
+    iconWrap.textContent = reason.icon || "⭐️";
+    card.appendChild(iconWrap);
+
+    if (reason.stat) {
+      const stat = document.createElement("p");
+      stat.className = "metric-card__stat";
+      stat.textContent = reason.stat;
+      card.appendChild(stat);
     }
 
-    const title = document.createElement("h3");
+    const title = document.createElement(reason.url ? "a" : "span");
+    title.className = "metric-card__title";
     title.textContent = reason.title;
+    if (reason.url) {
+      title.href = reason.url;
+      title.target = "_blank";
+      title.rel = "noopener noreferrer";
+    }
     card.appendChild(title);
 
     const desc = document.createElement("p");
+    desc.className = "metric-card__desc";
     desc.textContent = reason.description;
     card.appendChild(desc);
 
     if (reason.url) {
-      const link = document.createElement("a");
-      link.className = "btn secondary small";
-      link.href = reason.url;
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
-      link.textContent = reason.ctaLabel || "Learn more";
-      card.appendChild(link);
+      const cta = document.createElement("span");
+      cta.className = "metric-card__cta";
+      cta.textContent = reason.ctaLabel || "Learn more";
+      card.appendChild(cta);
+    }
+
+    if (observer) {
+      observer.observe(card);
+    } else {
+      card.classList.add("is-visible");
     }
 
     mount.appendChild(card);
@@ -287,7 +339,10 @@ function renderWhyNusHighlights(section, mount) {
 
 function renderProgrammeHighlights(section, mount) {
   if (!mount || !section) return;
+
   mount.innerHTML = "";
+
+  const spotlight = section.querySelector("[data-programme-feature]");
 
   if (!Array.isArray(EXPLORE_PROGRAMMES) || !EXPLORE_PROGRAMMES.length) {
     section.setAttribute("hidden", "true");
@@ -296,18 +351,67 @@ function renderProgrammeHighlights(section, mount) {
 
   section.removeAttribute("hidden");
 
-  EXPLORE_PROGRAMMES.forEach(programme => {
+  const programmes = EXPLORE_PROGRAMMES.slice();
+  const featured = programmes.find(item => item.highlighted) || programmes[0];
+  const programmesRootUrl = "https://www.nus.edu.sg/oam/undergraduate-programmes";
+
+  if (spotlight && featured) {
+    spotlight.innerHTML = "";
+
+    if (featured.badge) {
+      const badge = document.createElement("span");
+      badge.className = "spotlight-badge";
+      badge.textContent = featured.badge;
+      spotlight.appendChild(badge);
+    }
+
+    const featureTitle = document.createElement("h3");
+    featureTitle.className = "spotlight-title";
+    featureTitle.textContent = featured.title;
+    spotlight.appendChild(featureTitle);
+
+    const featureDesc = document.createElement("p");
+    featureDesc.className = "spotlight-desc";
+    featureDesc.textContent = featured.description;
+    spotlight.appendChild(featureDesc);
+
+    const bullets = Array.isArray(featured.bullets) ? featured.bullets : [];
+    if (bullets.length) {
+      const list = document.createElement("ul");
+      list.className = "spotlight-list";
+      bullets.forEach(point => {
+        const item = document.createElement("li");
+        item.textContent = point;
+        list.appendChild(item);
+      });
+      spotlight.appendChild(list);
+    }
+
+    const link = document.createElement("a");
+    link.className = "spotlight-link";
+    link.href = programmesRootUrl || featured.url;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = "See all NUS programmes →";
+    spotlight.appendChild(link);
+  }
+
+  const tiles = (programmes.filter(p => p !== featured).length
+    ? programmes.filter(p => p !== featured)
+    : programmes).slice(0, 4);
+
+  tiles.forEach(programme => {
     if (!programme?.title || !programme?.description) return;
 
     const card = document.createElement("article");
-    card.className = "landing-programme-card";
+    card.className = "programme-tile";
     if (programme.id) {
       card.id = `programme-${programme.id}`;
     }
 
     if (programme.badge) {
       const badge = document.createElement("span");
-      badge.className = "landing-programme-card__badge";
+      badge.className = "programme-tile__badge";
       badge.textContent = programme.badge;
       card.appendChild(badge);
     }
@@ -322,7 +426,7 @@ function renderProgrammeHighlights(section, mount) {
 
     if (programme.url) {
       const link = document.createElement("a");
-      link.className = "btn secondary small";
+      link.className = "programme-tile__link";
       link.href = programme.url;
       link.target = "_blank";
       link.rel = "noopener noreferrer";
@@ -336,7 +440,11 @@ function renderProgrammeHighlights(section, mount) {
 
 function renderNextSteps(section, mount) {
   if (!section || !mount) return;
+
   mount.innerHTML = "";
+
+  const checklist = section.querySelector("[data-next-steps-checklist]");
+  const divider = section.querySelector(".next-steps__divider");
 
   if (!Array.isArray(NEXT_STEPS) || !NEXT_STEPS.length) {
     section.setAttribute("hidden", "true");
@@ -345,11 +453,38 @@ function renderNextSteps(section, mount) {
 
   section.removeAttribute("hidden");
 
+  if (checklist) {
+    checklist.innerHTML = "";
+    NEXT_STEPS_CHECKLIST.forEach(item => {
+      const entry = document.createElement("li");
+      entry.className = "checklist__item";
+
+      const marker = document.createElement("span");
+      marker.className = "checklist__box";
+      marker.setAttribute("aria-hidden", "true");
+      entry.appendChild(marker);
+
+      const textWrap = document.createElement("div");
+      textWrap.className = "checklist__content";
+
+      const title = document.createElement("strong");
+      title.textContent = item.title;
+      textWrap.appendChild(title);
+
+      const desc = document.createElement("p");
+      desc.textContent = item.description;
+      textWrap.appendChild(desc);
+
+      entry.appendChild(textWrap);
+      checklist.appendChild(entry);
+    });
+  }
+
   NEXT_STEPS.forEach(step => {
     if (!step?.title || !step?.description) return;
 
     const card = document.createElement("article");
-    card.className = "landing-card";
+    card.className = "landing-card next-step-card";
     if (step.id) {
       card.id = `next-step-${step.id}`;
     }
@@ -374,6 +509,24 @@ function renderNextSteps(section, mount) {
 
     mount.appendChild(card);
   });
+
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (divider) {
+    if (prefersReducedMotion) {
+      section.classList.add("is-visible");
+    } else {
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            section.classList.add("is-visible");
+            observer.disconnect();
+          }
+        });
+      }, { threshold: 0.25 });
+
+      observer.observe(section);
+    }
+  }
 }
 
 function enableInteraction() {

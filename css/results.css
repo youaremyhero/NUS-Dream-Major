@@ -30,9 +30,6 @@ body.results-body .site-header {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: var(--surface-header);
-  border-bottom: 1px solid var(--border);
-  box-shadow: var(--shadow-soft);
 }
 
 /* Footer should NOT be fixed on results */
@@ -73,6 +70,14 @@ body.results-body .site-footer {
 }
 @media (min-width: 768px) {
   .page-section { padding: 72px 0; }
+}
+
+.page-section:not(.results-hero) {
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 6px);
+  padding: clamp(32px, 5vw, 48px) clamp(18px, 4vw, 28px);
+  box-shadow: var(--shadow-card);
 }
 
 /* Light outline between major sections for clearer separation */
@@ -856,6 +861,14 @@ body.results-body .btn.btn-moreinfo {
 }
 
 .results-hero__content .section-title { margin-bottom: 16px; }
+
+.results-hero__content > .results-section {
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 4px);
+  padding: clamp(16px, 3vw, 22px);
+  box-shadow: var(--shadow-card);
+}
 
 /* ---------- Explore Programmes ---------- */
 
