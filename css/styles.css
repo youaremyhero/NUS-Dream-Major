@@ -817,14 +817,30 @@ body.nav-open {
   animation: heroFloat 7s ease-in-out infinite;
 }
 
+/* New image container replacing orb */
 .hero-illustration__orb {
   position: absolute;
-  width: 60%;
-  aspect-ratio: 1;
-  background: radial-gradient(circle at 30% 30%, rgba(81, 157, 217, 0.28), transparent 60%),
-    radial-gradient(circle at 70% 70%, rgba(247, 194, 0, 0.32), transparent 60%);
-  filter: blur(2px);
+  bottom: 0;
+  right: 0;
+  width: 86%;
+  max-width: 420px;
+  aspect-ratio: auto;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: visible;
+  pointer-events: none;
 }
+
+/* New image styling */
+.hero-illustration__orb img.hero-illustration__image {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 18px 32px rgba(22, 27, 64, 0.32));
+}
+
 
 .hero-illustration__card {
   position: relative;
