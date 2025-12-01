@@ -66,18 +66,18 @@ body.results-body .site-footer {
 /* ---------- Page sections & spacing ---------- */
 
 .page-section {
-  padding: 48px 0;
+  padding: 36px 0;
   position: relative;
 }
 @media (min-width: 768px) {
-  .page-section { padding: 72px 0; }
+  .page-section { padding: 56px 0; }
 }
 
 .page-section:not(.results-hero) {
   background: var(--surface-card);
   border: 1px solid var(--border);
   border-radius: calc(var(--radius) + 6px);
-  padding: clamp(32px, 5vw, 48px) clamp(18px, 4vw, 28px);
+  padding: clamp(28px, 4.5vw, 40px) clamp(16px, 3.6vw, 24px);
   box-shadow: var(--shadow-card);
 }
 
@@ -153,6 +153,21 @@ body.results-body .btn.small {
   font-size: .92rem;
 }
 
+body.results-body .site-header .btn-restart {
+  background: #f7c200;
+  color: #000000;
+  border-color: #f7c200;
+  font-size: 1rem;
+  font-weight: 800;
+  padding: 6px 12px;
+}
+
+body.results-body .site-header .btn-restart:hover,
+body.results-body .site-header .btn-restart:focus-visible {
+  background: #ffdb3d;
+  color: #000000;
+}
+
 /* Secondary buttons (e.g. See programme options) */
 body.results-body .btn.secondary {
   background: var(--button-secondary-bg);
@@ -188,15 +203,39 @@ body.results-body .btn.btn-moreinfo {
   .qualities-grid { grid-template-columns: 1fr 1fr; }
 }
 @media (min-width: 960px) {
-  .qualities-grid { grid-template-columns: 1fr 1fr 1fr; }
+  .qualities-grid {
+    grid-template-columns: 1fr 1fr 1fr;
+    column-gap: 24px;
+  }
 }
 
 .quality-card {
-  background: var(--surface-card);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius);
+  background: transparent;
+  border: none;
+  border-radius: 0;
   padding: 14px 16px;
-  box-shadow: var(--shadow-card);
+  box-shadow: none;
+  position: relative;
+}
+
+@media (min-width: 960px) {
+  .quality-card {
+    padding: 16px 18px;
+  }
+
+  .quality-card::before {
+    content: "";
+    position: absolute;
+    top: 12%;
+    bottom: 12%;
+    left: -12px;
+    width: 1.5px;
+    background: var(--border-strong);
+  }
+
+  .quality-card:first-child::before {
+    display: none;
+  }
 }
 .quality-name {
   font-weight: 800;
