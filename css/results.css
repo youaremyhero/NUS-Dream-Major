@@ -215,14 +215,17 @@ body.results-body .btn.btn-moreinfo {
 
 .topmajors-grid {
   display: grid;
-  gap: 24px;
+  gap: 20px 24px;
   align-items: start;
-  grid-template-columns: minmax(180px, 210px) minmax(0, 1.45fr) minmax(180px, 220px);
+  grid-template-columns: minmax(180px, 210px) minmax(0, 1fr);
+  grid-template-areas:
+    "ranks detail"
+    "ranks cta";
 }
 
 @media (max-width: 1100px) {
   .topmajors-grid {
-    grid-template-columns: minmax(150px, 180px) minmax(0, 1.3fr) minmax(170px, 210px);
+    grid-template-columns: minmax(150px, 180px) minmax(0, 1fr);
   }
 }
 
@@ -234,6 +237,7 @@ body.results-body .btn.btn-moreinfo {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  grid-area: ranks;
 }
 
 .rank-tab {
@@ -313,6 +317,13 @@ body.results-body .btn.btn-moreinfo {
 .topmajors-cta {
   position: relative;
   min-height: 320px;
+}
+
+.topmajors-content { grid-area: detail; }
+
+.topmajors-cta {
+  grid-area: cta;
+  min-height: 260px;
 }
 
 .topmajor-panel,
@@ -427,6 +438,14 @@ body.results-body .btn.btn-moreinfo {
   box-shadow: inset 0 0 0 1px var(--brand-soft);
   display: grid;
   gap: 10px;
+}
+
+:root:not([data-theme="dark"]) .major-why-card {
+  background: linear-gradient(
+    135deg,
+    rgba(81, 157, 217, 0.14),
+    rgba(3, 218, 198, 0.12)
+  );
 }
 
 .major-why-card__label {
