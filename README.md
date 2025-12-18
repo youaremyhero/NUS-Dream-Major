@@ -10,16 +10,6 @@ An interactive quiz that helps prospective students discover NUS programmes alig
 - Theme toggle (light/dark) that respects system preference and user choice.
 - Optional PDF export of results from the results page.
 
-## Getting started
-1. Clone or download this repository.
-2. Start a simple static server from the project root (recommended so module imports work):
-   ```bash
-   python3 -m http.server 8000
-   ```
-3. Open the quiz at `http://localhost:8000/index.html`.
-4. Complete the quiz to view inline results or jump to the standalone results page at `results.html`. Saved results are stored in `localStorage`.
-
-Because the site is static, no build step or dependencies are required beyond a modern browser.
 
 ## Project structure
 - `index.html` – Landing page with the quiz flow and supporting sections.
