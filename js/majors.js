@@ -657,6 +657,17 @@ export const majorsBatch3 = [
     // Direct admission
   },
   {
+    id: "CHS_GI",
+    name: "Geospatial Intelligence",
+    faculty: "College of Humanities and Sciences",
+    cluster: "Sciences & Quantitative",
+    qualities: ["Analytical Thinking", "Problem Solving", "Attention to Detail"],
+    description:
+      "Work with geospatial data, remote sensing, and spatial analytics to uncover patterns that inform planning, environmental management, and security decisions.",
+    tags: ["Geospatial", "Spatial Analytics", "Data Science", "Environment"],
+    // Direct admission
+  },
+  {
     id: "CHS_FST",
     name: "Food Science & Technology",
     faculty: "College of Humanities and Sciences",

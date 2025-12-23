@@ -90,6 +90,7 @@ export const majorResources = {
   CHS_DSA: [{ label: "Programme Page", url: "https://www.stat.nus.edu.sg/undergraduate-programmes/bachelor-of-science-data-science-and-analytics/" }],
   CHS_FST: [{ label: "Programme Page", url: "https://www.fst.nus.edu.sg/undergraduate/" }],
   CHS_DSE: [{ label: "Programme Page", url: "https://chs.nus.edu.sg/programmes/data-science-and-economics/" }],
+  CHS_GI: [{ label: "Programme Page", url: "https://chs.nus.edu.sg/programmes/gi/" }],
   CHS_ENVSTUD: [{ label: "Programme Page", url: "https://envstudies.nus.edu.sg/undergraduate/" }],
   CHS_PPE: [{ label: "Programme Page", url: "https://chs.nus.edu.sg/programmes/philosophy-politics-economics/" }],
 
@@ -294,6 +295,17 @@ export const specialProgrammeRules = [
         title: "BSc (Real Estate) & Master of Urban Planning or MSc (Smart Industries and Digital Transformation)",
         note: "Offered by Faculty of Pharmacy & College of Design and Engineering.",
         url: "https://www.nus.edu.sg/registrar/academic-information-policies/undergraduate-students/special-programmes/concurrent-degree-programmes-(cdp)"
+      }
+    ],
+    cap: 1
+  },
+  {
+    ifTop1: ["NUR_NURS"],
+    recommend: [
+      {
+        title: "Nursing & Master in Biomedical Informatics",
+        note: "Offered by Alice Lee Centre for Nursing Studies.",
+        url: "https://medicine.nus.edu.sg/nursing/education-programmes/undergraduate/concurrent-degree-programme/"
       }
     ],
     cap: 1
