@@ -218,7 +218,8 @@ export const QUESTIONS_LIKERT = [
     majorsHints: [
       { id: "ENG_ENV", w: 0.6 },
       { id: "CHS_ENVSTUD", w: 0.6 },
-      { id: "CHS_GEOG", w: 0.4 }
+      { id: "CHS_GEOG", w: 0.4 },
+      { id: "CHS_GI", w: 0.5 }
     ],
     qualitiesHints: [
       { quality: "Ethical Thinking", w: 0.5 },
@@ -237,7 +238,8 @@ export const QUESTIONS_LIKERT = [
     majorsHints: [
       { id: "CHS_DSA", w: 0.7 },
       { id: "SOC_BA", w: 0.6 },
-      { id: "CHS_STAT", w: 0.5 }
+      { id: "CHS_STAT", w: 0.5 },
+      { id: "CHS_GI", w: 0.5 }
     ],
     qualitiesHints: [
       { quality: "Analytical Thinking", w: 0.7 },

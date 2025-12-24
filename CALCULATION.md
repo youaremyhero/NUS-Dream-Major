@@ -27,8 +27,8 @@ Each prompt can point to clusters (broad fields), specific majors, and/or qualit
 | 8 | Design, aesthetics, user experience | Design & Architecture (1.0); Humanities & Cultural Studies (0.4) | Industrial Design (0.7); Architecture (0.6) | Creativity (0.7); Attention to Detail (0.4) |
 | 9 | Public policy, governance, laws | Law & Legal Studies (1.0); Social Sciences (0.6) | Law (0.8); Political Science (0.6) | Critical Thinking (0.6); Ethical Thinking (0.5); Communication Skills (0.5) |
 | 10 | Performance, art, music | Music & Performing Arts (1.0); Humanities & Cultural Studies (0.6); Design & Architecture (0.4) | Music (0.9); Theatre & Performance Studies (0.4) | Creativity (0.6); Communication Skills (0.4) |
-| 11 | Sustainability and environmental challenges | Sciences & Quantitative (0.8); Engineering & Technology (0.8); Social Sciences (0.4) | Environmental Engineering (0.6); Environmental Studies (0.6); Geography (0.4) | Ethical Thinking (0.5); Analytical Thinking (0.5); Problem Solving (0.5) |
-| 12 | Working with data and statistics | Sciences & Quantitative (1.0); Computing & AI (0.6); Business & Management (0.5) | Data Science & Analytics (0.7); Business Analytics (0.6); Statistics (0.5) | Analytical Thinking (0.7); Attention to Detail (0.5) |
+| 11 | Sustainability and environmental challenges | Sciences & Quantitative (0.8); Engineering & Technology (0.8); Social Sciences (0.4) | Environmental Engineering (0.6); Environmental Studies (0.6); Geography (0.4); Geospatial Intelligence (0.5) | Ethical Thinking (0.5); Analytical Thinking (0.5); Problem Solving (0.5) |
+| 12 | Working with data and statistics | Sciences & Quantitative (1.0); Computing & AI (0.6); Business & Management (0.5) | Data Science & Analytics (0.7); Business Analytics (0.6); Statistics (0.5); Geospatial Intelligence (0.5) | Analytical Thinking (0.7); Attention to Detail (0.5) |
 | 13 | Leading teams and influencing outcomes | Business & Management (0.9); Social Sciences (0.6); Law & Legal Studies (0.4) | Leadership & Human Capital Management (0.6); Innovation & Entrepreneurship (0.5) | Leadership Potential (0.7); Strategic Planning (0.5); Communication Skills (0.5) |
 | 14 | Compliance, ethics, accuracy-heavy tasks | Health & Life Sciences (0.7); Law & Legal Studies (0.7); Business & Management (0.6) | Accountancy (0.6); Pharmacy (0.5); Law (0.4) | Attention to Detail (0.7); Ethical Thinking (0.6); Discipline (0.5) |
 | 15 | Cross-cultural curiosity and collaboration | Humanities & Cultural Studies (0.8); Social Sciences (0.8) | Global Studies (0.6); Southeast Asian Studies (0.5); Anthropology (0.5) | Intercultural Competence (0.8); Communication Skills (0.5) |
@@ -48,7 +48,7 @@ Each prompt can point to clusters (broad fields), specific majors, and/or qualit
 ## How qualities are calculated
 
 1. **Direct quality hints:** Questions can directly boost qualities using only the positive side of the Likert scale; disagreement does not reduce a quality score.
-2. **Qualities inferred from majors:** Each major lists its representative qualities. A major’s positive score is split equally across its qualities, then adjusted by an IDF-like factor: common qualities contribute slightly less, while rarer ones carry a bit more weight. This prevents ubiquitous traits from crowding out distinctive strengths.
+2. **Qualities inferred from majors:** Each major lists its representative qualities. A major’s positive score is split equally across its qualities, then adjusted by an IDF-like factor. The current dampening uses `idf = 1 / (1 + log(df))`, where `df` is the number of majors tagged with that quality—common qualities contribute slightly less, while rarer ones carry a bit more weight. This prevents ubiquitous traits from crowding out distinctive strengths.
 3. **Combined profile:** The final quality profile is the sum of direct hints and the contributions inferred from your strongest majors.
 
 ## Example: how one user’s answers flow through
@@ -62,6 +62,7 @@ Each prompt can point to clusters (broad fields), specific majors, and/or qualit
 
 ## Other details to know
 
-- **Sorting stability:** Within the same score (after diversity balancing), majors fall back to alphabetical order to keep results predictable.
+- **Sorting stability:** Within the same score group, majors are ordered by their ID (alphabetical) after diversity balancing to keep results predictable.
+- **Percent guardrails:** Percentages are computed against the highest shifted score, with a fallback of 1 to avoid divide-by-zero when all scores are zero.
 - **Saved results:** When you finish the quiz, the computed scores, top majors, and qualities are saved to `localStorage` with a timestamp. Reloading the results page restores this data instead of rerunning the quiz.
 - **Extensibility:** The weights, clusters, and qualities all live in configuration files, making it straightforward to tune how strongly certain answers influence your matches.
