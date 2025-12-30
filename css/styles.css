@@ -697,6 +697,12 @@ body.nav-open {
   margin: 0 auto;
 }
 
+.landing-quiz-disclaimer {
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
 .landing-section--static + .landing-section--static {
   border-top: 1px solid var(--border);
 }
