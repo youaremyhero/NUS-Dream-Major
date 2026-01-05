@@ -15,12 +15,12 @@ export const EXPLORE_PROGRAMMES = [
     ]
   },
   {
-    id: "infrastructure-management",
-    title: "Bachelor of Engineering in Infrastructure and Project Management",
+    id: "geo-intelligence",
+    title: "Geospatial Intelligence (Honours) Cross-Disciplinary Degree Programme",
     description:
-      "Shape resilient cities through integrated engineering, digital construction studios and internships with leading infrastructure partners.",
-    ctaLabel: "Discover I&PM",
-    url: "https://cde.nus.edu.sg/dep/programmes/b-eng-infrastructure-and-project-management/",
+      "Utilise intelligent solutions to optimise the built and natural environments, drive sustainable development, and improve well-being. ",
+    ctaLabel: "Discover this XDP",
+    url: "https://chs.nus.edu.sg/programmes/gi/",
     badge: "Spotlight"
   },
   {
