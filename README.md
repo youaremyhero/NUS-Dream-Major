@@ -24,7 +24,7 @@ An interactive quiz that helps prospective students discover NUS programmes alig
 - `js/majors.js` – Programme metadata used when mapping quiz outcomes to recommendations.
 
 ## Customising the experience
-- **Quiz questions:** Update Likert prompts and scales in `js/config/questionsLikert.js`. Supporting question rendering helpers live in `js/questions.js`.
+- **Quiz questions:** Update Likert prompts and scales in `js/config/questionsLikert.js`.
 - **Programme data:** Adjust major metadata and clusters in `js/majors.js` to refine recommendation mappings.
 - **Content sections:** Edit cards and copy in `js/content/whyNUS.js`, `js/content/exploreProgrammes.js`, and `js/content/nextSteps.js`.
 - **Styling:** Tweak layout or theme styling in `css/styles.css`, with quiz-specific adjustments in `css/questions.css` and results styling in `css/results.css`.
